@@ -9,9 +9,9 @@ import com.mxgraph.view.mxEdgeStyle;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStylesheet;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
+import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
 import edu.kpi.nesteruk.pzcs.model.common.NodeBuilder;
 import edu.kpi.nesteruk.pzcs.model.common.LinkBuilder;
-import edu.kpi.nesteruk.pzcs.model.tasks.Task;
 import edu.kpi.nesteruk.pzcs.view.Views;
 import edu.kpi.nesteruk.pzcs.view.dialog.Dialog;
 
@@ -38,6 +38,9 @@ public class CommonPresenter implements edu.kpi.nesteruk.pzcs.view.common.GraphP
 
     private final GraphModel model;
 
+    /**
+     * {cellId -> cell (vertex|edge) }
+     */
     private final Map<String, mxICell> cellsMap = new LinkedHashMap<>();
 
     public CommonPresenter(GraphView graphView, CaptionsSupplier captionsSupplier, Supplier<GraphModel> graphModelFactory) {
@@ -45,7 +48,6 @@ public class CommonPresenter implements edu.kpi.nesteruk.pzcs.view.common.GraphP
         this.captionsSupplier = captionsSupplier;
 
         this.graph = new mxGraph() {
-
             @Override
             public boolean isCellDisconnectable(Object cell, Object terminal, boolean source) {
                 return !((mxICell) cell).isEdge();
@@ -69,31 +71,7 @@ public class CommonPresenter implements edu.kpi.nesteruk.pzcs.view.common.GraphP
             mxCell edge = (mxCell) props.get(PROP_MX_CELL_EDGE);
             mxICell sourceCell = edge.getSource();
             mxICell targetCell = edge.getTarget();
-
-            if (sourceCell != null && targetCell != null) {
-                Task source = (Task) sourceCell.getValue();
-                Task target = (Task) targetCell.getValue();
-
-                String sourceId = source.getId();
-                String targetId = target.getId();
-
-                LinkBuilder linkBuilder = model.getLinkBuilder();
-                if(linkBuilder.beginConnect(sourceId, targetId)) {
-                    if(linkBuilder.needWeight()) {
-                        Dialog.InputIntegerDialog setWeightDialog = new Dialog.InputIntegerDialog(
-                                "Connecting " + captionsSupplier.apply(true), "Set connection weight:", String.valueOf(1)
-                        );
-                        setWeightDialog.showFetchInt().ifPresent(linkBuilder::setWeight);
-                    }
-                }
-
-                Optional<String> link = linkBuilder.finishConnect();
-                if(link.isPresent()) {
-                    edge.setValue(link.get());
-                } else {
-                    graph.getModel().remove(edge);
-                }
-            }
+            connectNodes(sourceCell, targetCell, edge);
         });
     }
 
@@ -215,7 +193,7 @@ public class CommonPresenter implements edu.kpi.nesteruk.pzcs.view.common.GraphP
                         );
                         setWeightDialog.showFetchInt().ifPresent(nodeBuilder::setWeight);
                     }
-                    nodeBuilder.finishBuild().ifPresent(nodeId -> addNode(x, y, nodeId));
+                    nodeBuilder.finishBuild().ifPresent(nodeIdAndValue -> addNode(x, y, nodeIdAndValue));
                 }
             }
         } finally {
@@ -223,23 +201,50 @@ public class CommonPresenter implements edu.kpi.nesteruk.pzcs.view.common.GraphP
         }
     }
 
-    private void addNode(int x, int y, String node) {
-        mxICell cell = insertVertex(x, y, node);
-        cellsMap.put(node, cell);
+    private void addNode(int x, int y, IdAndValue idAndValue) {
+        mxICell cell = insertVertex(x, y, idAndValue);
+        cellsMap.put(idAndValue.id, cell);
     }
 
-    private mxICell insertVertex(int x, int y, String node) {
-        return (mxICell) graph.insertVertex(parent, node, node, x, y, Views.Tasks.TASK_DIAMETER, Views.Tasks.TASK_DIAMETER, Views.Tasks.TASK_STYLE);
+    private mxICell insertVertex(int x, int y, IdAndValue nodeIdAndValue) {
+        return (mxICell) graph.insertVertex(parent, nodeIdAndValue.id, nodeIdAndValue.value, x, y, Views.Tasks.TASK_DIAMETER, Views.Tasks.TASK_DIAMETER, Views.Tasks.TASK_STYLE);
     }
 
-    void deleteNode(int x, int y) {
-        deleteVertex(x, y).ifPresent(id -> {
+    private void connectNodes(mxICell sourceCell, mxICell targetCell, mxICell edge) {
+        if (sourceCell != null && targetCell != null) {
+            String sourceId = sourceCell.getId();
+            String targetId = targetCell.getId();
+
+            LinkBuilder linkBuilder = model.getLinkBuilder();
+            if(linkBuilder.beginConnect(sourceId, targetId)) {
+                if(linkBuilder.needWeight()) {
+                    Dialog.InputIntegerDialog setWeightDialog = new Dialog.InputIntegerDialog(
+                            "Connecting " + captionsSupplier.apply(true), "Set connection weight:", String.valueOf(1)
+                    );
+                    setWeightDialog.showFetchInt().ifPresent(linkBuilder::setWeight);
+                }
+            }
+
+            Optional<IdAndValue> link = linkBuilder.finishConnect();
+            if(link.isPresent()) {
+                IdAndValue edgeIdAndValue = link.get();
+                edge.setId(edgeIdAndValue.id);
+                edge.setValue(edgeIdAndValue.value);
+                cellsMap.put(edgeIdAndValue.id, edge);
+            } else {
+                graph.getModel().remove(edge);
+            }
+        }
+    }
+
+    private void deleteNode(int x, int y) {
+        deleteCell(x, y).ifPresent(id -> {
             cellsMap.remove(id);
             model.deleteNode(id);
         });
     }
 
-    private Optional<String> deleteVertex(int x, int y) {
+    private Optional<String> deleteCell(int x, int y) {
         mxCell cellToDelete = (mxCell) graphComponent.getCellAt(x, y);
         if(cellToDelete == null) {
             return Optional.empty();
@@ -250,23 +255,53 @@ public class CommonPresenter implements edu.kpi.nesteruk.pzcs.view.common.GraphP
         }
     }
 
+    private void deleteLink(int x, int y) {
+        deleteCell(x, y).ifPresent(id -> {
+            cellsMap.remove(id);
+            model.deleteLink(id);
+        });
+    }
+
     Collection<JMenuItem> getMenuItemsForClick(MouseEvent event) {
         final int x = event.getX();
         final int y = event.getY();
-        return Arrays.asList(
-                new JMenuItem(new AbstractAction("Add " + captionsSupplier.apply(false)) {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        addNode(x, y);
-                    }
-                }),
-                new JMenuItem(new AbstractAction("Delete " + captionsSupplier.apply(false)) {
+
+        ArrayList<JMenuItem> menuOptions = new ArrayList<>();
+
+        menuOptions.add(new JMenuItem(new AbstractAction("Add " + captionsSupplier.apply(false)) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addNode(x, y);
+            }
+        }));
+
+        mxICell cell = (mxICell) graphComponent.getCellAt(x, y);
+        if(cell != null) {
+            if(cell.isVertex()) {
+                menuOptions.add(new JMenuItem(new AbstractAction("Delete " + captionsSupplier.apply(false)) {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         deleteNode(x, y);
                     }
-                })
-        );
+                }));
+            } else {
+                menuOptions.add(new JMenuItem(new AbstractAction("Delete link") {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        deleteLink(x, y);
+                    }
+                }));
+            }
+        }
+
+        menuOptions.add(new JMenuItem(new AbstractAction("Validate " + captionsSupplier.apply(true) + " graph topology") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                model.validate();
+            }
+        }));
+
+        return menuOptions;
     }
 
     public interface CaptionsSupplier extends Function<Boolean, String> {

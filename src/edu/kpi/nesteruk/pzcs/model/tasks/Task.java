@@ -1,6 +1,6 @@
 package edu.kpi.nesteruk.pzcs.model.tasks;
 
-import edu.kpi.nesteruk.pzcs.model.common.primitive.Node;
+import edu.kpi.nesteruk.pzcs.model.primitives.Node;
 
 /**
  * Created by Yurii on 3/10/2016.

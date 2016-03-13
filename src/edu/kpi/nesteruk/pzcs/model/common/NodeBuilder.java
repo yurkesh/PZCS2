@@ -1,5 +1,7 @@
 package edu.kpi.nesteruk.pzcs.model.common;
 
+import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
+
 import java.util.Optional;
 
 /**
@@ -14,5 +16,5 @@ public interface NodeBuilder {
     boolean setId(String id);
     boolean needWeight();
     void setWeight(int weight);
-    Optional<String> finishBuild();
+    Optional<IdAndValue> finishBuild();
 }

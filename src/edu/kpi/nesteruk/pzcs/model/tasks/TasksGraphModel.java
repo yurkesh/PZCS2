@@ -2,24 +2,22 @@ package edu.kpi.nesteruk.pzcs.model.tasks;
 
 import edu.kpi.nesteruk.misc.IdPool;
 import edu.kpi.nesteruk.pzcs.model.common.*;
-import edu.kpi.nesteruk.pzcs.model.common.primitive.DirectedLink;
+import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
+import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
-
 
 /**
  * Created by Yurii on 3/10/2016.
  */
 public class TasksGraphModel implements GraphModel {
 
-    private IdPool idPool = new IdPool();
+    private IdPool<String> idPool = new CommonIdPool();
 
     private Map<String, Task> tasksMap = new LinkedHashMap<>();
 
-    private Set<DirectedLink<Task>> edges = new LinkedHashSet<>();
+    private Map<String, DirectedLink<Task>> edges = new LinkedHashMap<>();
 
     @Override
     public NodeBuilder getNodeBuilder() {
@@ -27,6 +25,7 @@ public class TasksGraphModel implements GraphModel {
                 true,
                 idPool::obtainID,
                 id -> {
+                    id = id.toLowerCase();
                     boolean unique = !tasksMap.containsKey(id);
                     if(unique) {
                         idPool.obtainId(id);
@@ -39,13 +38,13 @@ public class TasksGraphModel implements GraphModel {
         );
     }
 
-    public String createTask(String id, int weight) {
+    public IdAndValue createTask(String id, int weight) {
         if(weight <= 0) {
             return null;
         }
         Task task = new Task(id, weight);
         tasksMap.put(id, task);
-        return task.toString();
+        return new IdAndValue(id, task.toString());
     }
 
     @Override
@@ -65,14 +64,15 @@ public class TasksGraphModel implements GraphModel {
         return true;
     }
 
-    public String connect(String srcId, String destId, int weight) {
+    public IdAndValue connect(String srcId, String destId, int weight) {
         DirectedLink<Task> link = new DirectedLink<>(tasksMap.get(srcId), tasksMap.get(destId), weight);
-        boolean added = edges.add(link);
-        if(added) {
-            return link.toString();
-        } else {
-            return null;
-        }
+        String linkId = link.toString();
+        return edges.putIfAbsent(linkId, link) == null ? new IdAndValue(linkId, link.toString()) : null;
+    }
+
+    @Override
+    public void deleteLink(String id) {
+        edges.remove(id);
     }
 
     @Override

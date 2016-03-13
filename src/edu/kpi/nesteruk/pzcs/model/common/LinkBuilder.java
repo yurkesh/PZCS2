@@ -1,5 +1,7 @@
 package edu.kpi.nesteruk.pzcs.model.common;
 
+import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
+
 import java.util.Optional;
 
 /**
@@ -9,5 +11,5 @@ public interface LinkBuilder {
     boolean beginConnect(String srcId, String destId);
     boolean needWeight();
     void setWeight(Integer weightIn);
-    Optional<String> finishConnect();
+    Optional<IdAndValue> finishConnect();
 }

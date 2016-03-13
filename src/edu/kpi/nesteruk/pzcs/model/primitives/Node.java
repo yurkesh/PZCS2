@@ -1,4 +1,4 @@
-package edu.kpi.nesteruk.pzcs.model.common.primitive;
+package edu.kpi.nesteruk.pzcs.model.primitives;
 
 import java.io.Serializable;
 

@@ -11,5 +11,7 @@ public interface GraphModel {
 
     void deleteNode(String id);
 
+    void deleteLink(String id);
+
     boolean validate();
 }

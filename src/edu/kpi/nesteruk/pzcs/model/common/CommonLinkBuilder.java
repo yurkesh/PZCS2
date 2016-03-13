@@ -1,5 +1,7 @@
 package edu.kpi.nesteruk.pzcs.model.common;
 
+import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
+
 import java.util.Optional;
 
 /**
@@ -42,7 +44,7 @@ public class CommonLinkBuilder implements LinkBuilder {
     }
 
     @Override
-    public Optional<String> finishConnect() {
+    public Optional<IdAndValue> finishConnect() {
         if(weight < 0) {
             return Optional.empty();
         } else if(srcId == null || destId == null) {
@@ -57,6 +59,6 @@ public class CommonLinkBuilder implements LinkBuilder {
     }
 
     public interface LinkFactory {
-        String makeLink(String srcId, String destId, int weight);
+        IdAndValue makeLink(String srcId, String destId, int weight);
     }
 }

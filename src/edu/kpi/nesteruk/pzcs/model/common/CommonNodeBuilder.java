@@ -1,5 +1,7 @@
 package edu.kpi.nesteruk.pzcs.model.common;
 
+import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
+
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -54,11 +56,11 @@ public class CommonNodeBuilder implements NodeBuilder {
     }
 
     @Override
-    public Optional<String> finishBuild() {
+    public Optional<IdAndValue> finishBuild() {
         return id == null ? Optional.empty() : Optional.ofNullable(nodeFactory.makeNode(id, weight));
     }
 
     public interface NodeFactory {
-        String makeNode(String id, int weight);
+        IdAndValue makeNode(String id, int weight);
     }
 }
