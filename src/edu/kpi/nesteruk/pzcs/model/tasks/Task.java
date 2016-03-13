@@ -1,26 +1,28 @@
-package edu.kpi.nesteruk.pzcs.model;
+package edu.kpi.nesteruk.pzcs.model.tasks;
 
-import java.io.Serializable;
+import edu.kpi.nesteruk.pzcs.model.common.primitive.Node;
 
 /**
  * Created by Yurii on 3/10/2016.
  */
-public class Task implements Serializable {
-    public final String id;
+public class Task implements Node {
 
-    public Task(String id) {
+    public final String id;
+    public final int weight;
+
+    public Task(String id, int weight) {
         this.id = id;
+        this.weight = weight;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
     @Override
     public String toString() {
-        return "Task{" +
-                "id='" + id + "'" +
-                '}';
+        return "T[" + id + "]{" + weight + "}";
     }
 
     @Override

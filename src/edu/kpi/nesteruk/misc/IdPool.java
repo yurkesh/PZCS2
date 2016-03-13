@@ -1,4 +1,4 @@
-package edu.kpi.nesteruk.pzcs.model;
+package edu.kpi.nesteruk.misc;
 
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -21,12 +21,24 @@ public class IdPool {
         return String.valueOf(result);
     }
 
+    public boolean obtainId(String id) {
+        try {
+            Integer idInt = Integer.valueOf(id);
+            return ids.remove(idInt);
+        } catch (NumberFormatException e) {
+            // IGNORE
+            // throw new IllegalArgumentException("Must be int. value = '" + id + "'");
+            return false;
+        }
+    }
+
     public void releaseId(String id) {
         try {
             Integer idInt = Integer.valueOf(id);
             ids.offer(idInt);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Must be int. value = '" + id + "'");
+            // IGNORE
+            // throw new IllegalArgumentException("Must be int. value = '" + id + "'");
         }
     }
 }
