@@ -1,6 +1,6 @@
 package edu.kpi.nesteruk.pzcs.graph.validation;
 
-import edu.kpi.nesteruk.pzcs.graph.GraphData;
+import org.jgrapht.Graph;
 
 import java.util.Set;
 
@@ -10,8 +10,8 @@ import java.util.Set;
 public class NoIsolatedEdgesGraphValidator implements GraphValidator {
 
     @Override
-    public boolean isValid(GraphData graph) {
-        Set vertices = graph.getVertices();
+    public boolean isValid(Graph graph) {
+        Set vertices = graph.vertexSet();
         if(vertices.size() == 1) {
             return true;
         }

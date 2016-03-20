@@ -3,8 +3,8 @@ package edu.kpi.nesteruk.pzcs.common;
 import edu.kpi.nesteruk.pzcs.model.system.SystemGraphModel;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphModel;
 import edu.kpi.nesteruk.pzcs.view.common.CommonGraphView;
-import edu.kpi.nesteruk.pzcs.view.common.CommonPresenter;
-import edu.kpi.nesteruk.pzcs.view.common.GraphPresenter;
+import edu.kpi.nesteruk.pzcs.presenter.CommonPresenter;
+import edu.kpi.nesteruk.pzcs.presenter.GraphPresenter;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
 
 import java.awt.*;

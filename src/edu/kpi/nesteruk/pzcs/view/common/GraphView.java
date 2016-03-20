@@ -1,6 +1,7 @@
 package edu.kpi.nesteruk.pzcs.view.common;
 
 import com.mxgraph.swing.mxGraphComponent;
+import edu.kpi.nesteruk.pzcs.presenter.GraphPresenter;
 
 import javax.swing.*;
 import java.util.Collection;

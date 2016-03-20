@@ -2,7 +2,7 @@ package edu.kpi.nesteruk.pzcs.view.dashboard;
 
 import edu.kpi.nesteruk.pzcs.common.GraphType;
 import edu.kpi.nesteruk.pzcs.view.common.CommonGraphView;
-import edu.kpi.nesteruk.pzcs.view.common.GraphPresenter;
+import edu.kpi.nesteruk.pzcs.presenter.GraphPresenter;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
 
 import javax.swing.*;

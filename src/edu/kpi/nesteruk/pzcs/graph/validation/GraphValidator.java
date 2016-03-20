@@ -1,12 +1,12 @@
 package edu.kpi.nesteruk.pzcs.graph.validation;
 
-import edu.kpi.nesteruk.pzcs.graph.GraphData;
+import org.jgrapht.Graph;
 
 /**
  * Created by Yurii on 2016-03-13.
  */
-public interface GraphValidator {
+public interface GraphValidator<V, E> {
 
-    boolean isValid(GraphData graph);
+    boolean isValid(Graph<V, E> graph);
 
 }

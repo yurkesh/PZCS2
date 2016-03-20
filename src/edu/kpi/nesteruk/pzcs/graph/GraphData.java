@@ -1,5 +1,7 @@
 package edu.kpi.nesteruk.pzcs.graph;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -13,5 +15,16 @@ public interface GraphData<Vertex, Edge> {
 
     Set<Vertex> getVertices();
 
+    Vertex getEdgeTarget(Edge edge);
 
+    /*
+    Collection<Vertex> getTargetedVertices(Vertex vertex);
+    */
+
+    /**
+     *
+     * @param vertex
+     * @return {connecting edge -> targeted vertex}
+     */
+    Map<Edge, Vertex> getTargetedVerticesWithEdges(Vertex vertex);
 }
