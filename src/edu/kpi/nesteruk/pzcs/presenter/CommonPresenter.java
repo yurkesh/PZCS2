@@ -3,9 +3,7 @@ package edu.kpi.nesteruk.pzcs.presenter;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxICell;
 import com.mxgraph.swing.mxGraphComponent;
-import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxEvent;
-import com.mxgraph.view.mxEdgeStyle;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStylesheet;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
@@ -15,6 +13,7 @@ import edu.kpi.nesteruk.pzcs.model.common.LinkBuilder;
 import edu.kpi.nesteruk.pzcs.view.Views;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
 import edu.kpi.nesteruk.pzcs.view.dialog.Dialog;
+import edu.kpi.nesteruk.pzcs.view.dialog.Message;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -44,7 +43,7 @@ public class CommonPresenter implements GraphPresenter {
      */
     private final Map<String, mxICell> cellsMap = new LinkedHashMap<>();
 
-    public CommonPresenter(GraphView graphView, CaptionsSupplier captionsSupplier, Supplier<GraphModel> graphModelFactory) {
+    public CommonPresenter(GraphView graphView, Function<mxStylesheet, mxStylesheet> graphStylesheetInterceptor, CaptionsSupplier captionsSupplier, Supplier<GraphModel> graphModelFactory) {
         this.graphView = graphView;
         this.captionsSupplier = captionsSupplier;
 
@@ -56,7 +55,7 @@ public class CommonPresenter implements GraphPresenter {
         };
         parent = graph.getDefaultParent();
 
-        applyGraphSettings();
+        applyGraphViewSettings(graphStylesheetInterceptor);
         initGraphListeners();
 
         this.graphComponent = new mxGraphComponent(graph);
@@ -76,30 +75,8 @@ public class CommonPresenter implements GraphPresenter {
         });
     }
 
-    private void applyGraphSettings() {
-        mxStylesheet stylesheet = new mxStylesheet();
-        stylesheet.setDefaultEdgeStyle(getEdgeStyles());
-        stylesheet.setDefaultVertexStyle(getVertexStyles());
-        graph.setStylesheet(stylesheet);
-    }
-
-    private Map<String, Object> getVertexStyles() {
-        Map<String, Object> vertexStyle = graph.getStylesheet().getDefaultVertexStyle();
-        vertexStyle.put(mxConstants.STYLE_FOLDABLE, false);
-        vertexStyle.put(mxConstants.STYLE_RESIZABLE, false);
-        return vertexStyle;
-    }
-
-    private Map<String, Object> getEdgeStyles() {
-        Map<String, Object> edgeStyle = graph.getStylesheet().getDefaultEdgeStyle();
-        edgeStyle.put(mxConstants.STYLE_EDGE, mxEdgeStyle.ElbowConnector);
-        edgeStyle.put(mxConstants.STYLE_SHAPE,    mxConstants.SHAPE_CONNECTOR);
-        edgeStyle.put(mxConstants.STYLE_ENDARROW, mxConstants.ARROW_CLASSIC);
-        edgeStyle.put(mxConstants.STYLE_STROKECOLOR, "#000000");
-        edgeStyle.put(mxConstants.STYLE_FONTCOLOR, "#000000");
-        edgeStyle.put(mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, "#f0f0f0");
-
-        return edgeStyle;
+    private void applyGraphViewSettings(Function<mxStylesheet, mxStylesheet> graphStylesheetInterceptor) {
+        graph.setStylesheet(graphStylesheetInterceptor.apply(new mxStylesheet()));
     }
 
     @Override
@@ -154,7 +131,7 @@ public class CommonPresenter implements GraphPresenter {
 
     @Override
     public void onAbout(ActionEvent event) {
-
+        System.out.println(model.getSerialized());
     }
 
     @Override
@@ -170,6 +147,18 @@ public class CommonPresenter implements GraphPresenter {
     @Override
     public void onContextMenuCall(MouseEvent event) {
         this.graphView.showMenu(getMenuItemsForClick(event), event.getX(), event.getY());
+    }
+
+    @Override
+    public void onValidate(ActionEvent event) {
+        boolean error = !model.validate();
+        String caption = captionsSupplier.apply(true);
+        caption = String.valueOf(caption.charAt(0)).toUpperCase() + caption.substring(1);
+        Message.showMessage(
+                error,
+                "Validation result",
+                 caption + " graph is " + (error ? "NOT" : "") + "valid"
+        );
     }
 
     void addNode(int x, int y) {
@@ -294,14 +283,6 @@ public class CommonPresenter implements GraphPresenter {
                 }));
             }
         }
-
-        menuOptions.add(new JMenuItem(new AbstractAction("Validate " + captionsSupplier.apply(true) + " graph topology") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                boolean valid = model.validate();
-                System.out.println("Is "+ captionsSupplier.apply(true) +" graph valid = " + valid);
-            }
-        }));
 
         return menuOptions;
     }

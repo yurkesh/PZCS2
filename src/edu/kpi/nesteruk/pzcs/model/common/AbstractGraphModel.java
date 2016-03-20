@@ -2,6 +2,7 @@ package edu.kpi.nesteruk.pzcs.model.common;
 
 import edu.kpi.nesteruk.misc.IdPool;
 import edu.kpi.nesteruk.misc.Pair;
+import edu.kpi.nesteruk.pzcs.graph.io.GraphSerializer;
 import edu.kpi.nesteruk.pzcs.graph.validation.GraphValidator;
 import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
 import edu.kpi.nesteruk.pzcs.model.primitives.Link;
@@ -27,9 +28,9 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
 
     private final Graph<String, String> graph;
     private final boolean isNodeWeighted;
-    private final GraphValidator validator;
+    private final GraphValidator<String, String> validator;
 
-    public AbstractGraphModel(Supplier<Graph<String, String>> graphFactory, boolean isNodeWeighted, GraphValidator validator) {
+    public AbstractGraphModel(Supplier<Graph<String, String>> graphFactory, boolean isNodeWeighted, GraphValidator<String, String> validator) {
         this.graphFactory = graphFactory;
         this.graph = graphFactory.get();
         this.isNodeWeighted = isNodeWeighted;
@@ -141,4 +142,11 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     public boolean validate() {
         return validator.isValid(cloneGraph(graph));
     }
+
+    @Override
+    public String getSerialized() {
+        return getGraphSerializer().serializeGraph(nodesMap.values(), linksMap.values());
+    }
+
+    protected abstract GraphSerializer<N, L> getGraphSerializer();
 }

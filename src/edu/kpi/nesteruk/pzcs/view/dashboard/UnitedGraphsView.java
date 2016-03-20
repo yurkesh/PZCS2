@@ -33,6 +33,7 @@ public class UnitedGraphsView implements GraphPresenter {
             tabbedPane.addTab(graphType.getCaption(), graphView);
             typedGraphViews.put(graphType, graphView);
         }
+        tabbedPane.addChangeListener(changeEvent -> currentGraph = graphTypes[tabbedPane.getSelectedIndex()]);
     }
 
     public JComponent getGraphsContainer() {
@@ -111,5 +112,10 @@ public class UnitedGraphsView implements GraphPresenter {
     @Override
     public void onContextMenuCall(MouseEvent event) {
         getGraphPresenter().onContextMenuCall(event);
+    }
+
+    @Override
+    public void onValidate(ActionEvent event) {
+        getGraphPresenter().onValidate(event);
     }
 }

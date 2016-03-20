@@ -36,4 +36,6 @@ public interface GraphPresenter {
     void onDoubleClick(MouseEvent event);
 
     void onContextMenuCall(MouseEvent event);
+
+    void onValidate(ActionEvent event);
 }

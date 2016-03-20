@@ -2,6 +2,7 @@ package edu.kpi.nesteruk.pzcs.model.system;
 
 import edu.kpi.nesteruk.misc.IdPool;
 import edu.kpi.nesteruk.misc.Pair;
+import edu.kpi.nesteruk.pzcs.graph.io.GraphSerializer;
 import edu.kpi.nesteruk.pzcs.graph.validation.CompositeGraphValidator;
 import edu.kpi.nesteruk.pzcs.graph.validation.GraphValidator;
 import edu.kpi.nesteruk.pzcs.graph.validation.NoIsolatedEdgesGraphValidator;
@@ -48,6 +49,11 @@ public class SystemGraphModel extends AbstractGraphModel<Processor, CongenericLi
     @Override
     protected Pair<CongenericLink<Processor>, String> makeConcreteLink(String srcId, String destId, int weight) {
         return Pair.create(new CongenericLink<>(getNode(srcId), getNode(destId), weight), getLinkId(srcId, destId));
+    }
+
+    @Override
+    protected GraphSerializer<Processor, CongenericLink<Processor>> getGraphSerializer() {
+        return null;
     }
 
     /*

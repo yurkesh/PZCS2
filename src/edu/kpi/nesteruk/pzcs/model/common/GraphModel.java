@@ -14,4 +14,6 @@ public interface GraphModel {
     void deleteLink(String id);
 
     boolean validate();
+
+    String getSerialized();
 }

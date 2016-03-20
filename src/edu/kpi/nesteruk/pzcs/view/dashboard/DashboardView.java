@@ -106,6 +106,12 @@ public class DashboardView extends JFrame {
         }
 
         {
+            JMenuItem validate = new JMenuItem("Validate");
+            validate.addActionListener(graphsContainerView::onValidate);
+            menuBar.add(validate);
+        }
+
+        {
             JMenuItem exit = new JMenuItem("Exit");
             exit.addActionListener(graphsContainerView::onExit);
             menuBar.add(exit);

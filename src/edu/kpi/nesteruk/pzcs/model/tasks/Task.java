@@ -20,6 +20,10 @@ public class Task implements Node {
         return id;
     }
 
+    public int getWeight() {
+        return weight;
+    }
+
     @Override
     public String toString() {
         return "T[" + id + "]{" + weight + "}";
