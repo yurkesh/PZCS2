@@ -12,6 +12,9 @@ import java.util.Map;
  * Created by Yurii on 2016-03-23.
  */
 public class GraphModelSerializable<N extends Node, L extends Link<N>> implements Serializable {
+
+    private static final long serialVersionUID = 6624076855744169362L;
+
     private Map<String, N> nodesMap;
     private Map<String, L> linksMap;
 

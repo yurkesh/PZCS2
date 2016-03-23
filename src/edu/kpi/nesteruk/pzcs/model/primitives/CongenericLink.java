@@ -5,6 +5,8 @@ package edu.kpi.nesteruk.pzcs.model.primitives;
  */
 public class CongenericLink<N extends Node> extends SimpleLink<N> implements Link<N> {
 
+    private static final long serialVersionUID = -2494365671091159475L;
+
     public CongenericLink(N src, N dest, int weight) {
         super(src, dest, weight);
     }

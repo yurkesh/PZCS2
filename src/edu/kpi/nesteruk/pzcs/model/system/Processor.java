@@ -7,6 +7,8 @@ import edu.kpi.nesteruk.pzcs.model.primitives.Node;
  */
 public class Processor implements Node {
 
+    private static final long serialVersionUID = 2750559400200735041L;
+
     public final String id;
 
     public Processor(String id) {

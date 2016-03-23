@@ -44,6 +44,8 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
 
     private GraphModel model;
 
+    private boolean listenCellConnection = true;
+
     /**
      * {cellId -> nodeId}, {nodeId -> cellId}
      */
@@ -79,6 +81,10 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
 
     private void initGraphListeners() {
         graph.addListener(mxEvent.CELL_CONNECTED, connectCellsListener);
+    }
+
+    private void setListenGraphCellConnection(boolean listen) {
+        this.listenCellConnection = listen;
     }
 
     private void applyGraphViewSettings(Function<mxStylesheet, mxStylesheet> graphStylesheetInterceptor) {
@@ -141,11 +147,13 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
     }
 
     private final mxEventSource.mxIEventListener connectCellsListener = (sender, evt) -> {
-        Map<String, Object> props = evt.getProperties();
-        mxCell edge = (mxCell) props.get(PROP_MX_CELL_EDGE);
-        mxICell sourceCell = edge.getSource();
-        mxICell targetCell = edge.getTarget();
-        connectNodes(sourceCell, targetCell, edge);
+        if(listenCellConnection) {
+            Map<String, Object> props = evt.getProperties();
+            mxCell edge = (mxCell) props.get(PROP_MX_CELL_EDGE);
+            mxICell sourceCell = edge.getSource();
+            mxICell targetCell = edge.getTarget();
+            connectNodes(sourceCell, targetCell, edge);
+        }
     };
 
     private void addIdsMappings(IdAndValue nodeIdAndValue, mxICell cell) {
@@ -176,13 +184,16 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
 
             Optional<IdAndValue> link = linkBuilder.finishConnect();
             if(link.isPresent()) {
-                IdAndValue edgeIdAndValue = link.get();
-                edge.setValue(edgeIdAndValue.value);
-                addIdsMappings(edgeIdAndValue, edge);
+                addEdge(edge, link.get());
             } else {
                 graph.getModel().remove(edge);
             }
         }
+    }
+
+    private void addEdge(mxICell edge, IdAndValue edgeIdAndValue) {
+        edge.setValue(edgeIdAndValue.value);
+        addIdsMappings(edgeIdAndValue, edge);
     }
 
     private void deleteNode(int x, int y) {
@@ -271,33 +282,39 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
     }
 
     private void restoreGraph(Pair<Collection<IdAndValue>, Collection<Pair<Pair<String, String>, IdAndValue>>> restoredModel, Map<String, Tuple<Integer>> nodeIdToItsCoordinates) {
+        clear();
         restoreNodes(restoredModel.first, nodeIdToItsCoordinates);
         restoreLinks(restoredModel.second);
     }
 
+    private void clear() {
+        cellIdAndNodeIdMapper.clear();
+        graph.removeCells(graph.getChildVertices(parent));
+    }
+
     private void restoreNodes(Collection<IdAndValue> nodes, Map<String, Tuple<Integer>> nodeIdToItsCoordinates) {
-        graph.getModel().beginUpdate();
         nodes.forEach(nodeIdAndValue -> {
             Tuple<Integer> coordinates = nodeIdToItsCoordinates.get(nodeIdAndValue.id);
             addNode(coordinates.first, coordinates.second, nodeIdAndValue);
         });
-        graph.getModel().endUpdate();
     }
 
     private void restoreLinks(Collection<Pair<Pair<String, String>, IdAndValue>> links) {
-        graph.getModel().beginUpdate();
+        setListenGraphCellConnection(false);
         links.forEach(linkInfo -> {
             Pair<String, String> srcAndDestIds = linkInfo.first;
             IdAndValue idAndValueOfLink = linkInfo.second;
-            graph.insertEdge(
+            mxICell edge = (mxICell) graph.insertEdge(
                     parent,
                     null,
                     idAndValueOfLink.value,
                     getCellById(cellIdAndNodeIdMapper.getByValue(srcAndDestIds.first)),
                     getCellById(cellIdAndNodeIdMapper.getByValue(srcAndDestIds.second))
             );
+            addEdge(edge, idAndValueOfLink);
         });
-        graph.getModel().endUpdate();
+        setListenGraphCellConnection(true);
+        System.out.println();
     }
 
     protected void onSave(ActionEvent event) {

@@ -33,7 +33,7 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
 
     @Override
     public void onOpenGraph(ActionEvent event) {
-
+        onOpen(event);
     }
 
     @Override

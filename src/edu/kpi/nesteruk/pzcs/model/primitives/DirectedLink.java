@@ -5,6 +5,8 @@ package edu.kpi.nesteruk.pzcs.model.primitives;
  */
 public class DirectedLink<N extends Node> extends SimpleLink<N> implements Link<N> {
 
+    private static final long serialVersionUID = -7222533970888717436L;
+
     public DirectedLink(N src, N dest, int weight) {
         super(src, dest, weight);
     }

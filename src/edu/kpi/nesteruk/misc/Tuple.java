@@ -6,6 +6,9 @@ import java.io.Serializable;
  * Created by Yurii on 3/9/2016.
  */
 public class Tuple<K> implements Serializable {
+
+    private static final long serialVersionUID = 1178827501986487743L;
+
     public final K first;
     public final K second;
 

@@ -7,6 +7,8 @@ import edu.kpi.nesteruk.pzcs.model.primitives.Node;
  */
 public class Task implements Node {
 
+    private static final long serialVersionUID = 4635855386417329784L;
+
     public final String id;
     public final int weight;
 

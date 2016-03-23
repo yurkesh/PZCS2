@@ -49,6 +49,11 @@ public class OneToOneMapper<K, V> {
         return inverse.get(Objects.requireNonNull(value));
     }
 
+    public void clear() {
+        map.clear();
+        inverse.clear();
+    }
+
     private void checkKeyAndValue(K key, V value) {
         if(key == null) {
             throw new NullPointerException("Null key for value = " + value);

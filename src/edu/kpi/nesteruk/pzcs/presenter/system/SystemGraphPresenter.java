@@ -27,7 +27,7 @@ public class SystemGraphPresenter extends CommonGraphPresenter implements System
 
     @Override
     public void onOpenSystem(ActionEvent event) {
-
+        onOpen(event);
     }
 
     @Override

@@ -25,20 +25,28 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> implements GraphModel {
 
-    private final Supplier<Graph<String, String>> graphFactory;
-    private IdPool<String> idPool = new CommonIdPool();
-    private Map<String, N> nodesMap = new LinkedHashMap<>();
-    private Map<String, L> linksMap = new LinkedHashMap<>();
+    private IdPool<String> idPool;
+    private Map<String, N> nodesMap;
+    private Map<String, L> linksMap;
+    private Graph<String, String> graph;
 
-    private final Graph<String, String> graph;
+    private final Supplier<Graph<String, String>> graphFactory;
     private final boolean isNodeWeighted;
     private final GraphValidator<String, String> validator;
 
     public AbstractGraphModel(Supplier<Graph<String, String>> graphFactory, boolean isNodeWeighted, GraphValidator<String, String> validator) {
         this.graphFactory = graphFactory;
-        this.graph = graphFactory.get();
         this.isNodeWeighted = isNodeWeighted;
         this.validator = validator;
+
+        clear();
+    }
+
+    private void clear() {
+        idPool = new CommonIdPool();
+        nodesMap = new LinkedHashMap<>();
+        linksMap = new LinkedHashMap<>();
+        graph = graphFactory.get();
     }
 
     @Override
@@ -60,7 +68,7 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
         );
     }
 
-    public final IdAndValue makeNode(String id, int weight) {
+    private IdAndValue makeNode(String id, int weight) {
         return addNode(makeConcreteNode(id, weight));
     }
 
@@ -102,22 +110,35 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
         return !graph.containsEdge(srcId, destId);
     }
 
-    public final IdAndValue connect(String srcId, String destId, int weight) {
+    private IdAndValue connect(String srcId, String destId, int weight) {
         Pair<L, String> linkWithId = makeConcreteLink(srcId, destId, weight);
-        L link = linkWithId.first;
-        String linkId = linkWithId.second;
+        try {
+            return addLink(linkWithId.second, linkWithId.first);
+        } catch (IllegalArgumentException e) {
+            logE(e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private IdAndValue addLink(String linkId, L link) {
         boolean unique = linksMap.putIfAbsent(linkId, link) == null;
         if(unique) {
+            String srcId = link.getFirst().getId();
+            String destId = link.getSecond().getId();
             try {
                 graph.addEdge(srcId, destId, linkId);
             } catch (Exception e) {
-                logE("Can not add vertex with srcId = '"+ srcId +"', destId = '"+ destId +"', linkId = '"+ linkId +"'. Exception = " + e);
-                return null;
+                throw new IllegalArgumentException("Can not add vertex with srcId = '"+ srcId +"', destId = '"+ destId +"', linkId = '"+ linkId +"'", e);
             }
-            return new IdAndValue(linkId, String.valueOf(weight));
+            return formatLink(linkId, link);
         } else {
-            return null;
+            throw new IllegalArgumentException("Link with id = '" + linkId + "' is not unique");
         }
+    }
+
+    private static IdAndValue formatLink(String linkId, Link link) {
+        return new IdAndValue(linkId, String.valueOf(link.getWeight()));
     }
 
     protected abstract Pair<L, String> makeConcreteLink(String srcId, String destId, int weight);
@@ -164,20 +185,40 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
 
     @Override
     public GraphModelSerializable getSerializable() {
+        ///
         return new GraphModelSerializable<>(nodesMap, linksMap);
     }
 
     @Override
     public Pair<Collection<IdAndValue>, Collection<Pair<Pair<String, String>, IdAndValue>>> restore(GraphModelSerializable serializable) {
         restoreInner((GraphModelSerializable<N, L>) serializable);
+        return getForPresenter();
+    }
+
+    private Pair<Collection<IdAndValue>, Collection<Pair<Pair<String, String>, IdAndValue>>> getForPresenter() {
         return Pair.create(
-                nodesMap.values().stream().map(AbstractGraphModel::formatNode).collect(Collectors.toList()),
-                null
+                nodesMap.values().stream()
+                        .map(AbstractGraphModel::formatNode)
+                        .collect(Collectors.toList()),
+                linksMap.entrySet().stream()
+                        .map(linkEntry -> {
+                            L link = linkEntry.getValue();
+                            return Pair.create(
+                                    Pair.create(
+                                            link.getFirst().getId(),
+                                            link.getSecond().getId()),
+                                    formatLink(linkEntry.getKey(), link)
+                            );
+                        })
+                        .collect(Collectors.toList())
         );
     }
 
     private void restoreInner(GraphModelSerializable<N, L> serializable) {
-
+        clear();
+        serializable.getNodesMap().values().forEach(this::addNode);
+        serializable.getLinksMap().entrySet()
+                .forEach(linkEntry -> addLink(linkEntry.getKey(), linkEntry.getValue()));
     }
 
     /*
