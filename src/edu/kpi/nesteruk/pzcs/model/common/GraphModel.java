@@ -20,10 +20,6 @@ public interface GraphModel {
 
     boolean validate();
 
-    /*
-    String getSerialized();
-    */
-
     GraphModelSerializable getSerializable();
 
     /**

@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 /**
  * Created by Yurii on 2016-03-21.
- @deprecated Not supported yet
+ @deprecated Not supported
  */
 @Deprecated
 public class GraphSerializer<N extends Node, L extends Link<N>> implements IOConst {

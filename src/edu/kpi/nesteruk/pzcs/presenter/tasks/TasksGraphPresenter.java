@@ -4,7 +4,6 @@ import com.mxgraph.view.mxStylesheet;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
 import edu.kpi.nesteruk.pzcs.presenter.common.CaptionsSupplier;
 import edu.kpi.nesteruk.pzcs.presenter.common.CommonGraphPresenter;
-import edu.kpi.nesteruk.pzcs.presenter.common.TasksPresenter;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
 
 import java.awt.event.ActionEvent;

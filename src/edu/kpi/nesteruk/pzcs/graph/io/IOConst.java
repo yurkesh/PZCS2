@@ -2,7 +2,9 @@ package edu.kpi.nesteruk.pzcs.graph.io;
 
 /**
  * Created by Yurii on 2016-03-21.
+ * @deprecated Not supported
  */
+@Deprecated
 interface IOConst {
 
     String TYPE_INFO = "TYPE";

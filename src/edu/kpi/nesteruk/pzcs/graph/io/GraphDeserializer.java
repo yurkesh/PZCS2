@@ -14,7 +14,7 @@ import static edu.kpi.nesteruk.util.StringUtils.isEmpty;
 
 /**
  * Created by Yurii on 2016-03-21.
- * @deprecated Not supported yet
+ * @deprecated Not supported
  */
 @Deprecated
 public class GraphDeserializer<N extends Node, L extends Link<N>> implements IOConst {

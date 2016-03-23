@@ -2,6 +2,8 @@ package edu.kpi.nesteruk.pzcs.view.dashboard;
 
 import edu.kpi.nesteruk.pzcs.common.GraphType;
 import edu.kpi.nesteruk.pzcs.presenter.common.*;
+import edu.kpi.nesteruk.pzcs.presenter.system.SystemPresenter;
+import edu.kpi.nesteruk.pzcs.presenter.tasks.TasksPresenter;
 import edu.kpi.nesteruk.pzcs.view.common.CommonGraphView;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
 

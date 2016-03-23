@@ -1,16 +1,16 @@
 package edu.kpi.nesteruk.pzcs.model.tasks;
 
 import edu.kpi.nesteruk.misc.Pair;
-import edu.kpi.nesteruk.pzcs.graph.io.GraphSerializer;
-import edu.kpi.nesteruk.pzcs.graph.validation.GraphValidator;
 import edu.kpi.nesteruk.pzcs.graph.validation.NonAcyclicGraphValidator;
-import edu.kpi.nesteruk.pzcs.model.common.*;
+import edu.kpi.nesteruk.pzcs.model.common.AbstractGraphModel;
+import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
 import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -36,27 +36,6 @@ public class TasksGraphModel extends AbstractGraphModel<Task, DirectedLink<Task>
         DirectedLink<Task> link = new DirectedLink<>(getNode(srcId), getNode(destId), weight);
         return Pair.create(link, link.toString());
     }
-
-    /*
-    @Override
-    protected GraphSerializer<Task, DirectedLink<Task>> getGraphSerializer() {
-        return new GraphSerializer<>(
-                "tasks",
-                task -> task.getId() + ":" + task.getWeight(),
-                new Function<DirectedLink<Task>, String>() {
-                    @Override
-                    public String apply(DirectedLink<Task> taskDirectedLink) {
-                        return escapeId(taskDirectedLink.getFirst().getId()) + "::" + escapeId(taskDirectedLink.getSecond().getId()) + "::" + taskDirectedLink.getWeight() ;
-                    }
-
-                    private String escapeId(String id) {
-                        id = GraphSerializer.escape(id, ":");
-                        return id;
-                    }
-                }
-        );
-    }
-    */
 
     private static String getLinkId(String srcId, String destId) {
         List<String> idsList = new ArrayList<>();

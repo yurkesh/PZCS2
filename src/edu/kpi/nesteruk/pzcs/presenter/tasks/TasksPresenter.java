@@ -1,4 +1,6 @@
-package edu.kpi.nesteruk.pzcs.presenter.common;
+package edu.kpi.nesteruk.pzcs.presenter.tasks;
+
+import edu.kpi.nesteruk.pzcs.presenter.common.GraphPresenter;
 
 import java.awt.event.ActionEvent;
 

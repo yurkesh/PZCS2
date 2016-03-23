@@ -6,7 +6,7 @@ import java.awt.event.MouseEvent;
 /**
  * Created by Yurii on 2016-03-13.
  */
-public interface GraphPresenter {
+public interface GraphPresenter extends FileActionHandler {
 
     String PROP_MX_CELL_EDGE = "edge";
 
@@ -15,11 +15,5 @@ public interface GraphPresenter {
     void onContextMenuCall(MouseEvent event);
 
     void onValidate(ActionEvent event);
-
-    void onNew(ActionEvent event);
-
-    void onOpen(ActionEvent event);
-
-    void onSave(ActionEvent event);
 
 }
