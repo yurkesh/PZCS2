@@ -10,6 +10,7 @@ import com.mxgraph.util.mxEventSource;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStylesheet;
 import edu.kpi.nesteruk.misc.OneToOneMapper;
+import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.misc.Tuple;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModelSerializable;
@@ -18,16 +19,11 @@ import edu.kpi.nesteruk.pzcs.model.common.NodeBuilder;
 import edu.kpi.nesteruk.pzcs.model.common.LinkBuilder;
 import edu.kpi.nesteruk.pzcs.view.Views;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
-import edu.kpi.nesteruk.pzcs.view.dialog.Dialog;
-import edu.kpi.nesteruk.pzcs.view.dialog.Message;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -40,12 +36,13 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
 
     private final GraphView graphView;
     private final CaptionsSupplier captionsSupplier;
+    private final Supplier<GraphModel> graphModelFactory;
 
     private final mxGraph graph;
     private final mxGraphComponent graphComponent;
     private final Object parent;
 
-    private final GraphModel model;
+    private GraphModel model;
 
     /**
      * {cellId -> nodeId}, {nodeId -> cellId}
@@ -60,6 +57,7 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
 
         this.graphView = graphView;
         this.captionsSupplier = captionsSupplier;
+        this.graphModelFactory = graphModelFactory;
 
         this.graph = new mxGraph() {
             @Override
@@ -102,7 +100,7 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
         boolean error = !model.validate();
         String caption = captionsSupplier.getCaption(true);
         caption = String.valueOf(caption.charAt(0)).toUpperCase() + caption.substring(1);
-        Message.showMessage(
+        graphView.showMessage(
                 error,
                 "Validation result",
                  caption + " graph is " + (error ? "NOT" : "") + "valid"
@@ -114,22 +112,20 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
         try {
             NodeBuilder nodeBuilder = model.getNodeBuilder();
             String supposedId = nodeBuilder.beginBuild();
-            Dialog<String> setIdDialog = new Dialog.InputIntegerDialog(
+            Optional<String> specifiedId = graphView.showStringInputDialog(
                     "Making new " + captionsSupplier.getCaption(false),
                     "Set ID of " + captionsSupplier.getCaption(false),
                     supposedId
             );
-            Optional<String> specifiedId = setIdDialog.show();
             if(specifiedId.isPresent()) {
                 boolean idIsCorrect = nodeBuilder.setId(specifiedId.get());
                 if(idIsCorrect) {
                     if(nodeBuilder.needWeight()) {
-                        Dialog.InputIntegerDialog setWeightDialog = new Dialog.InputIntegerDialog(
+                        graphView.showIntInputDialog(
                                 "Making new " + captionsSupplier.getCaption(false),
                                 "Set Weight of " + captionsSupplier.getCaption(false),
-                                String.valueOf(1)
-                        );
-                        setWeightDialog.showFetchInt().ifPresent(nodeBuilder::setWeight);
+                                1
+                        ).ifPresent(nodeBuilder::setWeight);
                     }
                     nodeBuilder.finishBuild().ifPresent(nodeIdAndValue -> addNode(x, y, nodeIdAndValue));
                 }
@@ -172,10 +168,9 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
             LinkBuilder linkBuilder = model.getLinkBuilder();
             if(linkBuilder.beginConnect(cellIdAndNodeIdMapper.getByKey(sourceId), cellIdAndNodeIdMapper.getByKey(targetId))) {
                 if(linkBuilder.needWeight()) {
-                    Dialog.InputIntegerDialog setWeightDialog = new Dialog.InputIntegerDialog(
-                            "Connecting " + captionsSupplier.getCaption(true), "Set connection weight:", String.valueOf(1)
-                    );
-                    setWeightDialog.showFetchInt().ifPresent(linkBuilder::setWeight);
+                    graphView.showIntInputDialog(
+                            "Connecting " + captionsSupplier.getCaption(true), "Set connection weight:", 1
+                    ).ifPresent(linkBuilder::setWeight);
                 }
             }
 
@@ -259,11 +254,54 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
     }
 
     protected void onOpen(ActionEvent event) {
+        graphView.showFileChooserDialog().ifPresent(this::openGraph);
+    }
 
+    private void openGraph(String filePath) {
+        try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filePath))) {
+            GraphModelSerializable modelSerializable = (GraphModelSerializable) ois.readObject();
+            GraphPresenterSerializable presenterSerializable = (GraphPresenterSerializable) ois.readObject();
+
+            model = graphModelFactory.get();
+            restoreGraph(model.restore(modelSerializable), presenterSerializable.getNodeIdToItsCoordinates());
+        } catch (Exception e) {
+            e.printStackTrace();
+            graphView.showMessage(true, "Cannot open " + captionsSupplier.getCaption(true) + " graph", e.getMessage());
+        }
+    }
+
+    private void restoreGraph(Pair<Collection<IdAndValue>, Collection<Pair<Pair<String, String>, IdAndValue>>> restoredModel, Map<String, Tuple<Integer>> nodeIdToItsCoordinates) {
+        restoreNodes(restoredModel.first, nodeIdToItsCoordinates);
+        restoreLinks(restoredModel.second);
+    }
+
+    private void restoreNodes(Collection<IdAndValue> nodes, Map<String, Tuple<Integer>> nodeIdToItsCoordinates) {
+        graph.getModel().beginUpdate();
+        nodes.forEach(nodeIdAndValue -> {
+            Tuple<Integer> coordinates = nodeIdToItsCoordinates.get(nodeIdAndValue.id);
+            addNode(coordinates.first, coordinates.second, nodeIdAndValue);
+        });
+        graph.getModel().endUpdate();
+    }
+
+    private void restoreLinks(Collection<Pair<Pair<String, String>, IdAndValue>> links) {
+        graph.getModel().beginUpdate();
+        links.forEach(linkInfo -> {
+            Pair<String, String> srcAndDestIds = linkInfo.first;
+            IdAndValue idAndValueOfLink = linkInfo.second;
+            graph.insertEdge(
+                    parent,
+                    null,
+                    idAndValueOfLink.value,
+                    getCellById(cellIdAndNodeIdMapper.getByValue(srcAndDestIds.first)),
+                    getCellById(cellIdAndNodeIdMapper.getByValue(srcAndDestIds.second))
+            );
+        });
+        graph.getModel().endUpdate();
     }
 
     protected void onSave(ActionEvent event) {
-        graphView.showFileChooserMenu().ifPresent(this::saveGraph);
+        graphView.showFileChooserDialog().ifPresent(this::saveGraph);
     }
 
     private void saveGraph(String filePath) {
@@ -273,11 +311,7 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
                 .collect(Collectors.toMap(
                         Function.identity(),
                         nodeId -> {
-                            mxGeometry geometry = (
-                                    (mxICell) (
-                                            (mxGraphModel) graph.getModel()
-                                    ).getCell(cellIdAndNodeIdMapper.getByValue(nodeId))
-                            ).getGeometry();
+                            mxGeometry geometry = getCellById(cellIdAndNodeIdMapper.getByValue(nodeId)).getGeometry();
                             return new Tuple<>((int) Math.round(geometry.getX()), (int) Math.round(geometry.getY()));
                         }
                 ));
@@ -289,7 +323,11 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
             oos.writeObject(presenterSerializable);
         } catch (IOException e) {
             e.printStackTrace();
-            // TODO: 2016-03-23 Show error to user
+            graphView.showMessage(true, "Cannot save " + captionsSupplier.getCaption(true) + " graph", e.getMessage());
         }
+    }
+
+    private mxICell getCellById(String id) {
+        return (mxICell) ((mxGraphModel) graph.getModel()).getCell(id);
     }
 }

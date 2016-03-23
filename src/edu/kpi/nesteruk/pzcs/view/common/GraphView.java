@@ -18,5 +18,11 @@ public interface GraphView {
 
     void showMenu(Collection<JMenuItem> jMenuItems, int x, int y);
 
-    Optional<String> showFileChooserMenu();
+    Optional<String> showStringInputDialog(String title, String text, String prePopulated);
+
+    Optional<Integer> showIntInputDialog(String title, String text, Integer prePopulated);
+
+    void showMessage(boolean error, String title, String text);
+
+    Optional<String> showFileChooserDialog();
 }

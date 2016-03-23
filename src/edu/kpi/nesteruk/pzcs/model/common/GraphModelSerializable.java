@@ -27,6 +27,14 @@ public class GraphModelSerializable<N extends Node, L extends Link<N>> implement
         return new LinkedHashSet<>(nodesMap.keySet());
     }
 
+    Map<String, N> getNodesMap() {
+        return nodesMap;
+    }
+
+    Map<String, L> getLinksMap() {
+        return linksMap;
+    }
+
     @Override
     public String toString() {
         return "GraphModelSerializable{" +

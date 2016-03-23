@@ -51,10 +51,12 @@ public class SystemGraphModel extends AbstractGraphModel<Processor, CongenericLi
         return Pair.create(new CongenericLink<>(getNode(srcId), getNode(destId), weight), getLinkId(srcId, destId));
     }
 
+    /*
     @Override
     protected GraphSerializer<Processor, CongenericLink<Processor>> getGraphSerializer() {
         return null;
     }
+    */
 
     /*
 

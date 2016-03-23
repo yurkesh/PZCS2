@@ -17,6 +17,10 @@ public class GraphPresenterSerializable implements Serializable {
         this.nodeIdToItsCoordinates = nodeIdToItsCoordinates;
     }
 
+    public Map<String, Tuple<Integer>> getNodeIdToItsCoordinates() {
+        return nodeIdToItsCoordinates;
+    }
+
     @Override
     public String toString() {
         return "GraphPresenterSerializable{" +

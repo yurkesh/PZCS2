@@ -37,6 +37,7 @@ public class TasksGraphModel extends AbstractGraphModel<Task, DirectedLink<Task>
         return Pair.create(link, link.toString());
     }
 
+    /*
     @Override
     protected GraphSerializer<Task, DirectedLink<Task>> getGraphSerializer() {
         return new GraphSerializer<>(
@@ -55,6 +56,7 @@ public class TasksGraphModel extends AbstractGraphModel<Task, DirectedLink<Task>
                 }
         );
     }
+    */
 
     private static String getLinkId(String srcId, String destId) {
         List<String> idsList = new ArrayList<>();

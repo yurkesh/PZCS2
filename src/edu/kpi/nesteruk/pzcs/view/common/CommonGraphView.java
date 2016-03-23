@@ -2,6 +2,8 @@ package edu.kpi.nesteruk.pzcs.view.common;
 
 import com.mxgraph.swing.mxGraphComponent;
 import edu.kpi.nesteruk.pzcs.presenter.common.GraphPresenter;
+import edu.kpi.nesteruk.pzcs.view.dialog.*;
+import edu.kpi.nesteruk.pzcs.view.dialog.Dialog;
 import edu.kpi.nesteruk.util.CollectionUtils;
 
 import javax.swing.*;
@@ -73,7 +75,30 @@ public class CommonGraphView extends JPanel implements GraphView {
     }
 
     @Override
-    public Optional<String> showFileChooserMenu() {
+    public Optional<String> showStringInputDialog(String title, String text, String prePopulated) {
+        return new Dialog.InputTextDialog(
+                title,
+                text,
+                prePopulated
+        ).show();
+    }
+
+    @Override
+    public Optional<Integer> showIntInputDialog(String title, String text, Integer prePopulated) {
+        return new Dialog.InputIntegerDialog(
+                title,
+                text,
+                String.valueOf(prePopulated)
+        ).showFetchInt();
+    }
+
+    @Override
+    public void showMessage(boolean error, String title, String text) {
+        Message.showMessage(error, title, text);
+    }
+
+    @Override
+    public Optional<String> showFileChooserDialog() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         int val = fileChooser.showSaveDialog(null);

@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Created by Yurii on 2016-03-20.
@@ -60,14 +61,22 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     }
 
     public final IdAndValue makeNode(String id, int weight) {
-        N node = makeConcreteNode(id, weight);
+        return addNode(makeConcreteNode(id, weight));
+    }
+
+    private IdAndValue addNode(N node) {
+        String id = node.getId();
         nodesMap.put(id, node);
         try {
             graph.addVertex(id);
         } catch (Exception e) {
             logE("Can not add vertex with id = '" + id + "'. Exception = " + e);
         }
-        return new IdAndValue(id, node.toString());
+        return formatNode(node);
+    }
+
+    private static IdAndValue formatNode(Node node) {
+        return new IdAndValue(node.getId(), node.toString());
     }
 
     protected final void logE(String error) {
@@ -146,15 +155,32 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
         return validator.isValid(cloneGraph(graph));
     }
 
+    /*
     @Override
     public String getSerialized() {
         return getGraphSerializer().serializeGraph(nodesMap.values(), linksMap.values());
     }
+    */
 
     @Override
     public GraphModelSerializable getSerializable() {
         return new GraphModelSerializable<>(nodesMap, linksMap);
     }
 
+    @Override
+    public Pair<Collection<IdAndValue>, Collection<Pair<Pair<String, String>, IdAndValue>>> restore(GraphModelSerializable serializable) {
+        restoreInner((GraphModelSerializable<N, L>) serializable);
+        return Pair.create(
+                nodesMap.values().stream().map(AbstractGraphModel::formatNode).collect(Collectors.toList()),
+                null
+        );
+    }
+
+    private void restoreInner(GraphModelSerializable<N, L> serializable) {
+
+    }
+
+    /*
     protected abstract GraphSerializer<N, L> getGraphSerializer();
+    */
 }
