@@ -1,6 +1,7 @@
 package edu.kpi.nesteruk.pzcs.view.dashboard;
 
 import edu.kpi.nesteruk.pzcs.common.GraphType;
+import edu.kpi.nesteruk.pzcs.presenter.common.UnitedGraphPresenter;
 import edu.kpi.nesteruk.pzcs.view.Views;
 
 import javax.swing.*;
@@ -11,7 +12,7 @@ import java.awt.*;
  */
 public class DashboardView extends JFrame {
 
-    private final UnitedGraphsView graphsContainerView;
+    private final UnitedGraphPresenter graphPresenter;
 
     public DashboardView(GraphType... graphTypes) throws HeadlessException {
         super("PZCS-2 Editor");
@@ -20,8 +21,8 @@ public class DashboardView extends JFrame {
         setSize(Views.DEFAULT_WINDOW_WIDTH, Views.DEFAULT_WINDOW_HEIGHT);
         setLocation(0, Views.WINDOW_MARGIN_TOP);
 
-        graphsContainerView = new UnitedGraphsView(graphTypes);
-        setContentPane(graphsContainerView.getGraphsContainer());
+        graphPresenter = UnitedGraphPresenter.createDefault(graphTypes);
+        setContentPane(graphPresenter.getGraphsContainer());
         
         JMenuBar menuBar = new JMenuBar();
         initHeaderMenu(menuBar);
@@ -39,20 +40,20 @@ public class DashboardView extends JFrame {
                 taskGraph.add(newGraph);
                 {
                     JMenuItem graphEditor = new JMenuItem("Graph editor");
-                    graphEditor.addActionListener(graphsContainerView::onNewGraphEditor);
+                    graphEditor.addActionListener(graphPresenter::onNewGraphEditor);
                     newGraph.add(graphEditor);
 
                     JMenuItem graphGenerator = new JMenuItem("Graph generator");
-                    graphGenerator.addActionListener(graphsContainerView::onNewGraphGenerator);
+                    graphGenerator.addActionListener(graphPresenter::onNewGraphGenerator);
                     newGraph.add(graphGenerator);
                 }
 
                 JMenuItem openGraph = new JMenuItem("Open");
-                openGraph.addActionListener(graphsContainerView::onOpenGraph);
+                openGraph.addActionListener(graphPresenter::onOpenGraph);
                 taskGraph.add(openGraph);
 
                 JMenuItem saveGraph = new JMenuItem("Save");
-                saveGraph.addActionListener(graphsContainerView::onSaveGraph);
+                saveGraph.addActionListener(graphPresenter::onSaveGraph);
                 taskGraph.add(saveGraph);
             }
         }
@@ -62,15 +63,15 @@ public class DashboardView extends JFrame {
             menuBar.add(systemGraph);
             {
                 JMenuItem newSystem = new JMenuItem("New system");
-                newSystem.addActionListener(graphsContainerView::onNewSystem);
+                newSystem.addActionListener(graphPresenter::onNewSystem);
                 systemGraph.add(newSystem);
 
                 JMenuItem openSystem = new JMenuItem("Open");
-                openSystem.addActionListener(graphsContainerView::onOpenSystem);
+                openSystem.addActionListener(graphPresenter::onOpenSystem);
                 systemGraph.add(openSystem);
 
                 JMenuItem saveSystem = new JMenuItem("Save");
-                saveSystem.addActionListener(graphsContainerView::onSaveSystem);
+                saveSystem.addActionListener(graphPresenter::onSaveSystem);
                 systemGraph.add(saveSystem);
             }
         }
@@ -80,18 +81,18 @@ public class DashboardView extends JFrame {
             menuBar.add(modeling);
             {
                 JMenuItem processorsParams = new JMenuItem("Processors params");
-                processorsParams.addActionListener(graphsContainerView::onProcessorsParams);
+                processorsParams.addActionListener(graphPresenter::onProcessorsParams);
                 modeling.add(processorsParams);
 
                 JMenuItem gantDiagram = new JMenuItem("Gant diagram");
-                gantDiagram.addActionListener(graphsContainerView::onGantDiagram);
+                gantDiagram.addActionListener(graphPresenter::onGantDiagram);
                 modeling.add(gantDiagram);
             }
         }
 
         {
             JMenu statistics = new JMenu("Statistics");
-            statistics.addActionListener(graphsContainerView::onStatistics);
+            statistics.addActionListener(graphPresenter::onStatistics);
             menuBar.add(statistics);
         }
 
@@ -100,20 +101,20 @@ public class DashboardView extends JFrame {
             menuBar.add(help);
             {
                 JMenuItem about = new JMenuItem("About");
-                about.addActionListener(graphsContainerView::onAbout);
+                about.addActionListener(graphPresenter::onAbout);
                 help.add(about);
             }
         }
 
         {
             JMenuItem validate = new JMenuItem("Validate");
-            validate.addActionListener(graphsContainerView::onValidate);
+            validate.addActionListener(graphPresenter::onValidate);
             menuBar.add(validate);
         }
 
         {
             JMenuItem exit = new JMenuItem("Exit");
-            exit.addActionListener(graphsContainerView::onExit);
+            exit.addActionListener(graphPresenter::onExit);
             menuBar.add(exit);
         }
     }

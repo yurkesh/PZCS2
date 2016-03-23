@@ -15,7 +15,8 @@ public class CommonIdPool implements IdPool<String> {
             new Wrapper<Integer, String>() {
                 @Override
                 public String wrap(Integer id) {
-                    return " " + id + " ";
+//                    return " " + id + " ";
+                    return "" + id;
                 }
 
                 @Override

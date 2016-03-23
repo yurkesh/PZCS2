@@ -2,6 +2,7 @@ package edu.kpi.nesteruk.pzcs.model.common;
 
 import edu.kpi.nesteruk.misc.IdPool;
 import edu.kpi.nesteruk.misc.Pair;
+import edu.kpi.nesteruk.pzcs.graph.io.GraphDeserializer;
 import edu.kpi.nesteruk.pzcs.graph.io.GraphSerializer;
 import edu.kpi.nesteruk.pzcs.graph.validation.GraphValidator;
 import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
@@ -10,6 +11,8 @@ import edu.kpi.nesteruk.pzcs.model.primitives.Node;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -102,7 +105,7 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
                 logE("Can not add vertex with srcId = '"+ srcId +"', destId = '"+ destId +"', linkId = '"+ linkId +"'. Exception = " + e);
                 return null;
             }
-            return new IdAndValue(linkId, link.toString());
+            return new IdAndValue(linkId, String.valueOf(weight));
         } else {
             return null;
         }
@@ -146,6 +149,11 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     @Override
     public String getSerialized() {
         return getGraphSerializer().serializeGraph(nodesMap.values(), linksMap.values());
+    }
+
+    @Override
+    public GraphModelSerializable getSerializable() {
+        return new GraphModelSerializable<>(nodesMap, linksMap);
     }
 
     protected abstract GraphSerializer<N, L> getGraphSerializer();

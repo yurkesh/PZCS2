@@ -26,7 +26,7 @@ public class Task implements Node {
 
     @Override
     public String toString() {
-        return "T[" + id + "]{" + weight + "}";
+        return "T#" + id + "=" + weight;
     }
 
     @Override

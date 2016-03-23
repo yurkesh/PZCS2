@@ -5,9 +5,11 @@ import com.mxgraph.view.mxEdgeStyle;
 import com.mxgraph.view.mxStylesheet;
 import edu.kpi.nesteruk.pzcs.model.system.SystemGraphModel;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphModel;
+import edu.kpi.nesteruk.pzcs.presenter.system.SystemGraphPresenter;
+import edu.kpi.nesteruk.pzcs.presenter.tasks.TasksGraphPresenter;
 import edu.kpi.nesteruk.pzcs.view.common.CommonGraphView;
-import edu.kpi.nesteruk.pzcs.presenter.CommonPresenter;
-import edu.kpi.nesteruk.pzcs.presenter.GraphPresenter;
+import edu.kpi.nesteruk.pzcs.presenter.common.CommonGraphPresenter;
+import edu.kpi.nesteruk.pzcs.presenter.common.GraphPresenter;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
 
 import java.awt.*;
@@ -23,7 +25,7 @@ public enum GraphType {
 
         @Override
         GraphPresenter getPresenter(GraphView graphView) {
-            return new CommonPresenter(
+            return new TasksGraphPresenter(
                     graphView,
                     getGraphStyleSheetInterceptor(),
                     many -> many ? "tasks" : "task",
@@ -34,7 +36,7 @@ public enum GraphType {
     SYSTEM("System") {
         @Override
         GraphPresenter getPresenter(GraphView graphView) {
-            return new CommonPresenter(
+            return new SystemGraphPresenter(
                     graphView,
                     getGraphStyleSheetInterceptor(),
                     many -> many ? "CPUs" : "CPU",
@@ -52,6 +54,7 @@ public enum GraphType {
     public String getCaption() {
         return caption;
     }
+
 
     protected Function<mxStylesheet, mxStylesheet> getGraphStyleSheetInterceptor() {
         return stylesheet -> {

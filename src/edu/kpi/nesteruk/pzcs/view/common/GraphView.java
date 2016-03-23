@@ -1,10 +1,11 @@
 package edu.kpi.nesteruk.pzcs.view.common;
 
 import com.mxgraph.swing.mxGraphComponent;
-import edu.kpi.nesteruk.pzcs.presenter.GraphPresenter;
+import edu.kpi.nesteruk.pzcs.presenter.common.GraphPresenter;
 
 import javax.swing.*;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Created by Yurii on 2016-03-13.
@@ -16,4 +17,6 @@ public interface GraphView {
     void setGraphComponent(mxGraphComponent graphComponent);
 
     void showMenu(Collection<JMenuItem> jMenuItems, int x, int y);
+
+    Optional<String> showFileChooserMenu();
 }

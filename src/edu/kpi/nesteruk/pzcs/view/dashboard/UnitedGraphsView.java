@@ -1,8 +1,8 @@
 package edu.kpi.nesteruk.pzcs.view.dashboard;
 
 import edu.kpi.nesteruk.pzcs.common.GraphType;
+import edu.kpi.nesteruk.pzcs.presenter.common.*;
 import edu.kpi.nesteruk.pzcs.view.common.CommonGraphView;
-import edu.kpi.nesteruk.pzcs.presenter.GraphPresenter;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
 
 import javax.swing.*;
@@ -14,13 +14,30 @@ import java.util.Map;
 /**
  * Created by Yurii on 2016-03-13.
  */
-public class UnitedGraphsView implements GraphPresenter {
+public class UnitedGraphsView implements UnitedGraphPresenter {
 
     private Map<GraphType, GraphView> typedGraphViews = new LinkedHashMap<>();
 
     private GraphType currentGraph;
 
     private final JTabbedPane tabbedPane = new JTabbedPane();
+
+    private final DefaultPresenter defaultPresenter = new DefaultPresenter() {
+        @Override
+        public void onGantDiagram(ActionEvent event) {
+
+        }
+
+        @Override
+        public void onStatistics(ActionEvent event) {
+
+        }
+
+        @Override
+        public void onAbout(ActionEvent event) {
+
+        }
+    };
 
     public UnitedGraphsView(GraphType... types) {
         initTabs(types);
@@ -36,72 +53,85 @@ public class UnitedGraphsView implements GraphPresenter {
         tabbedPane.addChangeListener(changeEvent -> currentGraph = graphTypes[tabbedPane.getSelectedIndex()]);
     }
 
+    @Override
     public JComponent getGraphsContainer() {
         return tabbedPane;
     }
 
-    public GraphPresenter getGraphPresenter() {
+    private GraphPresenter getGraphPresenter() {
         return typedGraphViews.get(currentGraph).getPresenter();
+    }
+
+    private <T extends GraphPresenter> T getGraphPresenter(GraphType graphType, Class<T> tClass) {
+        return tClass.cast(typedGraphViews.get(graphType).getPresenter());
+    }
+
+    private TasksPresenter getTasksPresenter() {
+        return getGraphPresenter(GraphType.TASKS, TasksPresenter.class);
+    }
+
+    private SystemPresenter getSystemPresenter() {
+        return getGraphPresenter(GraphType.SYSTEM, SystemPresenter.class);
     }
 
     @Override
     public void onNewGraphEditor(ActionEvent event) {
-        getGraphPresenter().onNewGraphEditor(event);
+        getTasksPresenter().onNewGraphEditor(event);
     }
 
     @Override
     public void onNewGraphGenerator(ActionEvent event) {
-        getGraphPresenter().onNewGraphGenerator(event);
+        getTasksPresenter().onNewGraphGenerator(event);
     }
 
     @Override
     public void onOpenGraph(ActionEvent event) {
-        getGraphPresenter().onOpenGraph(event);
+        getTasksPresenter().onOpenGraph(event);
     }
 
     @Override
     public void onSaveGraph(ActionEvent event) {
-        getGraphPresenter().onSaveGraph(event);
+        getTasksPresenter().onSaveGraph(event);
     }
 
     @Override
     public void onNewSystem(ActionEvent event) {
-        getGraphPresenter().onNewSystem(event);
+        getSystemPresenter().onNewSystem(event);
     }
 
     @Override
     public void onOpenSystem(ActionEvent event) {
-        getGraphPresenter().onOpenSystem(event);
+        getSystemPresenter().onOpenSystem(event);
     }
 
     @Override
     public void onSaveSystem(ActionEvent event) {
-        getGraphPresenter().onSaveSystem(event);
+        getSystemPresenter().onSaveSystem(event);
     }
 
     @Override
     public void onProcessorsParams(ActionEvent event) {
-        getGraphPresenter().onProcessorsParams(event);
+        getSystemPresenter().onProcessorsParams(event);
     }
 
     @Override
     public void onGantDiagram(ActionEvent event) {
-        getGraphPresenter().onGantDiagram(event);
+        defaultPresenter.onGantDiagram(event);
     }
 
     @Override
     public void onStatistics(ActionEvent event) {
-        getGraphPresenter().onStatistics(event);
+        defaultPresenter.onStatistics(event);
     }
 
     @Override
     public void onAbout(ActionEvent event) {
-        getGraphPresenter().onAbout(event);
+        defaultPresenter.onAbout(event);
     }
 
     @Override
     public void onExit(ActionEvent event) {
-        getGraphPresenter().onExit(event);
+        defaultPresenter.onExit(event);
     }
 
     @Override

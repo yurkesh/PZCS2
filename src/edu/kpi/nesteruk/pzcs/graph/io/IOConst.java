@@ -12,4 +12,6 @@ interface IOConst {
 
     String NODES_INFO = "NODES";
     String LINKS_INFO = "LINKS";
+
+    String DIVIDER = "::";
 }

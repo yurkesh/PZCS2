@@ -11,4 +11,8 @@ public class CollectionUtils {
         return collection == null || collection.isEmpty();
     }
 
+    public static boolean isEmpty(Object[] array) {
+        return array == null || array.length == 0;
+    }
+
 }

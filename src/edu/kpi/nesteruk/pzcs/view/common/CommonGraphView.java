@@ -1,7 +1,7 @@
 package edu.kpi.nesteruk.pzcs.view.common;
 
 import com.mxgraph.swing.mxGraphComponent;
-import edu.kpi.nesteruk.pzcs.presenter.GraphPresenter;
+import edu.kpi.nesteruk.pzcs.presenter.common.GraphPresenter;
 import edu.kpi.nesteruk.util.CollectionUtils;
 
 import javax.swing.*;
@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Created by Yurii on 2016-03-13.
@@ -69,5 +70,15 @@ public class CommonGraphView extends JPanel implements GraphView {
         JPopupMenu menu = new JPopupMenu("Choose action:");
         jMenuItems.forEach(menu::add);
         menu.show(graphComponent.getGraphControl(), x, y);
+    }
+
+    @Override
+    public Optional<String> showFileChooserMenu() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        int val = fileChooser.showSaveDialog(null);
+        return val == JFileChooser.APPROVE_OPTION ?
+                Optional.of(fileChooser.getSelectedFile().getAbsolutePath())
+                : Optional.empty();
     }
 }
