@@ -260,12 +260,14 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
         return menuOptions;
     }
 
-    protected void onNew(ActionEvent event) {
-
+    @Override
+    public void onNew(ActionEvent event) {
+        reset(true);
     }
 
-    protected void onOpen(ActionEvent event) {
-        graphView.showFileChooserDialog().ifPresent(this::openGraph);
+    @Override
+    public void onOpen(ActionEvent event) {
+        graphView.showFileChooserDialog(false).ifPresent(this::openGraph);
     }
 
     private void openGraph(String filePath) {
@@ -282,12 +284,15 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
     }
 
     private void restoreGraph(Pair<Collection<IdAndValue>, Collection<Pair<Pair<String, String>, IdAndValue>>> restoredModel, Map<String, Tuple<Integer>> nodeIdToItsCoordinates) {
-        clear();
+        reset(false);
         restoreNodes(restoredModel.first, nodeIdToItsCoordinates);
         restoreLinks(restoredModel.second);
     }
 
-    private void clear() {
+    private void reset(boolean clearModel) {
+        if(clearModel) {
+            model.reset();
+        }
         cellIdAndNodeIdMapper.clear();
         graph.removeCells(graph.getChildVertices(parent));
     }
@@ -317,8 +322,9 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
         System.out.println();
     }
 
-    protected void onSave(ActionEvent event) {
-        graphView.showFileChooserDialog().ifPresent(this::saveGraph);
+    @Override
+    public void onSave(ActionEvent event) {
+        graphView.showFileChooserDialog(true).ifPresent(this::saveGraph);
     }
 
     private void saveGraph(String filePath) {

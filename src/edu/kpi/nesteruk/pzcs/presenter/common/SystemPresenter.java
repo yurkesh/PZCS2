@@ -6,11 +6,17 @@ import java.awt.event.ActionEvent;
  * Created by Yurii on 2016-03-23.
  */
 public interface SystemPresenter extends GraphPresenter {
-    void onNewSystem(ActionEvent event);
+    default void onNewSystem(ActionEvent event) {
+        onNew(event);
+    }
 
-    void onOpenSystem(ActionEvent event);
+    default void onOpenSystem(ActionEvent event) {
+        onOpen(event);
+    }
 
-    void onSaveSystem(ActionEvent event);
+    default void onSaveSystem(ActionEvent event) {
+        onSave(event);
+    }
 
     void onProcessorsParams(ActionEvent event);
 }

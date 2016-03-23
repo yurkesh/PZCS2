@@ -24,5 +24,5 @@ public interface GraphView {
 
     void showMessage(boolean error, String title, String text);
 
-    Optional<String> showFileChooserDialog();
+    Optional<String> showFileChooserDialog(boolean save);
 }

@@ -98,10 +98,10 @@ public class CommonGraphView extends JPanel implements GraphView {
     }
 
     @Override
-    public Optional<String> showFileChooserDialog() {
+    public Optional<String> showFileChooserDialog(boolean save) {
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        int val = fileChooser.showSaveDialog(null);
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        int val = save ? fileChooser.showSaveDialog(null) : fileChooser.showOpenDialog(null);
         return val == JFileChooser.APPROVE_OPTION ?
                 Optional.of(fileChooser.getSelectedFile().getAbsolutePath())
                 : Optional.empty();

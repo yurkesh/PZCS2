@@ -75,6 +75,21 @@ public class UnitedGraphsView implements UnitedGraphPresenter {
     }
 
     @Override
+    public void onNew(ActionEvent event) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void onOpen(ActionEvent event) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void onSave(ActionEvent event) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void onNewGraphEditor(ActionEvent event) {
         getTasksPresenter().onNewGraphEditor(event);
     }

@@ -22,11 +22,6 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
     }
 
     @Override
-    public void onNewGraphEditor(ActionEvent event) {
-
-    }
-
-    @Override
     public void onNewGraphGenerator(ActionEvent event) {
 
     }

@@ -16,5 +16,10 @@ public interface GraphPresenter {
 
     void onValidate(ActionEvent event);
 
+    void onNew(ActionEvent event);
+
+    void onOpen(ActionEvent event);
+
+    void onSave(ActionEvent event);
 
 }

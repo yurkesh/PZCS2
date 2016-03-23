@@ -2,20 +2,15 @@ package edu.kpi.nesteruk.pzcs.model.common;
 
 import edu.kpi.nesteruk.misc.IdPool;
 import edu.kpi.nesteruk.misc.Pair;
-import edu.kpi.nesteruk.pzcs.graph.io.GraphDeserializer;
-import edu.kpi.nesteruk.pzcs.graph.io.GraphSerializer;
 import edu.kpi.nesteruk.pzcs.graph.validation.GraphValidator;
 import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
 import edu.kpi.nesteruk.pzcs.model.primitives.Link;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
 import org.jgrapht.Graph;
-import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -39,10 +34,11 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
         this.isNodeWeighted = isNodeWeighted;
         this.validator = validator;
 
-        clear();
+        reset();
     }
 
-    private void clear() {
+    @Override
+    public void reset() {
         idPool = new CommonIdPool();
         nodesMap = new LinkedHashMap<>();
         linksMap = new LinkedHashMap<>();
@@ -215,7 +211,7 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     }
 
     private void restoreInner(GraphModelSerializable<N, L> serializable) {
-        clear();
+        reset();
         serializable.getNodesMap().values().forEach(this::addNode);
         serializable.getLinksMap().entrySet()
                 .forEach(linkEntry -> addLink(linkEntry.getKey(), linkEntry.getValue()));

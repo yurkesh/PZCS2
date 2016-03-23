@@ -32,4 +32,6 @@ public interface GraphModel {
      * @return {nodes:[idAndValue], links:[{{sourceId, destinationId}, link:idAndValue}]}
      */
     Pair<Collection<IdAndValue>, Collection<Pair<Pair<String, String>, IdAndValue>>> restore(GraphModelSerializable serializable);
+
+    void reset();
 }
