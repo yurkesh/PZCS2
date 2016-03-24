@@ -174,16 +174,8 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
         return validator.isValid(cloneGraph(graph));
     }
 
-    /*
-    @Override
-    public String getSerialized() {
-        return getGraphSerializer().serializeGraph(nodesMap.values(), linksMap.values());
-    }
-    */
-
     @Override
     public GraphModelBundle getSerializable() {
-        ///
         return new GraphModelBundle<>(nodesMap, linksMap);
     }
 
