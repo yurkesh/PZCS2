@@ -12,8 +12,9 @@ import com.mxgraph.view.mxStylesheet;
 import edu.kpi.nesteruk.misc.OneToOneMapper;
 import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.misc.Tuple;
+import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
-import edu.kpi.nesteruk.pzcs.model.common.GraphModelSerializable;
+import edu.kpi.nesteruk.pzcs.model.common.GraphModelBundle;
 import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
 import edu.kpi.nesteruk.pzcs.model.common.NodeBuilder;
 import edu.kpi.nesteruk.pzcs.model.common.LinkBuilder;
@@ -272,7 +273,7 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
 
     private void openGraph(String filePath) {
         try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filePath))) {
-            GraphModelSerializable modelSerializable = (GraphModelSerializable) ois.readObject();
+            GraphModelBundle modelSerializable = (GraphModelBundle) ois.readObject();
             GraphPresenterSerializable presenterSerializable = (GraphPresenterSerializable) ois.readObject();
 
             model = graphModelFactory.get();
@@ -283,10 +284,10 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
         }
     }
 
-    private void restoreGraph(Pair<Collection<IdAndValue>, Collection<Pair<Pair<String, String>, IdAndValue>>> restoredModel, Map<String, Tuple<Integer>> nodeIdToItsCoordinates) {
+    private void restoreGraph(GraphDataAssembly restoredModel, Map<String, Tuple<Integer>> nodeIdToItsCoordinates) {
         reset(false);
-        restoreNodes(restoredModel.first, nodeIdToItsCoordinates);
-        restoreLinks(restoredModel.second);
+        restoreNodes(restoredModel.nodes, nodeIdToItsCoordinates);
+        restoreLinks(restoredModel.links);
     }
 
     private void reset(boolean clearModel) {
@@ -328,7 +329,7 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
     }
 
     private void saveGraph(String filePath) {
-        GraphModelSerializable modelSerializable = model.getSerializable();
+        GraphModelBundle modelSerializable = model.getSerializable();
         LinkedHashSet<String> nodesIds = modelSerializable.getNodesIds();
         Map<String, Tuple<Integer>> nodeIdToCoordinates = nodesIds.stream()
                 .collect(Collectors.toMap(

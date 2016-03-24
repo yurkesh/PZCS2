@@ -2,6 +2,8 @@ package edu.kpi.nesteruk.pzcs.model.common;
 
 import edu.kpi.nesteruk.misc.IdPool;
 import edu.kpi.nesteruk.misc.Pair;
+import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
+import edu.kpi.nesteruk.pzcs.graph.generation.GraphGenerator;
 import edu.kpi.nesteruk.pzcs.graph.validation.GraphValidator;
 import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
 import edu.kpi.nesteruk.pzcs.model.primitives.Link;
@@ -180,19 +182,29 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     */
 
     @Override
-    public GraphModelSerializable getSerializable() {
+    public GraphModelBundle getSerializable() {
         ///
-        return new GraphModelSerializable<>(nodesMap, linksMap);
+        return new GraphModelBundle<>(nodesMap, linksMap);
     }
 
     @Override
-    public Pair<Collection<IdAndValue>, Collection<Pair<Pair<String, String>, IdAndValue>>> restore(GraphModelSerializable serializable) {
-        restoreInner((GraphModelSerializable<N, L>) serializable);
+    public GraphDataAssembly restore(GraphModelBundle serializable) {
+        return apply((GraphModelBundle<N, L>) serializable);
+    }
+
+    private GraphDataAssembly apply(GraphModelBundle<N, L> modelSerializable) {
+        return apply(modelSerializable.getNodesMap().values(), modelSerializable.getLinksMap());
+    }
+
+    private GraphDataAssembly apply(Collection<N> nodes, Map<String, L> linksMap) {
+        reset();
+        nodes.forEach(this::addNode);
+        linksMap.entrySet().forEach(linkEntry -> addLink(linkEntry.getKey(), linkEntry.getValue()));
         return getForPresenter();
     }
 
-    private Pair<Collection<IdAndValue>, Collection<Pair<Pair<String, String>, IdAndValue>>> getForPresenter() {
-        return Pair.create(
+    private GraphDataAssembly getForPresenter() {
+        return new GraphDataAssembly(
                 nodesMap.values().stream()
                         .map(AbstractGraphModel::formatNode)
                         .collect(Collectors.toList()),
@@ -210,14 +222,8 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
         );
     }
 
-    private void restoreInner(GraphModelSerializable<N, L> serializable) {
-        reset();
-        serializable.getNodesMap().values().forEach(this::addNode);
-        serializable.getLinksMap().entrySet()
-                .forEach(linkEntry -> addLink(linkEntry.getKey(), linkEntry.getValue()));
+    @Override
+    public GraphDataAssembly generate(GraphGenerator.Params params) {
+        return apply(new GraphGenerator<>(this::makeConcreteNode, this::makeConcreteLink).generate(params));
     }
-
-    /*
-    protected abstract GraphSerializer<N, L> getGraphSerializer();
-    */
 }

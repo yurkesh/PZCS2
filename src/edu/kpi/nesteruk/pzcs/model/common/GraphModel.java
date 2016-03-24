@@ -1,9 +1,7 @@
 package edu.kpi.nesteruk.pzcs.model.common;
 
-import edu.kpi.nesteruk.misc.Pair;
-import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
-
-import java.util.Collection;
+import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
+import edu.kpi.nesteruk.pzcs.graph.generation.GraphGenerator;
 
 /**
  * Created by Yurii on 2016-03-13.
@@ -20,14 +18,11 @@ public interface GraphModel {
 
     boolean validate();
 
-    GraphModelSerializable getSerializable();
+    GraphModelBundle getSerializable();
 
-    /**
-     *
-     * @param serializable
-     * @return {nodes:[idAndValue], links:[{{sourceId, destinationId}, link:idAndValue}]}
-     */
-    Pair<Collection<IdAndValue>, Collection<Pair<Pair<String, String>, IdAndValue>>> restore(GraphModelSerializable serializable);
+    GraphDataAssembly generate(GraphGenerator.Params params);
+
+    GraphDataAssembly restore(GraphModelBundle serializable);
 
     void reset();
 }

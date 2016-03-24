@@ -11,17 +11,14 @@ import java.util.Map;
 /**
  * Created by Yurii on 2016-03-23.
  */
-public class GraphModelSerializable<N extends Node, L extends Link<N>> implements Serializable {
+public class GraphModelBundle<N extends Node, L extends Link<N>> implements Serializable {
 
     private static final long serialVersionUID = 6624076855744169362L;
 
     private Map<String, N> nodesMap;
     private Map<String, L> linksMap;
 
-    public GraphModelSerializable() {
-    }
-
-    public GraphModelSerializable(Map<String, N> nodesMap, Map<String, L> linksMap) {
+    public GraphModelBundle(Map<String, N> nodesMap, Map<String, L> linksMap) {
         this.nodesMap = new LinkedHashMap<>(nodesMap);
         this.linksMap = new LinkedHashMap<>(linksMap);
     }
@@ -40,7 +37,7 @@ public class GraphModelSerializable<N extends Node, L extends Link<N>> implement
 
     @Override
     public String toString() {
-        return "GraphModelSerializable{" +
+        return "GraphModelBundle{" +
                 "nodesMap=" + nodesMap +
                 ", linksMap=" + linksMap +
                 '}';
