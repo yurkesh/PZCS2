@@ -24,7 +24,11 @@ public class IntIdPool implements IdPool<Integer> {
 
     @Override
     public boolean obtainId(Integer id) {
-        return ids.remove(id);
+        boolean removed = ids.remove(id);
+        if(ids.isEmpty()) {
+            ids.add(id + 1);
+        }
+        return removed;
     }
 
     @Override
