@@ -21,7 +21,7 @@ public class SystemGraphModel extends AbstractGraphModel<Processor, CongenericLi
     public SystemGraphModel() {
         super(
                 SystemGraphModel::newGraph,
-                true,
+                false,
                 new NoIsolatedEdgesGraphValidator()
         );
     }

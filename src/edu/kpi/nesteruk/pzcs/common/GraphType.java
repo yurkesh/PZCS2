@@ -80,6 +80,7 @@ public enum GraphType {
     protected Map<String, Object> getCustomEdgeStyle(Map<String, Object> defaultEdgeStyle) {
         Map<String, Object> edgeStyle = new HashMap<>(defaultEdgeStyle);
         edgeStyle.put(mxConstants.STYLE_EDGE, mxEdgeStyle.ElbowConnector);
+        edgeStyle.put(mxConstants.STYLE_ROUNDED, true);
         edgeStyle.put(mxConstants.STYLE_SHAPE,    mxConstants.SHAPE_CONNECTOR);
         edgeStyle.put(mxConstants.STYLE_ENDARROW, mxConstants.ARROW_CLASSIC);
         edgeStyle.put(mxConstants.STYLE_STROKECOLOR, "#000000");

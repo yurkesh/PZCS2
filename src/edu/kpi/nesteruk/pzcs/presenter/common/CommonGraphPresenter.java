@@ -161,8 +161,8 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
         cellIdAndNodeIdMapper.add(cell.getId(), nodeIdAndValue.id);
     }
 
-    private void removeIdsMappingsByCellId(String deletedCellId) {
-        cellIdAndNodeIdMapper.removeByKey(deletedCellId);
+    private String removeIdsMappingsByCellId(String deletedCellId) {
+        return cellIdAndNodeIdMapper.removeByKey(deletedCellId);
     }
 
     private mxICell insertVertex(int x, int y, IdAndValue nodeIdAndValue) {
@@ -199,8 +199,8 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
 
     private void deleteNode(int x, int y) {
         deleteCell(x, y).ifPresent(id -> {
-            removeIdsMappingsByCellId(id);
-            model.deleteNode(id);
+            String idOfRemovedNode = removeIdsMappingsByCellId(id);
+            model.deleteNode(idOfRemovedNode);
         });
     }
 
@@ -218,11 +218,11 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
     private void deleteLink(int x, int y) {
         deleteCell(x, y).ifPresent(id -> {
             try {
-                removeIdsMappingsByCellId(id);
+                String idOfRemovedEdge = removeIdsMappingsByCellId(id);
+                model.deleteLink(idOfRemovedEdge);
             } catch (NullPointerException e) {
                 System.err.println("Removed not fully connected link");
             }
-            model.deleteLink(id);
         });
     }
 

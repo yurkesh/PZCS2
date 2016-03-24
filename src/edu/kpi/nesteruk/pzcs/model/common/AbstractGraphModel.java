@@ -105,7 +105,7 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     }
 
     protected boolean canConnect(String srcId, String destId) {
-        return !graph.containsEdge(srcId, destId);
+        return !(graph.containsEdge(srcId, destId) || graph.containsEdge(destId, srcId));
     }
 
     private IdAndValue connect(String srcId, String destId, int weight) {
