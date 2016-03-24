@@ -20,21 +20,6 @@ public class SystemGraphPresenter extends CommonGraphPresenter implements System
     }
 
     @Override
-    public void onNewSystem(ActionEvent event) {
-
-    }
-
-    @Override
-    public void onOpenSystem(ActionEvent event) {
-        onOpen(event);
-    }
-
-    @Override
-    public void onSaveSystem(ActionEvent event) {
-        onSave(event);
-    }
-
-    @Override
     public void onProcessorsParams(ActionEvent event) {
 
     }

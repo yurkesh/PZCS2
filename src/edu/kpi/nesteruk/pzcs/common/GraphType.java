@@ -8,7 +8,6 @@ import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphModel;
 import edu.kpi.nesteruk.pzcs.presenter.system.SystemGraphPresenter;
 import edu.kpi.nesteruk.pzcs.presenter.tasks.TasksGraphPresenter;
 import edu.kpi.nesteruk.pzcs.view.common.CommonGraphView;
-import edu.kpi.nesteruk.pzcs.presenter.common.CommonGraphPresenter;
 import edu.kpi.nesteruk.pzcs.presenter.common.GraphPresenter;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
 
@@ -43,6 +42,13 @@ public enum GraphType {
                     SystemGraphModel::new
             );
         }
+
+        @Override
+        protected Map<String, Object> getCustomEdgeStyle(Map<String, Object> defaultEdgeStyle) {
+            Map<String, Object> edgeStyle = super.getCustomEdgeStyle(defaultEdgeStyle);
+            edgeStyle.put("endArrow", "none");
+            return edgeStyle;
+        }
     };
 
     private final String caption;
@@ -58,20 +64,20 @@ public enum GraphType {
 
     protected Function<mxStylesheet, mxStylesheet> getGraphStyleSheetInterceptor() {
         return stylesheet -> {
-            stylesheet.setDefaultVertexStyle(getCustomVertexStyles(stylesheet.getDefaultVertexStyle()));
-            stylesheet.setDefaultEdgeStyle(getCustomEdgeStyles(stylesheet.getDefaultEdgeStyle()));
+            stylesheet.setDefaultVertexStyle(getCustomVertexStyle(stylesheet.getDefaultVertexStyle()));
+            stylesheet.setDefaultEdgeStyle(getCustomEdgeStyle(stylesheet.getDefaultEdgeStyle()));
             return stylesheet;
         };
     }
 
-    protected Map<String, Object> getCustomVertexStyles(Map<String, Object> defaultVertexStyle) {
+    protected Map<String, Object> getCustomVertexStyle(Map<String, Object> defaultVertexStyle) {
         Map<String, Object> vertexStyle = new HashMap<>(defaultVertexStyle);
         vertexStyle.put(mxConstants.STYLE_FOLDABLE, false);
         vertexStyle.put(mxConstants.STYLE_RESIZABLE, false);
         return vertexStyle;
     }
 
-    protected Map<String, Object> getCustomEdgeStyles(Map<String, Object> defaultEdgeStyle) {
+    protected Map<String, Object> getCustomEdgeStyle(Map<String, Object> defaultEdgeStyle) {
         Map<String, Object> edgeStyle = new HashMap<>(defaultEdgeStyle);
         edgeStyle.put(mxConstants.STYLE_EDGE, mxEdgeStyle.ElbowConnector);
         edgeStyle.put(mxConstants.STYLE_SHAPE,    mxConstants.SHAPE_CONNECTOR);

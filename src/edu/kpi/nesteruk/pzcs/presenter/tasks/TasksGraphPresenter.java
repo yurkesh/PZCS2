@@ -24,14 +24,4 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
     public void onNewGraphGenerator(ActionEvent event) {
 
     }
-
-    @Override
-    public void onOpenGraph(ActionEvent event) {
-        onOpen(event);
-    }
-
-    @Override
-    public void onSaveGraph(ActionEvent event) {
-        onSave(event);
-    }
 }
