@@ -4,6 +4,7 @@ import com.mxgraph.view.mxStylesheet;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
 import edu.kpi.nesteruk.pzcs.presenter.common.CaptionsSupplier;
 import edu.kpi.nesteruk.pzcs.presenter.common.CommonGraphPresenter;
+import edu.kpi.nesteruk.pzcs.presenter.common.GraphVertexSizeSupplier;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
 
 import java.awt.event.ActionEvent;
@@ -15,9 +16,14 @@ import java.util.function.Supplier;
  */
 public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPresenter {
 
+    public TasksGraphPresenter(
+            GraphView graphView,
+            Function<mxStylesheet, mxStylesheet> graphStylesheetInterceptor,
+            CaptionsSupplier captionsSupplier,
+            Supplier<GraphModel> graphModelFactory,
+            GraphVertexSizeSupplier vertexSizeSupplier) {
 
-    public TasksGraphPresenter(GraphView graphView, Function<mxStylesheet, mxStylesheet> graphStylesheetInterceptor, CaptionsSupplier captionsSupplier, Supplier<GraphModel> graphModelFactory) {
-        super(graphView, graphStylesheetInterceptor, captionsSupplier, graphModelFactory);
+        super(graphView, graphStylesheetInterceptor, captionsSupplier, graphModelFactory, vertexSizeSupplier);
     }
 
     @Override

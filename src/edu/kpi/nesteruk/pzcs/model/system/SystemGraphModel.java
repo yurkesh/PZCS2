@@ -23,7 +23,7 @@ public class SystemGraphModel extends AbstractGraphModel<Processor, CongenericLi
     public SystemGraphModel() {
         super(
                 SystemGraphModel::newGraph,
-                false,
+                true,
                 new CompositeGraphValidator<String, String>(new NoIsolatedEdgesGraphValidator(), new NonSplitGraphValidator())
         );
     }
@@ -42,7 +42,7 @@ public class SystemGraphModel extends AbstractGraphModel<Processor, CongenericLi
 
     @Override
     protected Processor makeConcreteNode(String nodeId, int weight) {
-        return new Processor(nodeId);
+        return new Processor(nodeId, weight);
     }
 
     @Override

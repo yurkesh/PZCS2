@@ -38,6 +38,7 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
     private final GraphView graphView;
     private final CaptionsSupplier captionsSupplier;
     private final Supplier<GraphModel> graphModelFactory;
+    private final GraphVertexSizeSupplier vertexSizeSupplier;
 
     private final mxGraph graph;
     private final mxGraphComponent graphComponent;
@@ -56,11 +57,13 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
             GraphView graphView,
             Function<mxStylesheet, mxStylesheet> graphStylesheetInterceptor,
             CaptionsSupplier captionsSupplier,
-            Supplier<GraphModel> graphModelFactory) {
+            Supplier<GraphModel> graphModelFactory,
+            GraphVertexSizeSupplier vertexSizeSupplier) {
 
         this.graphView = graphView;
         this.captionsSupplier = captionsSupplier;
         this.graphModelFactory = graphModelFactory;
+        this.vertexSizeSupplier = vertexSizeSupplier;
 
         this.graph = new mxGraph() {
             @Override
@@ -166,7 +169,8 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
     }
 
     private mxICell insertVertex(int x, int y, IdAndValue nodeIdAndValue) {
-        return (mxICell) graph.insertVertex(parent, null, nodeIdAndValue.value, x, y, Views.Tasks.TASK_DIAMETER, Views.Tasks.TASK_DIAMETER, Views.Tasks.TASK_STYLE);
+        Tuple<Integer> widthAndHeight = vertexSizeSupplier.getVertexSize();
+        return (mxICell) graph.insertVertex(parent, null, nodeIdAndValue.value, x, y, widthAndHeight.getFirst(), widthAndHeight.getSecond());
     }
 
     private void connectNodes(mxICell sourceCell, mxICell targetCell, mxICell edge) {

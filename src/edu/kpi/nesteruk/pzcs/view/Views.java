@@ -1,7 +1,5 @@
 package edu.kpi.nesteruk.pzcs.view;
 
-import com.mxgraph.util.mxConstants;
-
 /**
  * Created by Yurii on 21.10.2014.
  */
@@ -16,8 +14,6 @@ public class Views {
     public static final String COLOR_ERROR = "#FF0000";
     public static final String COLOR_NORMAL = "#C3D9FF";
     public static final String COLOR_STATE = "#FFBF00";
-    public static final String STYLE_CONDITION = "RHOMBUS";
-    public static final String STYLE_STATE = "shape=ellipse;perimter=ellipsePerimeter;" + mxConstants.STYLE_FILLCOLOR + '=' + COLOR_STATE;
 
     public static final int TABLE_ROW_HEIGHT = 18;
 
@@ -25,7 +21,10 @@ public class Views {
     public static class Tasks {
         public static final int TASK_DIAMETER = 60;
         public static final String TASK_COLOR = "#FFBF00";
-        public static final String TASK_STYLE = "shape=rectangle;perimter=ellipsePerimeter;" + mxConstants.STYLE_FILLCOLOR + '=' + TASK_COLOR;
+    }
+
+    public static class Links {
+        public static final String EDGE_COLOR = "#000000";
     }
 
 }
