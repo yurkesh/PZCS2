@@ -13,6 +13,7 @@ import org.jgrapht.Graph;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -142,9 +143,21 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     protected abstract Pair<L, String> makeConcreteLink(String srcId, String destId, int weight);
 
     @Override
-    public void deleteNode(String id) {
-        nodesMap.remove(id);
+    public Collection<String> deleteNode(String id) {
+        N removedNode = nodesMap.remove(id);
+
+        Set<String> linkIDsToRemove = linksMap.entrySet().stream()
+                //Get all links that are incident to this node
+                .filter(entry -> entry.getValue().isIncident(removedNode))
+                //Get id of link
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+
+        linkIDsToRemove.forEach(linksMap::remove);
         graph.removeVertex(id);
+        graph.removeAllEdges(linkIDsToRemove);
+
+        return linkIDsToRemove;
     }
 
     @Override

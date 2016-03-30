@@ -20,6 +20,7 @@ import edu.kpi.nesteruk.pzcs.model.common.NodeBuilder;
 import edu.kpi.nesteruk.pzcs.model.common.LinkBuilder;
 import edu.kpi.nesteruk.pzcs.view.Views;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
+import edu.kpi.nesteruk.util.CollectionUtils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -204,8 +205,18 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
     private void deleteNode(int x, int y) {
         deleteCell(x, y).ifPresent(id -> {
             String idOfRemovedNode = removeIdsMappingsByCellId(id);
-            model.deleteNode(idOfRemovedNode);
+            Collection<String> linkIDsToRemove = model.deleteNode(idOfRemovedNode);
+            if(!CollectionUtils.isEmpty(linkIDsToRemove)) {
+                linkIDsToRemove.stream()
+                        //Get id of edge-cell by id of link
+                        .map(cellIdAndNodeIdMapper::getByValue)
+                        //Get edge-cell by its id
+                        .map(this::getCellById)
+                        //Remove cells from model
+                        .forEach(cell -> graph.getModel().remove(cell));
+            }
         });
+        System.out.println();
     }
 
     private Optional<String> deleteCell(int x, int y) {
