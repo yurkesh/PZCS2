@@ -64,4 +64,8 @@ public class OneToOneMapper<K, V> {
         }
     }
 
+    public void replace(K key, V oldValue, V newValue) {
+        remove(key, oldValue);
+        add(key, newValue);
+    }
 }

@@ -2,6 +2,7 @@ package edu.kpi.nesteruk.pzcs.model.common;
 
 import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
 import edu.kpi.nesteruk.pzcs.graph.generation.GraphGenerator;
+import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
 
 import java.util.Collection;
 
@@ -32,4 +33,12 @@ public interface GraphModel {
     GraphDataAssembly restore(GraphModelBundle serializable);
 
     void reset();
+
+    /**
+     *
+     * @param idOfLink
+     * @param text
+     * @return new String value to set in corresponding cell
+     */
+    IdAndValue updateWeight(String idOfLink, String text);
 }

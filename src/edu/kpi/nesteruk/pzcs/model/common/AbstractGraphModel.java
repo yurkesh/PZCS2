@@ -231,4 +231,27 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     public GraphDataAssembly generate(GraphGenerator.Params params) {
         return apply(new GraphGenerator<>(this::makeConcreteNode, this::makeConcreteLink).generate(params));
     }
+
+    @Override
+    public IdAndValue updateWeight(String idOfLink, String text) {
+        L link = linksMap.get(idOfLink);
+        if(link == null) {
+            throw new IllegalArgumentException("Cannot find link with id = '" + idOfLink + "'");
+        }
+        int weight;
+        try {
+            weight = Integer.valueOf(text);
+        } catch (NumberFormatException e) {
+            System.err.println("Cannot convert text = '" + text + "' to weight");
+            //Return old value
+            return formatLink(idOfLink, link);
+        }
+
+        linksMap.remove(idOfLink);
+        graph.removeEdge(idOfLink);
+
+        String srcId = link.getFirst().getId();
+        String destId = link.getSecond().getId();
+        return connect(srcId, destId, weight);
+    }
 }

@@ -67,9 +67,19 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
         this.vertexSizeSupplier = vertexSizeSupplier;
 
         this.graph = new mxGraph() {
+
+            private boolean isEdge(Object cell) {
+                return ((mxICell) cell).isEdge();
+            }
+
             @Override
             public boolean isCellDisconnectable(Object cell, Object terminal, boolean source) {
-                return !((mxICell) cell).isEdge();
+                return !isEdge(cell);
+            }
+
+            @Override
+            public boolean isCellEditable(Object cell) {
+                return super.isCellEditable(cell);
             }
         };
         parent = graph.getDefaultParent();
@@ -79,6 +89,8 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
 
         this.graphComponent = new mxGraphComponent(graph);
 
+        initGraphComponentListeners();
+
         model = graphModelFactory.get();
 
         graphView.setGraphComponent(graphComponent);
@@ -86,6 +98,11 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
 
     private void initGraphListeners() {
         graph.addListener(mxEvent.CELL_CONNECTED, connectCellsListener);
+    }
+
+    private void initGraphComponentListeners() {
+        graphComponent.addListener(mxEvent.START_EDITING, startEditingListener);
+        graphComponent.addListener(mxEvent.LABEL_CHANGED, labelChangedListener);
     }
 
     private void setListenGraphCellConnection(boolean listen) {
@@ -159,6 +176,31 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
             mxICell targetCell = edge.getTarget();
             connectNodes(sourceCell, targetCell, edge);
         }
+    };
+
+    private mxICell tempEdge;
+    private final mxEventSource.mxIEventListener startEditingListener = (sender, evt) -> {
+        tempEdge = (mxICell) evt.getProperties().get("cell");
+    };
+
+    private final mxEventSource.mxIEventListener labelChangedListener = (sender, evt) -> {
+        if(tempEdge != null) {
+            mxICell edge = (mxICell) evt.getProperties().get("cell");
+            if(tempEdge.equals(edge)) {
+                String edgeId = edge.getId();
+                String idOfLink = cellIdAndNodeIdMapper.getByKey(edgeId);
+                String text = (String) evt.getProperties().get("value");
+                IdAndValue idAndValue = model.updateWeight(idOfLink, text);
+                String updatedIdOfLink = idAndValue.id;
+                if(!idOfLink.equals(updatedIdOfLink)) {
+                    cellIdAndNodeIdMapper.replace(edgeId, idOfLink, updatedIdOfLink);
+                }
+                edge.setValue(idAndValue.value);
+            } else {
+                throw new IllegalStateException("Edit started on another edge. StartCell = " + tempEdge + ", EndCell = " + edge);
+            }
+        }
+        tempEdge = null;
     };
 
     private void addIdsMappings(IdAndValue nodeIdAndValue, mxICell cell) {
