@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Created by Yurii on 2016-03-23.
+ * Created by Anatolii on 2016-03-23.
  */
 public class OneToOneMapper<K, V> {
 

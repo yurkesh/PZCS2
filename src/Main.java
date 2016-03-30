@@ -17,11 +17,11 @@ public class Main {
                 break;
             }
         }
-        /*
+
         GraphStyle.DEFAULT_STYLE = GraphStyle.Alternative;
-        Task.TO_STRING_FORMAT = "Task[%s]: %s";
-        Processor.TO_STRING_FORMAT = "Processor[%s]=%s";
-        */
+        Task.TO_STRING_FORMAT = "T[%s]: %s";
+        Processor.TO_STRING_FORMAT = "P[%s]=%s";
+
         new DashboardView(GraphType.values());
     }
 }

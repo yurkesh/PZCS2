@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by Yurii on 3/10/2016.
+ * Created by Anatolii on 3/10/2016.
  */
 public class TasksGraphModel extends AbstractGraphModel<Task, DirectedLink<Task>> implements GraphModel {
 

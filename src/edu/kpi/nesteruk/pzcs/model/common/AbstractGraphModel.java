@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * Created by Yurii on 2016-03-20.
+ * Created by Anatolii on 2016-03-20.
  */
 public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> implements GraphModel {
 

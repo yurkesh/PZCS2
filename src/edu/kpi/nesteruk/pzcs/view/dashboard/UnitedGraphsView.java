@@ -14,7 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Created by Yurii on 2016-03-13.
+ * Created by Anatolii on 2016-03-13.
  */
 public class UnitedGraphsView implements UnitedGraphPresenter {
 

@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Created by Yurii on 2016-03-13.
+ * Created by Anatolii on 2016-03-13.
  */
 public interface GraphView {
 

@@ -1,7 +1,7 @@
 package edu.kpi.nesteruk.pzcs.presenter.common;
 
 /**
- * Created by Yurii on 2016-03-23.
+ * Created by Anatolii on 2016-03-23.
  */
 @FunctionalInterface
 public interface CaptionsSupplier {

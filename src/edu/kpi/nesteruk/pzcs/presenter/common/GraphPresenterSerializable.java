@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * Created by Yurii on 2016-03-23.
+ * Created by Anatolii on 2016-03-23.
  */
 public class GraphPresenterSerializable implements Serializable {
     private Map<String, Tuple<Integer>> nodeIdToItsCoordinates;

@@ -5,7 +5,7 @@ import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
 import java.util.Optional;
 
 /**
- * Created by Yurii on 2016-03-13.
+ * Created by Anatolii on 2016-03-13.
  */
 public interface LinkBuilder {
     boolean beginConnect(String srcId, String destId);

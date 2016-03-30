@@ -4,7 +4,7 @@ import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
 import edu.kpi.nesteruk.pzcs.graph.generation.GraphGenerator;
 
 /**
- * Created by Yurii on 2016-03-13.
+ * Created by Anatolii on 2016-03-13.
  */
 public interface GraphModel {
 

@@ -1,11 +1,11 @@
 package edu.kpi.nesteruk.pzcs.view;
 
 /**
- * Created by Yurii on 21.10.2014.
+ * Created by Anatolii on 21.10.2014.
  */
 public class Views {
-    public static final int DEFAULT_WINDOW_WIDTH = 600;
-    public static final int DEFAULT_WINDOW_HEIGHT = 800;
+    public static final int DEFAULT_WINDOW_WIDTH = 900;
+    public static final int DEFAULT_WINDOW_HEIGHT = 700;
     public static final int WINDOW_MARGIN_TOP = 100;
 
     public static final int DEFAULT_NODE_WIDTH = 120;

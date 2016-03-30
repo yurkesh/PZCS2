@@ -1,7 +1,7 @@
 package edu.kpi.nesteruk.pzcs.graph.io;
 
 /**
- * Created by Yurii on 2016-03-21.
+ * Created by Anatolii on 2016-03-21.
  * @deprecated Not supported
  */
 @Deprecated

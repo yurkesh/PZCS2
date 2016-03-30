@@ -7,7 +7,7 @@ import java.awt.*;
 import java.util.Optional;
 
 /**
- * Created by Yurii on 12.12.2014.
+ * Created by Anatolii on 12.12.2014.
  */
 public abstract class Dialog<Result> {
 

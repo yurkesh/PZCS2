@@ -3,7 +3,7 @@ package edu.kpi.nesteruk.pzcs.graph.validation;
 import org.jgrapht.Graph;
 
 /**
- * Created by Yurii on 2016-03-13.
+ * Created by Anatolii on 2016-03-13.
  */
 public class CompositeGraphValidator<V, E> implements GraphValidator<V, E> {
 

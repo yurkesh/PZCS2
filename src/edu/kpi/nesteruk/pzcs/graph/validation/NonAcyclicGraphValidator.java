@@ -5,7 +5,7 @@ import org.jgrapht.Graph;
 import org.jgrapht.alg.CycleDetector;
 
 /**
- * Created by Yurii on 2016-03-20.
+ * Created by Anatolii on 2016-03-20.
  */
 public class NonAcyclicGraphValidator<V, E> implements GraphValidator<V, E> {
 

@@ -8,7 +8,7 @@ import org.jgrapht.alg.FloydWarshallShortestPaths;
 import java.util.Set;
 
 /**
- * Created by Yurii on 2016-03-24.
+ * Created by Anatolii on 2016-03-24.
  */
 public class NonSplitGraphValidator implements GraphValidator {
 

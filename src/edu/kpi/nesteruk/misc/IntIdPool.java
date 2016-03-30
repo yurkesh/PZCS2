@@ -4,7 +4,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 /**
- * Created by Yurii on 3/10/2016.
+ * Created by Anatolii on 3/10/2016.
  */
 public class IntIdPool implements IdPool<Integer> {
 

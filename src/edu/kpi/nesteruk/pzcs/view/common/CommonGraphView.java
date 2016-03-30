@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Created by Yurii on 2016-03-13.
+ * Created by Anatolii on 2016-03-13.
  */
 public class CommonGraphView extends JPanel implements GraphView {
 
@@ -69,7 +69,7 @@ public class CommonGraphView extends JPanel implements GraphView {
             return;
         }
 
-        JPopupMenu menu = new JPopupMenu("Choose action:");
+        JPopupMenu menu = new JPopupMenu("Виберыть дію:");
         jMenuItems.forEach(menu::add);
         menu.show(graphComponent.getGraphControl(), x, y);
     }

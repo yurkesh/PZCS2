@@ -9,7 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Created by Yurii on 09.09.2014.
+ * Created by Anatolii on 09.09.2014.
  */
 public class DashboardView extends JFrame {
 

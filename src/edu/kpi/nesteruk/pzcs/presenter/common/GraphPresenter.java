@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 
 /**
- * Created by Yurii on 2016-03-13.
+ * Created by Anatolii on 2016-03-13.
  */
 public interface GraphPresenter extends FileActionHandler {
 

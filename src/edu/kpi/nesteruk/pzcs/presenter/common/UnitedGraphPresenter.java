@@ -8,7 +8,7 @@ import edu.kpi.nesteruk.pzcs.view.dashboard.UnitedGraphsView;
 import javax.swing.*;
 
 /**
- * Created by Yurii on 2016-03-23.
+ * Created by Anatolii on 2016-03-23.
  */
 public interface UnitedGraphPresenter extends GraphPresenter, TasksPresenter, SystemPresenter, DefaultPresenter {
 

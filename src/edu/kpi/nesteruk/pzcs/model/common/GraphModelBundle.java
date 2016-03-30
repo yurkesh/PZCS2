@@ -9,7 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 
 /**
- * Created by Yurii on 2016-03-23.
+ * Created by Anatolii on 2016-03-23.
  */
 public class GraphModelBundle<N extends Node, L extends Link<N>> implements Serializable {
 

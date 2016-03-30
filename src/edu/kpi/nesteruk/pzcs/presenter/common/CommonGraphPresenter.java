@@ -31,7 +31,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * Created by Yurii on 2016-02-17.
+ * Created by Anatolii on 2016-02-17.
  */
 public abstract class CommonGraphPresenter implements GraphPresenter {
 
@@ -112,8 +112,8 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
         caption = String.valueOf(caption.charAt(0)).toUpperCase() + caption.substring(1);
         graphView.showMessage(
                 error,
-                "Validation result",
-                 caption + " graph is " + (error ? "NOT" : "") + "valid"
+                "Валідація",
+                 "Граф " + (error ? "не" : "") + "валідний"
         );
     }
 
@@ -123,8 +123,8 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
             NodeBuilder nodeBuilder = model.getNodeBuilder();
             String supposedId = nodeBuilder.beginBuild();
             Optional<String> specifiedId = graphView.showStringInputDialog(
-                    "Making new " + captionsSupplier.getCaption(false),
-                    "Set ID of " + captionsSupplier.getCaption(false),
+                    "New",// + captionsSupplier.getCaption(false),
+                    "Id",// + captionsSupplier.getCaption(false),
                     supposedId
             );
             if(specifiedId.isPresent()) {
@@ -132,8 +132,8 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
                 if(idIsCorrect) {
                     if(nodeBuilder.needWeight()) {
                         graphView.showIntInputDialog(
-                                "Making new " + captionsSupplier.getCaption(false),
-                                "Set Weight of " + captionsSupplier.getCaption(false),
+                                "New",// + captionsSupplier.getCaption(false),
+                                "Вага",// + captionsSupplier.getCaption(false),
                                 1
                         ).ifPresent(nodeBuilder::setWeight);
                     }
@@ -182,7 +182,8 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
             if(linkBuilder.beginConnect(cellIdAndNodeIdMapper.getByKey(sourceId), cellIdAndNodeIdMapper.getByKey(targetId))) {
                 if(linkBuilder.needWeight()) {
                     graphView.showIntInputDialog(
-                            "Connecting " + captionsSupplier.getCaption(true), "Set connection weight:", 1
+                            "З'єднання",// + captionsSupplier.getCaption(true),
+                            "Вага:", 1
                     ).ifPresent(linkBuilder::setWeight);
                 }
             }
@@ -236,7 +237,7 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
 
         ArrayList<JMenuItem> menuOptions = new ArrayList<>();
 
-        menuOptions.add(new JMenuItem(new AbstractAction("Add " + captionsSupplier.getCaption(false)) {
+        menuOptions.add(new JMenuItem(new AbstractAction("Додати " + captionsSupplier.getCaption(false)) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 addNode(x, y);
@@ -246,14 +247,14 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
         mxICell cell = (mxICell) graphComponent.getCellAt(x, y);
         if(cell != null) {
             if(cell.isVertex()) {
-                menuOptions.add(new JMenuItem(new AbstractAction("Delete " + captionsSupplier.getCaption(false)) {
+                menuOptions.add(new JMenuItem(new AbstractAction("Видалити " + captionsSupplier.getCaption(false)) {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         deleteNode(x, y);
                     }
                 }));
             } else {
-                menuOptions.add(new JMenuItem(new AbstractAction("Delete link") {
+                menuOptions.add(new JMenuItem(new AbstractAction("Видалити зв'язок") {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         deleteLink(x, y);

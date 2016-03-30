@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.function.Function;
 
 /**
- * Created by Yurii on 2016-03-21.
+ * Created by Anatolii on 2016-03-21.
  @deprecated Not supported
  */
 @Deprecated

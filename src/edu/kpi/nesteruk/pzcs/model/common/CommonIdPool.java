@@ -6,7 +6,7 @@ import edu.kpi.nesteruk.misc.IntIdPool;
 import edu.kpi.nesteruk.misc.Wrapper;
 
 /**
- * Created by Yurii on 2016-03-14.
+ * Created by Anatolii on 2016-03-14.
  */
 public class CommonIdPool implements IdPool<String> {
 

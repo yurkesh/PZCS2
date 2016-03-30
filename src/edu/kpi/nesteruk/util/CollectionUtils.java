@@ -3,7 +3,7 @@ package edu.kpi.nesteruk.util;
 import java.util.Collection;
 
 /**
- * Created by Yurii on 2016-02-29.
+ * Created by Anatolii on 2016-02-29.
  */
 public class CollectionUtils {
 

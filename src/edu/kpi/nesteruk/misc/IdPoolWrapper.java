@@ -1,7 +1,7 @@
 package edu.kpi.nesteruk.misc;
 
 /**
- * Created by Yurii on 2016-03-14.
+ * Created by Anatolii on 2016-03-14.
  */
 public class IdPoolWrapper<RawId, BackedId> implements IdPool<BackedId> {
 

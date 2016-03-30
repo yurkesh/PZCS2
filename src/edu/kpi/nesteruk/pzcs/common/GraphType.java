@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * Created by Yurii on 2016-03-13.
+ * Created by Anatolii on 2016-03-13.
  */
 public enum GraphType {
     TASKS(Localization.getInstance().getLanguage().taskGraph) {
@@ -28,7 +28,7 @@ public enum GraphType {
             return new TasksGraphPresenter(
                     graphView,
                     getGraphStyleSheetInterceptor(),
-                    many -> many ? "tasks" : "task",
+                    many -> many ? "задачі" : "задачу",
                     TasksGraphModel::new,
                     () -> graphStyle.getNodeSize(this)
             );

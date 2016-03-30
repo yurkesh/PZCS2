@@ -22,7 +22,7 @@
 //import java.util.*;
 //
 ///**
-// * Created by Yurii on 09.09.2014.
+// * Created by Anatolii on 09.09.2014.
 // */
 //public class FlowchartController {
 //

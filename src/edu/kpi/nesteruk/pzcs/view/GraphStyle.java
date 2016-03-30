@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Yurii on 2016-03-29.
+ * Created by Anatolii on 2016-03-29.
  */
 public enum GraphStyle {
     Classic {
@@ -51,7 +51,8 @@ public enum GraphStyle {
         public Map<String, Object> getVertexStyles(GraphType graphType) {
             Map<String, Object> vertexStyles = super.getVertexStyles(graphType);
             vertexStyles.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_ELLIPSE);
-            vertexStyles.put(mxConstants.STYLE_FILLCOLOR, graphType == GraphType.TASKS ? "#18ffff" : "#76ff03");
+//            vertexStyles.put(mxConstants.STYLE_FILLCOLOR, graphType == GraphType.TASKS ? "#18ffff" : "#76ff03");
+            vertexStyles.put(mxConstants.STYLE_FILLCOLOR, graphType == GraphType.TASKS ? "#00FF00" : "#0000FF");
             return vertexStyles;
         }
     }

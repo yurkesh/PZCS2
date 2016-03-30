@@ -6,7 +6,7 @@ import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
 import java.util.Collection;
 
 /**
- * Created by Yurii on 2016-03-24.
+ * Created by Anatolii on 2016-03-24.
  */
 public class GraphDataAssembly {
 

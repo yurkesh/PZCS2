@@ -6,7 +6,7 @@ import java.util.Locale;
 import java.util.function.Function;
 
 /**
- * Created by Yurii on 3/10/2016.
+ * Created by Anatolii on 3/10/2016.
  */
 public class Task implements Node {
 

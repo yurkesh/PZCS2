@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by Yurii on 2016-03-13.
+ * Created by Anatolii on 2016-03-13.
  */
 public class SystemGraphModel extends AbstractGraphModel<Processor, CongenericLink<Processor>> implements GraphModel {
 

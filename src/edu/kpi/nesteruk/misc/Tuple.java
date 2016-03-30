@@ -3,7 +3,7 @@ package edu.kpi.nesteruk.misc;
 import java.io.Serializable;
 
 /**
- * Created by Yurii on 3/9/2016.
+ * Created by Anatolii on 3/9/2016.
  */
 public class Tuple<K> implements Serializable {
 

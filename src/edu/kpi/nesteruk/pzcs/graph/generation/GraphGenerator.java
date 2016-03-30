@@ -6,7 +6,7 @@ import edu.kpi.nesteruk.pzcs.model.primitives.Link;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
 
 /**
- * Created by Yurii on 2016-03-24.
+ * Created by Anatolii on 2016-03-24.
  */
 public class GraphGenerator<N extends Node, L extends Link<N>> {
 
