@@ -53,6 +53,9 @@ public enum GraphStyle {
             vertexStyles.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_ELLIPSE);
 //            vertexStyles.put(mxConstants.STYLE_FILLCOLOR, graphType == GraphType.TASKS ? "#18ffff" : "#76ff03");
             vertexStyles.put(mxConstants.STYLE_FILLCOLOR, graphType == GraphType.TASKS ? "#00FF00" : "#0000FF");
+            if (graphType == GraphType.SYSTEM) {
+                vertexStyles.put(mxConstants.STYLE_FONTCOLOR, "#FFFFFF");
+            }
             return vertexStyles;
         }
     }

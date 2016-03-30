@@ -89,6 +89,10 @@ public class DashboardView extends JFrame {
                 JMenuItem gantDiagram = new JMenuItem(lang.gantDiagram);
                 gantDiagram.addActionListener(graphPresenter::onGantDiagram);
                 modeling.add(gantDiagram);
+
+                JMenuItem validate = new JMenuItem(lang.validate);
+                validate.addActionListener(graphPresenter::onValidate);
+                modeling.add(validate);
             }
         }
 
@@ -108,16 +112,19 @@ public class DashboardView extends JFrame {
             }
         }
 
+        /*
         {
             JMenuItem validate = new JMenuItem(lang.validate);
             validate.addActionListener(graphPresenter::onValidate);
             menuBar.add(validate);
         }
-
+        */
+        /*
         {
             JMenuItem exit = new JMenuItem(lang.exit);
             exit.addActionListener(graphPresenter::onExit);
             menuBar.add(exit);
         }
+        */
     }
 }
