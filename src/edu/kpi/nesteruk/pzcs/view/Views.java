@@ -24,8 +24,8 @@ public class Views {
 
     public static class Tasks {
         public static final int TASK_DIAMETER = 60;
-        public static final String TASK_COLOR = "#FFBF00";
-        public static final String TASK_STYLE = "shape=rectangle;perimter=ellipsePerimeter;" + mxConstants.STYLE_FILLCOLOR + '=' + TASK_COLOR;
+        public static final String TASK_COLOR = "#00FF00";
+        public static final String TASK_STYLE = "shape=ellipse;perimter=ellipsePerimeter;" + mxConstants.STYLE_FILLCOLOR + '=' + TASK_COLOR;
     }
 
 }

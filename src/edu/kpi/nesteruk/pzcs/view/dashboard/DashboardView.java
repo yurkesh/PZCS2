@@ -3,6 +3,7 @@ package edu.kpi.nesteruk.pzcs.view.dashboard;
 import edu.kpi.nesteruk.pzcs.common.GraphType;
 import edu.kpi.nesteruk.pzcs.presenter.common.UnitedGraphPresenter;
 import edu.kpi.nesteruk.pzcs.view.Views;
+import edu.kpi.nesteruk.pzcs.view.localization.Localization;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +16,7 @@ public class DashboardView extends JFrame {
     private final UnitedGraphPresenter graphPresenter;
 
     public DashboardView(GraphType... graphTypes) throws HeadlessException {
-        super("PZCS-2 Editor");
+        super(Localization.getInstance().getLanguage().pzks);
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(Views.DEFAULT_WINDOW_WIDTH, Views.DEFAULT_WINDOW_HEIGHT);
@@ -23,7 +24,7 @@ public class DashboardView extends JFrame {
 
         graphPresenter = UnitedGraphPresenter.createDefault(graphTypes);
         setContentPane(graphPresenter.getGraphsContainer());
-        
+
         JMenuBar menuBar = new JMenuBar();
         initHeaderMenu(menuBar);
         setJMenuBar(menuBar);
@@ -32,88 +33,89 @@ public class DashboardView extends JFrame {
     }
 
     private void initHeaderMenu(JMenuBar menuBar) {
+        Localization.Language lang = Localization.getInstance().getLanguage();
         {
-            JMenu taskGraph = new JMenu("Task graph");
+            JMenu taskGraph = new JMenu(lang.taskGraph);
             menuBar.add(taskGraph);
             {
-                JMenu newGraph = new JMenu("New");
+                JMenu newGraph = new JMenu(lang.aNew);
                 taskGraph.add(newGraph);
                 {
-                    JMenuItem graphEditor = new JMenuItem("Graph editor");
+                    JMenuItem graphEditor = new JMenuItem(lang.graphEditor);
                     graphEditor.addActionListener(graphPresenter::onNewGraphEditor);
                     newGraph.add(graphEditor);
 
-                    JMenuItem graphGenerator = new JMenuItem("Graph generator");
+                    JMenuItem graphGenerator = new JMenuItem(lang.graphGenerator);
                     graphGenerator.addActionListener(graphPresenter::onNewGraphGenerator);
                     newGraph.add(graphGenerator);
                 }
 
-                JMenuItem openGraph = new JMenuItem("Open");
+                JMenuItem openGraph = new JMenuItem(lang.open);
                 openGraph.addActionListener(graphPresenter::onOpenGraph);
                 taskGraph.add(openGraph);
 
-                JMenuItem saveGraph = new JMenuItem("Save");
+                JMenuItem saveGraph = new JMenuItem(lang.save);
                 saveGraph.addActionListener(graphPresenter::onSaveGraph);
                 taskGraph.add(saveGraph);
             }
         }
 
         {
-            JMenu systemGraph = new JMenu("System graph");
+            JMenu systemGraph = new JMenu(lang.systemGraph);
             menuBar.add(systemGraph);
             {
-                JMenuItem newSystem = new JMenuItem("New system");
+                JMenuItem newSystem = new JMenuItem(lang.newSystem);
                 newSystem.addActionListener(graphPresenter::onNewSystem);
                 systemGraph.add(newSystem);
 
-                JMenuItem openSystem = new JMenuItem("Open");
+                JMenuItem openSystem = new JMenuItem(lang.open);
                 openSystem.addActionListener(graphPresenter::onOpenSystem);
                 systemGraph.add(openSystem);
 
-                JMenuItem saveSystem = new JMenuItem("Save");
+                JMenuItem saveSystem = new JMenuItem(lang.save);
                 saveSystem.addActionListener(graphPresenter::onSaveSystem);
                 systemGraph.add(saveSystem);
             }
         }
 
         {
-            JMenu modeling = new JMenu("Modeling");
+            JMenu modeling = new JMenu(lang.modeling);
             menuBar.add(modeling);
             {
-                JMenuItem processorsParams = new JMenuItem("Processors params");
+                JMenuItem processorsParams = new JMenuItem(lang.processorsParams);
                 processorsParams.addActionListener(graphPresenter::onProcessorsParams);
                 modeling.add(processorsParams);
 
-                JMenuItem gantDiagram = new JMenuItem("Gant diagram");
+                JMenuItem gantDiagram = new JMenuItem(lang.gantDiagram);
                 gantDiagram.addActionListener(graphPresenter::onGantDiagram);
                 modeling.add(gantDiagram);
             }
         }
 
         {
-            JMenu statistics = new JMenu("Statistics");
+            JMenu statistics = new JMenu(lang.statistics);
             statistics.addActionListener(graphPresenter::onStatistics);
             menuBar.add(statistics);
         }
 
         {
-            JMenu help = new JMenu("Help");
+            JMenu help = new JMenu(lang.help);
             menuBar.add(help);
             {
-                JMenuItem about = new JMenuItem("About");
+                JMenuItem about = new JMenuItem(lang.about);
                 about.addActionListener(graphPresenter::onAbout);
                 help.add(about);
             }
         }
 
         {
-            JMenuItem validate = new JMenuItem("Validate");
+            JMenuItem validate = new JMenuItem(lang.validate);
             validate.addActionListener(graphPresenter::onValidate);
             menuBar.add(validate);
         }
 
         {
-            JMenuItem exit = new JMenuItem("Exit");
+            JMenuItem exit = new JMenuItem(lang.exit);
             exit.addActionListener(graphPresenter::onExit);
             menuBar.add(exit);
         }

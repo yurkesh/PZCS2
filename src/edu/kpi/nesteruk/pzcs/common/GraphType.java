@@ -5,12 +5,12 @@ import com.mxgraph.view.mxEdgeStyle;
 import com.mxgraph.view.mxStylesheet;
 import edu.kpi.nesteruk.pzcs.model.system.SystemGraphModel;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphModel;
+import edu.kpi.nesteruk.pzcs.presenter.common.GraphPresenter;
 import edu.kpi.nesteruk.pzcs.presenter.system.SystemGraphPresenter;
 import edu.kpi.nesteruk.pzcs.presenter.tasks.TasksGraphPresenter;
 import edu.kpi.nesteruk.pzcs.view.common.CommonGraphView;
-import edu.kpi.nesteruk.pzcs.presenter.common.CommonGraphPresenter;
-import edu.kpi.nesteruk.pzcs.presenter.common.GraphPresenter;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
+import edu.kpi.nesteruk.pzcs.view.localization.Localization;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -21,7 +21,7 @@ import java.util.function.Function;
  * Created by Yurii on 2016-03-13.
  */
 public enum GraphType {
-    TASKS("Tasks") {
+    TASKS(Localization.getInstance().getLanguage().taskGraph) {
 
         @Override
         GraphPresenter getPresenter(GraphView graphView) {
@@ -33,7 +33,7 @@ public enum GraphType {
             );
         }
     },
-    SYSTEM("System") {
+    SYSTEM(Localization.getInstance().getLanguage().systemGraph) {
         @Override
         GraphPresenter getPresenter(GraphView graphView) {
             return new SystemGraphPresenter(
