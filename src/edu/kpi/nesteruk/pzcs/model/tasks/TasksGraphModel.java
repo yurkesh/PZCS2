@@ -1,7 +1,9 @@
 package edu.kpi.nesteruk.pzcs.model.tasks;
 
 import edu.kpi.nesteruk.misc.Pair;
+import edu.kpi.nesteruk.pzcs.graph.validation.CompositeGraphValidator;
 import edu.kpi.nesteruk.pzcs.graph.validation.NonAcyclicGraphValidator;
+import edu.kpi.nesteruk.pzcs.graph.validation.NonSplitGraphValidator;
 import edu.kpi.nesteruk.pzcs.model.common.AbstractGraphModel;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
 import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;

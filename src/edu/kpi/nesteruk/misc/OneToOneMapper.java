@@ -36,9 +36,10 @@ public class OneToOneMapper<K, V> {
         }
     }
 
-    public void removeByKey(K key) {
+    public V removeByKey(K key) {
         V removedValue = map.remove(Objects.requireNonNull(key));
         inverse.remove(Objects.requireNonNull(removedValue));
+        return removedValue;
     }
 
     public V getByKey(K key) {

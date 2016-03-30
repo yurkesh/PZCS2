@@ -94,7 +94,12 @@ public class CommonGraphView extends JPanel implements GraphView {
 
     @Override
     public void showMessage(boolean error, String title, String text) {
-        Message.showMessage(error, title, text);
+        JOptionPane.showMessageDialog(
+                this,
+                text,
+                title,
+                error ? JOptionPane.ERROR_MESSAGE : JOptionPane.INFORMATION_MESSAGE
+        );
     }
 
     @Override

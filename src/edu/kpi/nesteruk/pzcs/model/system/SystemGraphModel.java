@@ -1,7 +1,9 @@
 package edu.kpi.nesteruk.pzcs.model.system;
 
 import edu.kpi.nesteruk.misc.Pair;
+import edu.kpi.nesteruk.pzcs.graph.validation.CompositeGraphValidator;
 import edu.kpi.nesteruk.pzcs.graph.validation.NoIsolatedEdgesGraphValidator;
+import edu.kpi.nesteruk.pzcs.graph.validation.NonSplitGraphValidator;
 import edu.kpi.nesteruk.pzcs.model.common.AbstractGraphModel;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
 import edu.kpi.nesteruk.pzcs.model.primitives.CongenericLink;
@@ -22,7 +24,7 @@ public class SystemGraphModel extends AbstractGraphModel<Processor, CongenericLi
         super(
                 SystemGraphModel::newGraph,
                 true,
-                new NoIsolatedEdgesGraphValidator()
+                new CompositeGraphValidator<String, String>(new NoIsolatedEdgesGraphValidator(), new NonSplitGraphValidator())
         );
     }
 
@@ -40,7 +42,7 @@ public class SystemGraphModel extends AbstractGraphModel<Processor, CongenericLi
 
     @Override
     protected Processor makeConcreteNode(String nodeId, int weight) {
-        return new Processor(nodeId);
+        return new Processor(nodeId, weight);
     }
 
     @Override

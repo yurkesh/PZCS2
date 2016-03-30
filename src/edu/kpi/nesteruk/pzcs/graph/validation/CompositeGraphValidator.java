@@ -5,17 +5,18 @@ import org.jgrapht.Graph;
 /**
  * Created by Yurii on 2016-03-13.
  */
-public class CompositeGraphValidator implements GraphValidator {
+public class CompositeGraphValidator<V, E> implements GraphValidator<V, E> {
 
-    private final GraphValidator[] graphValidators;
+    private final GraphValidator<V, E>[] graphValidators;
 
-    public CompositeGraphValidator(GraphValidator... graphValidators) {
+    @SafeVarargs
+    public CompositeGraphValidator(GraphValidator<V, E>... graphValidators) {
         this.graphValidators = graphValidators;
     }
 
     @Override
-    public boolean isValid(Graph graph) {
-        for (GraphValidator graphValidator : graphValidators) {
+    public boolean isValid(Graph<V, E> graph) {
+        for (GraphValidator<V, E> graphValidator : graphValidators) {
             if(!graphValidator.isValid(graph)) {
                 return false;
             }
