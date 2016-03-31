@@ -9,4 +9,5 @@ public interface Link<N extends Node> extends Serializable {
     N getFirst();
     N getSecond();
     int getWeight();
+    boolean isIncident(N node);
 }

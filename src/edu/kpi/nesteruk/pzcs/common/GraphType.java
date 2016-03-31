@@ -1,7 +1,15 @@
 package edu.kpi.nesteruk.pzcs.common;
 
 import com.mxgraph.view.mxStylesheet;
+import edu.kpi.nesteruk.misc.Pair;
+import edu.kpi.nesteruk.pzcs.model.common.GraphModelBundle;
+import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
+import edu.kpi.nesteruk.pzcs.model.queuing.common.DefaultPathsConstructor;
+import edu.kpi.nesteruk.pzcs.model.queuing.common.QueueConstructor;
+import edu.kpi.nesteruk.pzcs.model.queuing.common.NodesQueue;
+import edu.kpi.nesteruk.pzcs.model.queuing.concrete.CriticalPathOfGraphAndNodesByTime1;
 import edu.kpi.nesteruk.pzcs.model.system.SystemGraphModel;
+import edu.kpi.nesteruk.pzcs.model.tasks.Task;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphModel;
 import edu.kpi.nesteruk.pzcs.presenter.common.GraphPresenter;
 import edu.kpi.nesteruk.pzcs.presenter.system.SystemGraphPresenter;
@@ -13,6 +21,8 @@ import edu.kpi.nesteruk.pzcs.view.common.GraphView;
 import edu.kpi.nesteruk.pzcs.view.localization.Localization;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -25,12 +35,17 @@ public enum GraphType {
 
         @Override
         GraphPresenter getPresenter(GraphView graphView) {
+            QueueConstructor<Task, DirectedLink<Task>> graphAndNodesByTime = tasksModelBundle ->
+                    new CriticalPathOfGraphAndNodesByTime1<Task, DirectedLink<Task>>(true)
+                            .constructQueue(tasksModelBundle);
+
             return new TasksGraphPresenter(
                     graphView,
                     getGraphStyleSheetInterceptor(),
                     many -> many ? "задачі" : "задачу",
                     TasksGraphModel::new,
-                    () -> graphStyle.getNodeSize(this)
+                    () -> graphStyle.getNodeSize(this),
+                    Arrays.asList(graphAndNodesByTime)
             );
         }
     },

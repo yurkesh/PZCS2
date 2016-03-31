@@ -43,6 +43,11 @@ public class SimpleLink<N extends Node> implements Link<N> {
     }
 
     @Override
+    public boolean isIncident(N node) {
+        return src.equals(node) || dest.equals(node);
+    }
+
+    @Override
     public String toString() {
         return "SimpleLink{" +
                 "src=" + src +

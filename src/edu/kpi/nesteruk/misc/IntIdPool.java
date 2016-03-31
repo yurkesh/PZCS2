@@ -2,6 +2,7 @@ package edu.kpi.nesteruk.misc;
 
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.function.Predicate;
 
 /**
  * Created by Anatolii on 3/10/2016.
@@ -11,7 +12,7 @@ public class IntIdPool implements IdPool<Integer> {
     private Queue<Integer> ids = new PriorityQueue<>();
 
     @Override
-    public Integer obtainID() {
+    public Integer obtainId() {
         if (ids.isEmpty()) {
             ids.offer(0);
         }
@@ -20,6 +21,15 @@ public class IntIdPool implements IdPool<Integer> {
             ids.add(result + 1);
         }
         return result;
+    }
+
+    @Override
+    public Integer obtainId(Predicate<Integer> idPredicate) {
+        Integer id;
+        do {
+            id = obtainId();
+        } while (!idPredicate.test(id));
+        return id;
     }
 
     @Override

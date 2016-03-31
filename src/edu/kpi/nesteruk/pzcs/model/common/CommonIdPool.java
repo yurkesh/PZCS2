@@ -5,6 +5,8 @@ import edu.kpi.nesteruk.misc.IdPoolWrapper;
 import edu.kpi.nesteruk.misc.IntIdPool;
 import edu.kpi.nesteruk.misc.Wrapper;
 
+import java.util.function.Predicate;
+
 /**
  * Created by Anatolii on 2016-03-14.
  */
@@ -31,8 +33,13 @@ public class CommonIdPool implements IdPool<String> {
     );
 
     @Override
-    public String obtainID() {
-        return idPool.obtainID();
+    public String obtainId() {
+        return idPool.obtainId();
+    }
+
+    @Override
+    public String obtainId(Predicate<String> stringPredicate) {
+        return idPool.obtainId(stringPredicate);
     }
 
     @Override

@@ -22,6 +22,7 @@ import edu.kpi.nesteruk.pzcs.model.common.NodeBuilder;
 import edu.kpi.nesteruk.pzcs.model.common.LinkBuilder;
 import edu.kpi.nesteruk.pzcs.view.Views;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
+import edu.kpi.nesteruk.util.CollectionUtils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -68,9 +69,19 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
         this.vertexSizeSupplier = vertexSizeSupplier;
 
         this.graph = new mxGraph() {
+
+            private boolean isEdge(Object cell) {
+                return ((mxICell) cell).isEdge();
+            }
+
             @Override
             public boolean isCellDisconnectable(Object cell, Object terminal, boolean source) {
-                return !((mxICell) cell).isEdge();
+                return !isEdge(cell);
+            }
+
+            @Override
+            public boolean isCellEditable(Object cell) {
+                return super.isCellEditable(cell);
             }
         };
         parent = graph.getDefaultParent();
@@ -80,6 +91,8 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
 
         this.graphComponent = new mxGraphComponent(graph);
 
+        initGraphComponentListeners();
+
         model = graphModelFactory.get();
 
         graphView.setGraphComponent(graphComponent);
@@ -87,6 +100,11 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
 
     private void initGraphListeners() {
         graph.addListener(mxEvent.CELL_CONNECTED, connectCellsListener);
+    }
+
+    private void initGraphComponentListeners() {
+        graphComponent.addListener(mxEvent.START_EDITING, startEditingListener);
+        graphComponent.addListener(mxEvent.LABEL_CHANGED, labelChangedListener);
     }
 
     private void setListenGraphCellConnection(boolean listen) {
@@ -169,6 +187,31 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
         }
     };
 
+    private mxICell tempEdge;
+    private final mxEventSource.mxIEventListener startEditingListener = (sender, evt) -> {
+        tempEdge = (mxICell) evt.getProperties().get("cell");
+    };
+
+    private final mxEventSource.mxIEventListener labelChangedListener = (sender, evt) -> {
+        if(tempEdge != null) {
+            mxICell edge = (mxICell) evt.getProperties().get("cell");
+            if(tempEdge.equals(edge)) {
+                String edgeId = edge.getId();
+                String idOfLink = cellIdAndNodeIdMapper.getByKey(edgeId);
+                String text = (String) evt.getProperties().get("value");
+                IdAndValue idAndValue = model.updateWeight(idOfLink, text);
+                String updatedIdOfLink = idAndValue.id;
+                if(!idOfLink.equals(updatedIdOfLink)) {
+                    cellIdAndNodeIdMapper.replace(edgeId, idOfLink, updatedIdOfLink);
+                }
+                edge.setValue(idAndValue.value);
+            } else {
+                throw new IllegalStateException("Edit started on another edge. StartCell = " + tempEdge + ", EndCell = " + edge);
+            }
+        }
+        tempEdge = null;
+    };
+
     private void addIdsMappings(IdAndValue nodeIdAndValue, mxICell cell) {
         cellIdAndNodeIdMapper.add(cell.getId(), nodeIdAndValue.id);
     }
@@ -214,8 +257,18 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
     private void deleteNode(int x, int y) {
         deleteCell(x, y).ifPresent(id -> {
             String idOfRemovedNode = removeIdsMappingsByCellId(id);
-            model.deleteNode(idOfRemovedNode);
+            Collection<String> linkIDsToRemove = model.deleteNode(idOfRemovedNode);
+            if(!CollectionUtils.isEmpty(linkIDsToRemove)) {
+                linkIDsToRemove.stream()
+                        //Get id of edge-cell by id of link
+                        .map(cellIdAndNodeIdMapper::getByValue)
+                        //Get edge-cell by its id
+                        .map(this::getCellById)
+                        //Remove cells from model
+                        .forEach(cell -> graph.getModel().remove(cell));
+            }
         });
+        System.out.println();
     }
 
     private Optional<String> deleteCell(int x, int y) {
@@ -367,5 +420,9 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
 
     private mxICell getCellById(String id) {
         return (mxICell) ((mxGraphModel) graph.getModel()).getCell(id);
+    }
+
+    protected GraphModel getModel() {
+        return model;
     }
 }

@@ -33,7 +33,7 @@ public enum GraphStyle {
             edgeStyle.put(mxConstants.STYLE_FONTCOLOR, "#000000");
             edgeStyle.put(mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, "#f0f0f0");
             if(graphType == GraphType.SYSTEM) {
-                edgeStyle.put("endArrow", "none");
+                edgeStyle.put(mxConstants.STYLE_ENDARROW, mxConstants.NONE);
             }
             return edgeStyle;
         }
@@ -67,6 +67,7 @@ public enum GraphStyle {
         HashMap<String, Object> vertexStyle = new HashMap<>();
         vertexStyle.put(mxConstants.STYLE_FOLDABLE, false);
         vertexStyle.put(mxConstants.STYLE_RESIZABLE, false);
+        vertexStyle.put(mxConstants.STYLE_EDITABLE, false);
         return vertexStyle;
     }
 

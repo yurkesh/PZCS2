@@ -2,6 +2,12 @@ package edu.kpi.nesteruk.pzcs.model.common;
 
 import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
 import edu.kpi.nesteruk.pzcs.graph.generation.GraphGenerator;
+import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
+import edu.kpi.nesteruk.pzcs.model.queuing.common.QueueConstructor;
+import edu.kpi.nesteruk.pzcs.model.queuing.common.NodesQueue;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by Anatolii on 2016-03-13.
@@ -12,7 +18,12 @@ public interface GraphModel {
 
     LinkBuilder getLinkBuilder();
 
-    void deleteNode(String id);
+    /**
+     *
+     * @param id
+     * @return collection of IDs of incident edges
+     */
+    Collection<String> deleteNode(String id);
 
     void deleteLink(String id);
 
@@ -25,4 +36,12 @@ public interface GraphModel {
     GraphDataAssembly restore(GraphModelBundle serializable);
 
     void reset();
+
+    /**
+     *
+     * @param idOfLink
+     * @param text
+     * @return new String value to set in corresponding cell
+     */
+    IdAndValue updateWeight(String idOfLink, String text);
 }

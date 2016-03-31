@@ -8,11 +8,14 @@ import edu.kpi.nesteruk.pzcs.graph.validation.GraphValidator;
 import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
 import edu.kpi.nesteruk.pzcs.model.primitives.Link;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
+import edu.kpi.nesteruk.pzcs.model.queuing.common.NodesQueue;
+import edu.kpi.nesteruk.pzcs.model.queuing.common.QueueConstructor;
 import org.jgrapht.Graph;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -51,7 +54,7 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     public NodeBuilder getNodeBuilder() {
         return new CommonNodeBuilder(
                 isNodeWeighted,
-                idPool::obtainID,
+                () -> idPool.obtainId(id -> !nodesMap.containsKey(id)),
                 id -> {
                     id = id.toLowerCase();
                     boolean unique = !nodesMap.containsKey(id);
@@ -142,9 +145,21 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     protected abstract Pair<L, String> makeConcreteLink(String srcId, String destId, int weight);
 
     @Override
-    public void deleteNode(String id) {
-        nodesMap.remove(id);
+    public Collection<String> deleteNode(String id) {
+        N removedNode = nodesMap.remove(id);
+
+        Set<String> linkIDsToRemove = linksMap.entrySet().stream()
+                //Get all links that are incident to this node
+                .filter(entry -> entry.getValue().isIncident(removedNode))
+                //Get id of link
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+
+        linkIDsToRemove.forEach(linksMap::remove);
         graph.removeVertex(id);
+        graph.removeAllEdges(linkIDsToRemove);
+
+        return linkIDsToRemove;
     }
 
     @Override
@@ -175,7 +190,7 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     }
 
     @Override
-    public GraphModelBundle getSerializable() {
+    public GraphModelBundle<N, L> getSerializable() {
         return new GraphModelBundle<>(nodesMap, linksMap);
     }
 
@@ -217,5 +232,28 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     @Override
     public GraphDataAssembly generate(GraphGenerator.Params params) {
         return apply(new GraphGenerator<>(this::makeConcreteNode, this::makeConcreteLink).generate(params));
+    }
+
+    @Override
+    public IdAndValue updateWeight(String idOfLink, String text) {
+        L link = linksMap.get(idOfLink);
+        if(link == null) {
+            throw new IllegalArgumentException("Cannot find link with id = '" + idOfLink + "'");
+        }
+        int weight;
+        try {
+            weight = Integer.valueOf(text);
+        } catch (NumberFormatException e) {
+            System.err.println("Cannot convert text = '" + text + "' to weight");
+            //Return old value
+            return formatLink(idOfLink, link);
+        }
+
+        linksMap.remove(idOfLink);
+        graph.removeEdge(idOfLink);
+
+        String srcId = link.getFirst().getId();
+        String destId = link.getSecond().getId();
+        return connect(srcId, destId, weight);
     }
 }

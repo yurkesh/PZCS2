@@ -1,5 +1,7 @@
 package edu.kpi.nesteruk.misc;
 
+import java.util.function.Predicate;
+
 /**
  * Created by Anatolii on 2016-03-14.
  */
@@ -14,8 +16,13 @@ public class IdPoolWrapper<RawId, BackedId> implements IdPool<BackedId> {
     }
 
     @Override
-    public BackedId obtainID() {
-        return wrapper.wrap(wrappedIdPool.obtainID());
+    public BackedId obtainId() {
+        return wrapper.wrap(wrappedIdPool.obtainId());
+    }
+
+    @Override
+    public BackedId obtainId(Predicate<BackedId> backedIdPredicate) {
+        return wrapper.wrap(wrappedIdPool.obtainId(rawId -> backedIdPredicate.test(wrapper.wrap(rawId))));
     }
 
     @Override

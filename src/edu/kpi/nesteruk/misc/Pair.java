@@ -65,4 +65,12 @@ public class Pair<F, S> {
     public String toString() {
         return "Pair{" + first + ", " + second + '}';
     }
+
+    public F getFirst() {
+        return first;
+    }
+
+    public S getSecond() {
+        return second;
+    }
 }
