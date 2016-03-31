@@ -12,6 +12,7 @@ import edu.kpi.nesteruk.pzcs.presenter.common.CaptionsSupplier;
 import edu.kpi.nesteruk.pzcs.presenter.common.CommonGraphPresenter;
 import edu.kpi.nesteruk.pzcs.presenter.common.GraphVertexSizeSupplier;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
+import edu.kpi.nesteruk.util.StringUtils;
 
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
@@ -47,15 +48,23 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
 
     @Override
     public void onMakeQueues(ActionEvent event) {
-        Map<String, NodesQueue> queues = queueConstructors.stream()
+        Map<String, Collection<NodesQueue<Task>>> queuesWithTitles = queueConstructors.stream()
                 .map(queueConstructor -> queueConstructor.constructQueue((
                         (GraphModelBundle<Task, DirectedLink<Task>>) getModel().getSerializable())
                 ))
-                .collect(Collectors.toMap(
-                        (Function<Pair<String, NodesQueue<Task>>, String>) pair -> pair.first,
-                        (Function<Pair<String, NodesQueue<Task>>, NodesQueue>) pair -> pair.second
-                ));
+                .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 
-        queues.forEach((title, queue) -> System.out.println(title + ": value = " + queue.value + ", tasks order:\n" + queue.tasksSequence + "\n"));
+        queuesWithTitles.forEach((title, queues) -> System.out.println(title + ":\n" + queuesToString(queues) + "\n"));
     }
+
+    private static String queuesToString(Collection<NodesQueue<Task>> queues) {
+        StringBuilder sb = new StringBuilder();
+        queues.forEach(queue ->
+                sb.append("Value = ").append(queue.value).append(", order:\n")
+                        .append(queue.tasksSequence).append("\n")
+        );
+        return sb.toString();
+    }
+
+
 }
