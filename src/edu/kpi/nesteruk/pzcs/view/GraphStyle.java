@@ -58,6 +58,15 @@ public enum GraphStyle {
             }
             return vertexStyles;
         }
+
+        @Override
+        public Map<String, Object> getEdgeStyles(GraphType graphType) {
+            Map<String, Object> edgeStyles = super.getEdgeStyles(graphType);
+            if(graphType == GraphType.SYSTEM) {
+                edgeStyles.put(mxConstants.STYLE_ENDARROW, mxConstants.NONE);
+            }
+            return edgeStyles;
+        }
     }
     ;
 

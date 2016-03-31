@@ -1,7 +1,7 @@
 package edu.kpi.nesteruk.pzcs.presenter.common;
 
 import com.mxgraph.layout.mxCircleLayout;
-import com.mxgraph.layout.mxCompactTreeLayout;
+import com.mxgraph.layout.mxGraphLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.model.mxGraphModel;
@@ -15,12 +15,12 @@ import edu.kpi.nesteruk.misc.OneToOneMapper;
 import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.misc.Tuple;
 import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
+import edu.kpi.nesteruk.pzcs.common.GraphType;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModelBundle;
 import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
 import edu.kpi.nesteruk.pzcs.model.common.NodeBuilder;
 import edu.kpi.nesteruk.pzcs.model.common.LinkBuilder;
-import edu.kpi.nesteruk.pzcs.view.Views;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
 import edu.kpi.nesteruk.util.CollectionUtils;
 
@@ -48,6 +48,7 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
     private final Object parent;
 
     private GraphModel model;
+    private GraphType graphType;
 
     private boolean listenCellConnection = true;
 
@@ -61,8 +62,10 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
             Function<mxStylesheet, mxStylesheet> graphStylesheetInterceptor,
             CaptionsSupplier captionsSupplier,
             Supplier<GraphModel> graphModelFactory,
-            GraphVertexSizeSupplier vertexSizeSupplier) {
+            GraphVertexSizeSupplier vertexSizeSupplier,
+            GraphType graphType) {
 
+        this.graphType = graphType;
         this.graphView = graphView;
         this.captionsSupplier = captionsSupplier;
         this.graphModelFactory = graphModelFactory;
@@ -137,9 +140,9 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
         );
         if (!error) {
             graph.getModel().beginUpdate();
+            mxGraphLayout mxGraphLayout = graphType.getMxGraphLayout(graph);
 //            mxCompactTreeLayout layout = new mxCompactTreeLayout(graph, true);
-            mxCircleLayout layout = new mxCircleLayout(graph);
-            layout.execute(graph.getDefaultParent());
+            mxGraphLayout.execute(graph.getDefaultParent());
             graph.getModel().endUpdate();
         }
     }

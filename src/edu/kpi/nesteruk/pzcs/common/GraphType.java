@@ -1,5 +1,9 @@
 package edu.kpi.nesteruk.pzcs.common;
 
+import com.mxgraph.layout.mxCircleLayout;
+import com.mxgraph.layout.mxCompactTreeLayout;
+import com.mxgraph.layout.mxGraphLayout;
+import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStylesheet;
 import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModelBundle;
@@ -32,6 +36,10 @@ import java.util.function.Function;
  */
 public enum GraphType {
     TASKS(Localization.getInstance().getLanguage().taskGraph) {
+        @Override
+        public mxGraphLayout getMxGraphLayout(mxGraph graph) {
+            return new mxCompactTreeLayout(graph, false);
+        }
 
         @Override
         GraphPresenter getPresenter(GraphView graphView) {
@@ -50,6 +58,11 @@ public enum GraphType {
         }
     },
     SYSTEM(Localization.getInstance().getLanguage().systemGraph) {
+        @Override
+        public mxGraphLayout getMxGraphLayout(mxGraph graph) {
+            return new mxCircleLayout(graph);
+        }
+
         @Override
         GraphPresenter getPresenter(GraphView graphView) {
             return new SystemGraphPresenter(
@@ -77,6 +90,8 @@ public enum GraphType {
     public String getCaption() {
         return caption;
     }
+
+    public abstract mxGraphLayout getMxGraphLayout(mxGraph graph);
 
     protected Function<mxStylesheet, mxStylesheet> getGraphStyleSheetInterceptor() {
         return stylesheet -> {

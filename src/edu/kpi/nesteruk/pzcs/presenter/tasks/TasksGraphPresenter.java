@@ -2,6 +2,7 @@ package edu.kpi.nesteruk.pzcs.presenter.tasks;
 
 import com.mxgraph.view.mxStylesheet;
 import edu.kpi.nesteruk.misc.Pair;
+import edu.kpi.nesteruk.pzcs.common.GraphType;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModelBundle;
 import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
@@ -36,7 +37,7 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
             GraphVertexSizeSupplier vertexSizeSupplier,
             Collection<QueueConstructor<Task, DirectedLink<Task>>> queueConstructors) {
 
-        super(graphView, graphStylesheetInterceptor, captionsSupplier, graphModelFactory, vertexSizeSupplier);
+        super(graphView, graphStylesheetInterceptor, captionsSupplier, graphModelFactory, vertexSizeSupplier, GraphType.TASKS);
         this.queueConstructors = queueConstructors;
     }
 
