@@ -1,5 +1,7 @@
 package edu.kpi.nesteruk.pzcs.presenter.common;
 
+import com.mxgraph.layout.mxCircleLayout;
+import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.model.mxGraphModel;
@@ -115,6 +117,13 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
                 "Валідація",
                  "Граф " + (error ? "не" : "") + "валідний"
         );
+        if (!error) {
+            graph.getModel().beginUpdate();
+//            mxCompactTreeLayout layout = new mxCompactTreeLayout(graph, true);
+            mxCircleLayout layout = new mxCircleLayout(graph);
+            layout.execute(graph.getDefaultParent());
+            graph.getModel().endUpdate();
+        }
     }
 
     void addNode(int x, int y) {
