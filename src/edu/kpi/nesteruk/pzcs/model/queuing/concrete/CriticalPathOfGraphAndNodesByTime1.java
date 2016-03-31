@@ -49,6 +49,8 @@ public class CriticalPathOfGraphAndNodesByTime1<N extends Node, L extends Link<N
                 .max(Comparator.comparing(Pair::getSecond))
                 //Get from Optional
                 .get();
+
+        //TODO need to return all paths sorted by relative (normalized) length from max to min (as specified in lab#1 task)
         return Pair.create(
                 "Critical path of graph and nodes by time (#1)",
                 new NodesQueue<>(longestPath.first, longestPath.second)
@@ -56,7 +58,7 @@ public class CriticalPathOfGraphAndNodesByTime1<N extends Node, L extends Link<N
     }
 
     /**
-     * Relative length of path = Tcr_p / Tgr + Ncr_p / Ngr. See examples from lecture
+     * Relative (normalized) length of path = Tcr_p / Tgr + Ncr_p / Ngr. See examples from lecture
      * @param pathLengths
      * @param graphLengths
      * @return relative length of path.
