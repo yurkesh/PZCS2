@@ -60,7 +60,7 @@ public class DashboardView extends JFrame {
 
                 JMenuItem makeQueues = new JMenuItem("Make queues");
                 makeQueues.addActionListener(graphPresenter::onMakeQueues);
-                taskGraph.add(makeQueues);
+//                taskGraph.add(makeQueues);
             }
         }
 
