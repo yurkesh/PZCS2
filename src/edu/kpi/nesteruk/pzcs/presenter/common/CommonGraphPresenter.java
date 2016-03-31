@@ -411,4 +411,8 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
     private mxICell getCellById(String id) {
         return (mxICell) ((mxGraphModel) graph.getModel()).getCell(id);
     }
+
+    protected GraphModel getModel() {
+        return model;
+    }
 }

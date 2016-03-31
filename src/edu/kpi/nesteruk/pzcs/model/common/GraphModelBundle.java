@@ -27,12 +27,12 @@ public class GraphModelBundle<N extends Node, L extends Link<N>> implements Seri
         return new LinkedHashSet<>(nodesMap.keySet());
     }
 
-    Map<String, N> getNodesMap() {
-        return nodesMap;
+    public Map<String, N> getNodesMap() {
+        return new LinkedHashMap<>(nodesMap);
     }
 
-    Map<String, L> getLinksMap() {
-        return linksMap;
+    public Map<String, L> getLinksMap() {
+        return new LinkedHashMap<>(linksMap);
     }
 
     @Override

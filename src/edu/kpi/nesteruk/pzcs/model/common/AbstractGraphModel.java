@@ -8,6 +8,8 @@ import edu.kpi.nesteruk.pzcs.graph.validation.GraphValidator;
 import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
 import edu.kpi.nesteruk.pzcs.model.primitives.Link;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
+import edu.kpi.nesteruk.pzcs.model.queuing.common.NodesQueue;
+import edu.kpi.nesteruk.pzcs.model.queuing.common.QueueConstructor;
 import org.jgrapht.Graph;
 
 import java.util.Collection;
@@ -52,7 +54,7 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     public NodeBuilder getNodeBuilder() {
         return new CommonNodeBuilder(
                 isNodeWeighted,
-                idPool::obtainID,
+                () -> idPool.obtainId(id -> !nodesMap.containsKey(id)),
                 id -> {
                     id = id.toLowerCase();
                     boolean unique = !nodesMap.containsKey(id);
@@ -188,7 +190,7 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     }
 
     @Override
-    public GraphModelBundle getSerializable() {
+    public GraphModelBundle<N, L> getSerializable() {
         return new GraphModelBundle<>(nodesMap, linksMap);
     }
 

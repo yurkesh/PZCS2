@@ -30,6 +30,11 @@ public class Processor implements Node {
     }
 
     @Override
+    public Integer getWeight() {
+        return productivity;
+    }
+
+    @Override
     public String toString() {
         return STRING_FORMATTER.apply(this);
     }

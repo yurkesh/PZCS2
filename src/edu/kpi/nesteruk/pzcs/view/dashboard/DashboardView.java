@@ -55,6 +55,10 @@ public class DashboardView extends JFrame {
                 JMenuItem saveGraph = new JMenuItem("Save");
                 saveGraph.addActionListener(graphPresenter::onSaveGraph);
                 taskGraph.add(saveGraph);
+
+                JMenuItem makeQueues = new JMenuItem("Make queues");
+                makeQueues.addActionListener(graphPresenter::onMakeQueues);
+                taskGraph.add(makeQueues);
             }
         }
 

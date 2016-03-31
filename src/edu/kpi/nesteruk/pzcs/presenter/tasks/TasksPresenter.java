@@ -21,4 +21,6 @@ public interface TasksPresenter extends GraphPresenter {
     default void onSaveGraph(ActionEvent event) {
         onSave(event);
     }
+
+    void onMakeQueues(ActionEvent event);
 }

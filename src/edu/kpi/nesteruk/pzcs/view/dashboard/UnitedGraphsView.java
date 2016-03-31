@@ -137,6 +137,11 @@ public class UnitedGraphsView implements UnitedGraphPresenter {
     }
 
     @Override
+    public void onMakeQueues(ActionEvent event) {
+        getTasksPresenter().onMakeQueues(event);
+    }
+
+    @Override
     public void onStatistics(ActionEvent event) {
         defaultPresenter.onStatistics(event);
     }
