@@ -17,6 +17,22 @@ public class NodesQueue<N extends Node> {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        NodesQueue<?> that = (NodesQueue<?>) o;
+
+        return tasksSequence != null ? tasksSequence.equals(that.tasksSequence) : that.tasksSequence == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return tasksSequence != null ? tasksSequence.hashCode() : 0;
+    }
+
+    @Override
     public String toString() {
         return "NodesQueue{" +
                 "value=" + value +

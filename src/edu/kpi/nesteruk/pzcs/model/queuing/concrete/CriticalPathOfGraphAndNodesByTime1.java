@@ -7,6 +7,7 @@ import edu.kpi.nesteruk.pzcs.model.primitives.Link;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
 import edu.kpi.nesteruk.pzcs.model.queuing.common.DefaultPathsConstructor;
 import edu.kpi.nesteruk.pzcs.model.queuing.common.NodesQueue;
+import edu.kpi.nesteruk.pzcs.model.queuing.common.PathLengthsComputer;
 import edu.kpi.nesteruk.pzcs.model.queuing.common.QueueConstructor;
 
 import java.util.Collection;
@@ -20,14 +21,14 @@ import java.util.stream.Collectors;
  */
 public class CriticalPathOfGraphAndNodesByTime1<N extends Node, L extends Link<N>> implements QueueConstructor<N, L> {
 
-    private final boolean considerLinksWeights;
+    private final PathLengthsComputer<N, L> lengthComputer;
 
     public CriticalPathOfGraphAndNodesByTime1(boolean considerLinksWeights) {
-        this.considerLinksWeights = considerLinksWeights;
+        this.lengthComputer = new PathLengthsComputer<>(considerLinksWeights);
     }
 
     @Override
-    public Pair<String, NodesQueue<N>> constructQueue(GraphModelBundle<N, L> graphModelBundle) {
+    public Pair<String, Collection<NodesQueue<N>>> constructQueue(GraphModelBundle<N, L> graphModelBundle) {
         DefaultPathsConstructor<N, L> pathsConstructor = new DefaultPathsConstructor<>(graphModelBundle);
 
         Collection<List<N>> allPaths = pathsConstructor.getAllPaths();
@@ -35,25 +36,28 @@ public class CriticalPathOfGraphAndNodesByTime1<N extends Node, L extends Link<N
 
         List<Pair<List<N>, Tuple<Integer>>> pathsWithLengths = allPaths.stream()
                 //Make pair: path & lengths of this path
-                .map(path -> Pair.create(path, getLengths(path, allLinks)))
+                .map(path -> Pair.create(path, lengthComputer.getLengths(path, allLinks)))
                 .collect(Collectors.toList());
 
         Tuple<Integer> graphLengths = getGraphLengths(pathsWithLengths);
-        Pair<List<N>, Double> longestPath = pathsWithLengths.stream()
+
+        List<Pair<List<N>, Double>> pathsSortedByLength = pathsWithLengths.stream()
                 //Make pair: path & its relative length
                 .map(pathWithLengths -> Pair.create(
                         pathWithLengths.first,
                         getRelativeLength(pathWithLengths.second, graphLengths)
                 ))
-                //Find biggest path by comparing its relative length
-                .max(Comparator.comparing(Pair::getSecond))
-                //Get from Optional
-                .get();
+                //Sort paths by comparing their relative length; from biggest to smallest (use reversed comparator)
+                .sorted(Comparator.<Pair<List<N>, Double>, Double>comparing(Pair::getSecond).reversed())
+                .collect(Collectors.toList());
 
         //TODO need to return all paths sorted by relative (normalized) length from max to min (as specified in lab#1 task)
         return Pair.create(
                 "Critical path of graph and nodes by time (#1)",
-                new NodesQueue<>(longestPath.first, longestPath.second)
+                pathsSortedByLength.stream()
+                        //Make NodesQueue from each pair of {listOfNodes, relativeLength}
+                        .map(pathWithLength -> new NodesQueue<>(pathWithLength.first, pathWithLength.second))
+                        .collect(Collectors.toList())
         );
     }
 
@@ -95,29 +99,5 @@ public class CriticalPathOfGraphAndNodesByTime1<N extends Node, L extends Link<N
                         //Get max tuple lengths
                         .second
         );
-    }
-
-    /**
-     * This is pair of {Tcr, Ncr} from examples. See examples from lecture
-     * @param path
-     * @return {lengthInWeight, lengthInNodesNumber} == {Tcr_p, Ncr_p}
-     */
-    private Tuple<Integer> getLengths(List<N> path, Collection<L> allLinks) {
-        N previousNode = null;
-        int sum = 0;
-        for (N node : path) {
-            if(previousNode != null) {
-                if(considerLinksWeights) {
-                    sum += getLinkBetween(previousNode, node, allLinks).getWeight();
-                }
-            }
-            previousNode = node;
-            sum += node.getWeight();
-        }
-        return new Tuple<>(sum, path.size());
-    }
-
-    private L getLinkBetween(N src, N dest, Collection<L> links) {
-        return links.stream().filter(link -> link.getFirst().equals(src) && link.getSecond().equals(dest)).findFirst().get();
     }
 }
