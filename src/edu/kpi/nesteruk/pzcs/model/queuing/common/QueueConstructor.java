@@ -12,5 +12,5 @@ import java.util.Collection;
  */
 @FunctionalInterface
 public interface QueueConstructor<N extends Node, L extends Link<N>> {
-    Pair<String, Collection<NodesQueue<N>>> constructQueue(GraphModelBundle<N, L> graphModelBundle);
+    Pair<String, Collection<NodesQueue<N>>> constructQueues(GraphModelBundle<N, L> graphModelBundle);
 }
