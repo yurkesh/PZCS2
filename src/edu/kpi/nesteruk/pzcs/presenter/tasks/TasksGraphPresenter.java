@@ -13,10 +13,8 @@ import edu.kpi.nesteruk.pzcs.presenter.common.CaptionsSupplier;
 import edu.kpi.nesteruk.pzcs.presenter.common.CommonGraphPresenter;
 import edu.kpi.nesteruk.pzcs.presenter.common.GraphVertexSizeSupplier;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
-import edu.kpi.nesteruk.util.StringUtils;
 
 import java.awt.event.ActionEvent;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
@@ -50,7 +48,7 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
     @Override
     public void onMakeQueues(ActionEvent event) {
         Map<String, Collection<NodesQueue<Task>>> queuesWithTitles = queueConstructors.stream()
-                .map(queueConstructor -> queueConstructor.constructQueue((
+                .map(queueConstructor -> queueConstructor.constructQueues((
                         (GraphModelBundle<Task, DirectedLink<Task>>) getModel().getSerializable())
                 ))
                 .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));

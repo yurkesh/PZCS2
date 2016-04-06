@@ -46,7 +46,7 @@ public class DefaultPathsConstructor<N extends Node, L extends Link<N>> {
                 upgradedPaths.add(path);
             } else {
                 for (N nextNode : nextNodes) {
-                    List<N> upgradedPath = new ArrayList<N>(path);
+                    List<N> upgradedPath = new ArrayList<>(path);
                     upgradedPath.add(nextNode);
                     upgradedPaths.add(upgradedPath);
                     allNotExpanded = false;
