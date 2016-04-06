@@ -22,14 +22,23 @@ public class GraphPathsData<N extends Node, L extends Link<N>> {
         this.graphLengths = graphLengths;
     }
 
-    public static <N extends Node, L extends Link<N>> GraphPathsData<N, L> compute(PathLengthsComputer<N, L> lengthsComputer, Collection<List<N>> allPaths, Collection<L> allLinks) {
+    public static <N extends Node, L extends Link<N>> GraphPathsData<N, L> compute(
+            PathLengthsComputer<N, L> lengthsComputer,
+            Collection<List<N>> allPaths,
+            Collection<N> allNodes,
+            Collection<L> allLinks) {
         List<Pair<List<N>, Tuple<Integer>>> pathsWithLengths = allPaths.stream()
                 //Make pair: path & lengths of this path
                 .map(path -> Pair.create(path, lengthsComputer.getLengths(path, allLinks)))
                 .collect(Collectors.toList());
 
         Tuple<Integer> graphLengths = GraphLengthsComputher.getGraphLengths(pathsWithLengths);
-
+        pathsWithLengths = LongestSubpathsFetcher.getLongestSubpaths(
+                allNodes,
+                allLinks,
+                pathsWithLengths,
+                lengthsComputer
+        );
         return new GraphPathsData<>(pathsWithLengths, graphLengths);
     }
 

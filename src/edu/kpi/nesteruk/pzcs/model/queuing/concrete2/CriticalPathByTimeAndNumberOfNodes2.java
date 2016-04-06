@@ -27,7 +27,12 @@ public class CriticalPathByTimeAndNumberOfNodes2<N extends Node, L extends Link<
 
         Collection<List<N>> allPaths = pathsConstructor.getAllPaths();
 
-        GraphPathsData<N, L> graphPathsData = GraphPathsData.compute(lengthComputer, allPaths, graphModelBundle.getLinksMap().values());
+        GraphPathsData<N, L> graphPathsData = GraphPathsData.compute(
+                lengthComputer,
+                allPaths,
+                graphModelBundle.getNodesMap().values(),
+                graphModelBundle.getLinksMap().values()
+        );
         final List<Pair<List<N>, Tuple<Integer>>> pathsWithLengths = graphPathsData.pathsWithLengths;
         final Tuple<Integer> graphLengths = graphPathsData.graphLengths;
 

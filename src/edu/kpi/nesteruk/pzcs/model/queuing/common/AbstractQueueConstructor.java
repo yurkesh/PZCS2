@@ -32,7 +32,12 @@ public abstract class AbstractQueueConstructor<N extends Node, L extends Link<N>
         Collection<List<N>> allPaths = pathsConstructor.getAllPaths();
 
         Collection<L> allLinks = graphModelBundle.getLinksMap().values();
-        GraphPathsData<N, L> graphPathsData = GraphPathsData.compute(lengthComputer, allPaths, allLinks);
+        GraphPathsData<N, L> graphPathsData = GraphPathsData.compute(
+                lengthComputer,
+                allPaths,
+                graphModelBundle.getNodesMap().values(),
+                allLinks
+        );
 
         return Pair.create(title, constructQueues(allPaths, allLinks, graphPathsData));
     }

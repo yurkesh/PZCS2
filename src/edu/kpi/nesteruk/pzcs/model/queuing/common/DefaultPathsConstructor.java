@@ -44,6 +44,7 @@ public class DefaultPathsConstructor<N extends Node, L extends Link<N>> {
             Collection<N> nextNodes = getNextNodes(endOfPath);
             if (CollectionUtils.isEmpty(nextNodes)) {
                 upgradedPaths.add(path);
+                upgradedPaths.add(Collections.singletonList(endOfPath));
             } else {
                 for (N nextNode : nextNodes) {
                     List<N> upgradedPath = new ArrayList<>(path);
