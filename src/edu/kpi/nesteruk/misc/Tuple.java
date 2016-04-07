@@ -27,10 +27,7 @@ public class Tuple<K> implements Serializable {
 
     @Override
     public String toString() {
-        return "Tuple{" +
-                "first=" + first +
-                ", second=" + second +
-                '}';
+        return "(" + first + ", " + second + ')';
     }
 
     @Override

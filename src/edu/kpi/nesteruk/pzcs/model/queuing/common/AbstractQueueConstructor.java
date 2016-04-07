@@ -4,6 +4,7 @@ import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModelBundle;
 import edu.kpi.nesteruk.pzcs.model.primitives.Link;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
+import edu.kpi.nesteruk.pzcs.model.queuing.primitives.CriticalNode;
 
 import java.util.Collection;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  */
 public abstract class AbstractQueueConstructor<N extends Node, L extends Link<N>> implements QueueConstructor<N, L> {
 
-    private final PathLengthsComputer<N, L> lengthComputer;
+    protected final PathLengthsComputer<N, L> lengthComputer;
     private final String title;
 
     public AbstractQueueConstructor(PathLengthsComputer<N, L> lengthComputer, String title) {
@@ -26,16 +27,23 @@ public abstract class AbstractQueueConstructor<N extends Node, L extends Link<N>
     }
 
     @Override
-    public Pair<String, Collection<NodesQueue<N>>> constructQueues(GraphModelBundle<N, L> graphModelBundle) {
+    public Pair<String, List<CriticalNode<N>>> constructQueues(GraphModelBundle<N, L> graphModelBundle) {
         DefaultPathsConstructor<N, L> pathsConstructor = new DefaultPathsConstructor<>(graphModelBundle);
 
         Collection<List<N>> allPaths = pathsConstructor.getAllPaths();
 
         Collection<L> allLinks = graphModelBundle.getLinksMap().values();
-        GraphPathsData<N, L> graphPathsData = GraphPathsData.compute(lengthComputer, allPaths, allLinks);
+        Collection<N> allNodes = graphModelBundle.getNodesMap().values();
+        GraphPathsData<N> graphPathsData = GraphPathsData.compute(
+                lengthComputer,
+                allPaths,
+                allNodes,
+                allLinks
+        );
 
-        return Pair.create(title, constructQueues(allPaths, allLinks, graphPathsData));
+        return Pair.create(title, constructQueues(allNodes, allLinks, allPaths, graphPathsData));
     }
 
-    protected abstract Collection<NodesQueue<N>> constructQueues(Collection<List<N>> allPaths, Collection<L> allLinks, GraphPathsData<N, L> graphPathsData);
+    protected abstract List<CriticalNode<N>> constructQueues(Collection<N> allNodes, Collection<L> allLinks, Collection<List<N>> allPaths, GraphPathsData<N> graphPathsData);
+
 }
