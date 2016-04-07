@@ -12,12 +12,10 @@ import java.util.Arrays;
 public class Main {
 
     public static void main(String[] args) {
-        /*
         GraphStyle.DEFAULT_STYLE = GraphStyle.Alternative;
         Task.TO_STRING_FORMAT = "Task[%s]: %s";
         Processor.TO_STRING_FORMAT = "Processor[%s]=%s";
 
-        */
         GraphType.queueConstructors = Arrays.asList(
                 new CriticalPathByTimeAndNumberOfNodes2<>(),
                 new CriticalPathByNumberOfNodesAndCoherence10<>(),

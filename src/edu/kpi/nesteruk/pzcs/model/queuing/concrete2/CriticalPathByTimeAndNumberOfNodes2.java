@@ -25,10 +25,14 @@ public class CriticalPathByTimeAndNumberOfNodes2<N extends Node, L extends Link<
 
     @Override
     protected List<CriticalNode<N>> constructQueues(Collection<N> allNodes, Collection<L> allLinks, Collection<List<N>> allPaths, GraphPathsData<N> graphPathsData) {
-        Map<N, Integer> nodeToLengthOfCriticalPathFromBegin = GraphPathsData.computeLengthsOfPaths(
+        //Get paths and their lengths from beginning of graph to node
+        List<Pair<List<N>, PathLength>> pathWithLengthPairs = GraphPathsData.computeLengthsOfPaths(
                 lengthComputer, allPaths, allNodes, allLinks, false
-        ).stream().collect(Collectors.toMap(
+        );
+        Map<N, Integer> nodeToLengthOfCriticalPathFromBegin = pathWithLengthPairs.stream().collect(Collectors.toMap(
+                //Key = first node of path
                 pathWithLengthFromBegin -> CollectionUtils.getLastOrNull(pathWithLengthFromBegin.first),
+                //Value = length of path in weight
                 pathWithLengthFromBegin -> pathWithLengthFromBegin.second.inWeight
         ));
 

@@ -46,11 +46,12 @@ public class CriticalPathByNumberOfNodesAndCoherence10<N extends Node, L extends
                                         ).reversed()
                                 )
                 )
-                .map(pathWithLengthPairWithCoherencePair1 -> new CriticalNode<>(
-                        CollectionUtils.getFirstOrNull(pathWithLengthPairWithCoherencePair1.first.first),
+                //pair {{path, lengthOfPath}, coherence} -> CriticalNode(firstNodeOfPath, {coherence, lengthOfPathInNumberOfNodes})
+                .map(pathWithLengthPairWithCoherencePair -> new CriticalNode<>(
+                        CollectionUtils.getFirstOrNull(pathWithLengthPairWithCoherencePair.first.first),
                         new Tuple<>(
-                                pathWithLengthPairWithCoherencePair1.second,
-                                pathWithLengthPairWithCoherencePair1.first.second.inNumberOfNodes
+                                pathWithLengthPairWithCoherencePair.second,
+                                pathWithLengthPairWithCoherencePair.first.second.inNumberOfNodes
                         )
                 ))
                 .collect(Collectors.toList());
