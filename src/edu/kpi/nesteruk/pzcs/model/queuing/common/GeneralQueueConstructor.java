@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Created by Yurii on 2016-04-07.
+ * Created by Anatolii on 2016-04-07.
  */
 public abstract class GeneralQueueConstructor<N extends Node, L extends Link<N>> extends AbstractQueueConstructor<N, L> {
     public GeneralQueueConstructor(PathLengthsComputer<N, L> lengthComputer, String title) {

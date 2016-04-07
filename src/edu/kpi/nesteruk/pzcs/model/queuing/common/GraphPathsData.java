@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by Yurii on 2016-03-31.
+ * Created by Anatolii on 2016-03-31.
  */
 public class GraphPathsData<N extends Node> {
 

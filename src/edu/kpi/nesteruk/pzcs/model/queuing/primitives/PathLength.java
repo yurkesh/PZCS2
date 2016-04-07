@@ -1,7 +1,7 @@
 package edu.kpi.nesteruk.pzcs.model.queuing.primitives;
 
 /**
- * Created by Yurii on 2016-04-07.
+ * Created by Anatolii on 2016-04-07.
  */
 public class PathLength {
     public final int inWeight;

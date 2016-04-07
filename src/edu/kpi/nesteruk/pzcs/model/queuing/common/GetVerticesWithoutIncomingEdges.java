@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by Yurii on 2016-03-20.
+ * Created by Anatolii on 2016-03-20.
  */
 public class GetVerticesWithoutIncomingEdges {
 

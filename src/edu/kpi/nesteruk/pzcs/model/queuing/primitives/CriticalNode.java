@@ -6,7 +6,7 @@ import edu.kpi.nesteruk.pzcs.model.primitives.Node;
 import java.util.List;
 
 /**
- * Created by Yurii on 2016-04-07.
+ * Created by Anatolii on 2016-04-07.
  */
 public class CriticalNode<N extends Node> {
     public final N node;

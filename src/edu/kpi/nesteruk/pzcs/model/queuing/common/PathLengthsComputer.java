@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Created by Yurii on 2016-03-31.
+ * Created by Anatolii on 2016-03-31.
  */
 public class PathLengthsComputer<N extends Node, L extends Link<N>> {
 

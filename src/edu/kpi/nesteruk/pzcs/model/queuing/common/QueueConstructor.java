@@ -9,7 +9,7 @@ import edu.kpi.nesteruk.pzcs.model.queuing.primitives.CriticalNode;
 import java.util.List;
 
 /**
- * Created by Yurii on 2016-03-31.
+ * Created by Anatolii on 2016-03-31.
  */
 @FunctionalInterface
 public interface QueueConstructor<N extends Node, L extends Link<N>> {

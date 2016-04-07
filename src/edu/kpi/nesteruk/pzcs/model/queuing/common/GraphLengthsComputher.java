@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * Created by Yurii on 2016-03-31.
+ * Created by Anatolii on 2016-03-31.
  */
 public class GraphLengthsComputher {
 

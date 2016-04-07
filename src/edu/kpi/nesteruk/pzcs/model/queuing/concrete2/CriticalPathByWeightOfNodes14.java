@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by Yurii on 2016-04-07.
+ * Created by Anatolii on 2016-04-07.
  */
 public class CriticalPathByWeightOfNodes14<N extends Node, L extends Link<N>> implements QueueConstructor<N, L> {
 

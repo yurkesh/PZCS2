@@ -57,10 +57,11 @@ public class DashboardView extends JFrame {
                 JMenuItem saveGraph = new JMenuItem(lang.save);
                 saveGraph.addActionListener(graphPresenter::onSaveGraph);
                 taskGraph.add(saveGraph);
-
+                /*
                 JMenuItem makeQueues = new JMenuItem("Make queues");
                 makeQueues.addActionListener(graphPresenter::onMakeQueues);
-//                taskGraph.add(makeQueues);
+                taskGraph.add(makeQueues);
+                */
             }
         }
 
@@ -97,6 +98,10 @@ public class DashboardView extends JFrame {
                 JMenuItem validate = new JMenuItem(lang.validate);
                 validate.addActionListener(graphPresenter::onValidate);
                 modeling.add(validate);
+
+                JMenuItem makeQueues = new JMenuItem("Сформувати черги");
+                makeQueues.addActionListener(graphPresenter::onMakeQueues);
+                modeling.add(makeQueues);
             }
         }
 
