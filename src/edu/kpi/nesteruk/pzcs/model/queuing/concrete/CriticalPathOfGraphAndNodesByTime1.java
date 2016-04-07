@@ -1,11 +1,11 @@
 package edu.kpi.nesteruk.pzcs.model.queuing.concrete;
 
 import edu.kpi.nesteruk.misc.Pair;
-import edu.kpi.nesteruk.misc.Tuple;
-import edu.kpi.nesteruk.pzcs.model.common.GraphModelBundle;
 import edu.kpi.nesteruk.pzcs.model.primitives.Link;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
 import edu.kpi.nesteruk.pzcs.model.queuing.common.*;
+import edu.kpi.nesteruk.pzcs.model.queuing.primitives.CriticalNode;
+import edu.kpi.nesteruk.pzcs.model.queuing.primitives.PathLength;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -22,9 +22,9 @@ public class CriticalPathOfGraphAndNodesByTime1<N extends Node, L extends Link<N
     }
 
     @Override
-    protected Collection<NodesQueue<N>> constructQueues(Collection<List<N>> allPaths, Collection<L> allLinks, GraphPathsData<N, L> graphPathsData) {
-        final List<Pair<List<N>, Tuple<Integer>>> pathsWithLengths = graphPathsData.pathsWithLengths;
-        final Tuple<Integer> graphLengths = graphPathsData.graphLengths;
+    protected List<CriticalNode<N>> constructQueues(Collection<List<N>> allPaths, Collection<L> allLinks, GraphPathsData<N> graphPathsData) {
+        final List<Pair<List<N>, PathLength>> pathsWithLengths = graphPathsData.pathsWithLengths;
+        final PathLength graphLengths = graphPathsData.graphLengths;
 
         List<Pair<List<N>, Double>> pathsSortedByLength = pathsWithLengths.stream()
                 //Make pair: path & its relative length
@@ -38,7 +38,7 @@ public class CriticalPathOfGraphAndNodesByTime1<N extends Node, L extends Link<N
 
         return pathsSortedByLength.stream()
                 //Make NodesQueue from each pair of {listOfNodes, relativeLength}
-                .map(pathWithLength -> new NodesQueue<>(pathWithLength.first, pathWithLength.second))
+                .map(CriticalNode::new)
                 .collect(Collectors.toList());
     }
 
@@ -48,7 +48,7 @@ public class CriticalPathOfGraphAndNodesByTime1<N extends Node, L extends Link<N
      * @param graphLengths
      * @return relative length of path.
      */
-    private Double getRelativeLength(Tuple<Integer> pathLengths, Tuple<Integer> graphLengths) {
-        return 1.0 * pathLengths.first / graphLengths.first + 1.0 * pathLengths.second / graphLengths.second;
+    private Double getRelativeLength(PathLength pathLengths, PathLength graphLengths) {
+        return 1.0 * pathLengths.inWeight / graphLengths.inWeight + 1.0 * pathLengths.inNumberOfNodes / graphLengths.inNumberOfNodes;
     }
 }

@@ -1,5 +1,6 @@
 package edu.kpi.nesteruk.pzcs.model.queuing.common;
 
+import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
 
 import java.util.List;
@@ -7,13 +8,18 @@ import java.util.List;
 /**
  * Created by Yurii on 2016-03-31.
  */
+@Deprecated
 public class NodesQueue<N extends Node> {
     public final double value;
-    public final List<N> tasksSequence;
+    public final List<N> path;
 
-    public NodesQueue(List<N> tasksSequence, double value) {
-        this.tasksSequence = tasksSequence;
+    public NodesQueue(List<N> path, double value) {
+        this.path = path;
         this.value = value;
+    }
+
+    public NodesQueue(Pair<List<N>, ? extends Number> pathWithLength) {
+        this(pathWithLength.first, pathWithLength.second.doubleValue());
     }
 
     @Override
@@ -23,20 +29,20 @@ public class NodesQueue<N extends Node> {
 
         NodesQueue<?> that = (NodesQueue<?>) o;
 
-        return tasksSequence != null ? tasksSequence.equals(that.tasksSequence) : that.tasksSequence == null;
+        return path != null ? path.equals(that.path) : that.path == null;
 
     }
 
     @Override
     public int hashCode() {
-        return tasksSequence != null ? tasksSequence.hashCode() : 0;
+        return path != null ? path.hashCode() : 0;
     }
 
     @Override
     public String toString() {
         return "NodesQueue{" +
                 "value=" + value +
-                ", tasksSequence=" + tasksSequence +
+                ", path=" + path +
                 '}';
     }
 }

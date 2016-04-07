@@ -1,8 +1,8 @@
 package edu.kpi.nesteruk.pzcs.model.queuing.common;
 
-import edu.kpi.nesteruk.misc.Tuple;
 import edu.kpi.nesteruk.pzcs.model.primitives.Link;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
+import edu.kpi.nesteruk.pzcs.model.queuing.primitives.PathLength;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,7 +23,7 @@ public class PathLengthsComputer<N extends Node, L extends Link<N>> {
      * @param path
      * @return {lengthInWeight, lengthInNodesNumber} == {Tcr_p, Ncr_p}
      */
-    public Tuple<Integer> getLengths(List<N> path, Collection<L> allLinks) {
+    public PathLength getLengths(List<N> path, Collection<L> allLinks) {
         N previousNode = null;
         int sum = 0;
         for (N node : path) {
@@ -35,7 +35,7 @@ public class PathLengthsComputer<N extends Node, L extends Link<N>> {
             previousNode = node;
             sum += node.getWeight();
         }
-        return new Tuple<>(sum, path.size());
+        return new PathLength(sum, path.size());
     }
 
     private L getLinkBetween(N src, N dest, Collection<L> links) {

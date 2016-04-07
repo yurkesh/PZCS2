@@ -4,6 +4,7 @@ import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModelBundle;
 import edu.kpi.nesteruk.pzcs.model.primitives.Link;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
+import edu.kpi.nesteruk.pzcs.model.queuing.primitives.CriticalNode;
 
 import java.util.Collection;
 import java.util.List;
@@ -26,13 +27,13 @@ public abstract class AbstractQueueConstructor<N extends Node, L extends Link<N>
     }
 
     @Override
-    public Pair<String, Collection<NodesQueue<N>>> constructQueues(GraphModelBundle<N, L> graphModelBundle) {
+    public Pair<String, List<CriticalNode<N>>> constructQueues(GraphModelBundle<N, L> graphModelBundle) {
         DefaultPathsConstructor<N, L> pathsConstructor = new DefaultPathsConstructor<>(graphModelBundle);
 
         Collection<List<N>> allPaths = pathsConstructor.getAllPaths();
 
         Collection<L> allLinks = graphModelBundle.getLinksMap().values();
-        GraphPathsData<N, L> graphPathsData = GraphPathsData.compute(
+        GraphPathsData<N> graphPathsData = GraphPathsData.compute(
                 lengthComputer,
                 allPaths,
                 graphModelBundle.getNodesMap().values(),
@@ -42,5 +43,5 @@ public abstract class AbstractQueueConstructor<N extends Node, L extends Link<N>
         return Pair.create(title, constructQueues(allPaths, allLinks, graphPathsData));
     }
 
-    protected abstract Collection<NodesQueue<N>> constructQueues(Collection<List<N>> allPaths, Collection<L> allLinks, GraphPathsData<N, L> graphPathsData);
+    protected abstract List<CriticalNode<N>> constructQueues(Collection<List<N>> allPaths, Collection<L> allLinks, GraphPathsData<N> graphPathsData);
 }

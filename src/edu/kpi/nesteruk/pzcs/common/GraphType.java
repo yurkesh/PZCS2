@@ -17,6 +17,7 @@ import edu.kpi.nesteruk.pzcs.view.common.GraphView;
 
 import java.awt.*;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -29,18 +30,13 @@ public enum GraphType {
 
         @Override
         GraphPresenter getPresenter(GraphView graphView) {
-
-
             return new TasksGraphPresenter(
                     graphView,
                     getGraphStyleSheetInterceptor(),
                     many -> many ? "tasks" : "task",
                     TasksGraphModel::new,
                     () -> graphStyle.getNodeSize(this),
-                    Arrays.asList(
-                            new CriticalPathOfGraphAndNodesByTime1<>(),
-                            new CriticalPathByTimeForAllNodes3<>()
-                    )
+                    queueConstructors
             );
         }
     },
@@ -56,6 +52,11 @@ public enum GraphType {
             );
         }
     };
+
+    public static Collection<QueueConstructor<Task, DirectedLink<Task>>> queueConstructors = Arrays.asList(
+            new CriticalPathOfGraphAndNodesByTime1<>(),
+            new CriticalPathByTimeForAllNodes3<>()
+    );
 
     private final String caption;
     protected final GraphStyle graphStyle;

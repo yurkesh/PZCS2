@@ -1,8 +1,8 @@
 package edu.kpi.nesteruk.pzcs.model.queuing.common;
 
 import edu.kpi.nesteruk.misc.Pair;
-import edu.kpi.nesteruk.misc.Tuple;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
+import edu.kpi.nesteruk.pzcs.model.queuing.primitives.PathLength;
 
 import java.util.Comparator;
 import java.util.List;
@@ -13,10 +13,10 @@ import java.util.function.Function;
  */
 public class GraphLengthsComputher {
 
-    public static <N extends Node> Tuple<Integer> getGraphLengths(List<Pair<List<N>, Tuple<Integer>>> pathsWithLengths) {
-        return new Tuple<>(
-                getMaxLength(pathsWithLengths, Tuple::getFirst),
-                getMaxLength(pathsWithLengths, Tuple::getSecond)
+    public static <N extends Node> PathLength getGraphLengths(List<Pair<List<N>, PathLength>> pathsWithLengths) {
+        return new PathLength(
+                getMaxLength(pathsWithLengths, PathLength::getInWeight),
+                getMaxLength(pathsWithLengths, PathLength::getInNumberOfNodes)
         );
     }
 
@@ -26,7 +26,7 @@ public class GraphLengthsComputher {
      * @param lengthExtractor specifies the param to compare - length in weight or in nodes number
      * @return max length of all paths by weight or by count
      */
-    private static <N extends Node> Integer getMaxLength(List<Pair<List<N>, Tuple<Integer>>> pathsWithLengths, Function<Tuple<Integer>, Integer> lengthExtractor) {
+    private static <N extends Node> Integer getMaxLength(List<Pair<List<N>, PathLength>> pathsWithLengths, Function<PathLength, Integer> lengthExtractor) {
         //Get length in total weight or in number of nodes
         return lengthExtractor.apply(
                 pathsWithLengths.stream()

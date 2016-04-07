@@ -5,8 +5,8 @@ import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModelBundle;
 import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
-import edu.kpi.nesteruk.pzcs.model.queuing.common.NodesQueue;
 import edu.kpi.nesteruk.pzcs.model.queuing.common.QueueConstructor;
+import edu.kpi.nesteruk.pzcs.model.queuing.primitives.CriticalNode;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
 import edu.kpi.nesteruk.pzcs.presenter.common.CaptionsSupplier;
 import edu.kpi.nesteruk.pzcs.presenter.common.CommonGraphPresenter;
@@ -15,6 +15,7 @@ import edu.kpi.nesteruk.pzcs.view.common.GraphView;
 
 import java.awt.event.ActionEvent;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -46,7 +47,7 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
 
     @Override
     public void onMakeQueues(ActionEvent event) {
-        Map<String, Collection<NodesQueue<Task>>> queuesWithTitles = queueConstructors.stream()
+        Map<String, List<CriticalNode<Task>>> queuesWithTitles = queueConstructors.stream()
                 .map(queueConstructor -> queueConstructor.constructQueues((
                         (GraphModelBundle<Task, DirectedLink<Task>>) getModel().getSerializable())
                 ))
@@ -55,11 +56,10 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
         queuesWithTitles.forEach((title, queues) -> System.out.println(title + ":\n" + queuesToString(queues) + "\n"));
     }
 
-    private static String queuesToString(Collection<NodesQueue<Task>> queues) {
+    private static String queuesToString(Collection<CriticalNode<Task>> criticalNodes) {
         StringBuilder sb = new StringBuilder();
-        queues.forEach(queue ->
-                sb.append("Value = ").append(queue.value).append(", order:\n")
-                        .append(queue.tasksSequence).append("\n")
+        criticalNodes.forEach(node ->
+                sb.append(node.node).append(" (").append(node.value).append(")").append("\n")
         );
         return sb.toString();
     }

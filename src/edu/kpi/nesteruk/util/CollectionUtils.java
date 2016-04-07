@@ -18,6 +18,10 @@ public class CollectionUtils {
         return array == null || array.length == 0;
     }
 
+    public static <T> T getFirstOrNull(Collection<T> collection) {
+        return collection.stream().findFirst().get();
+    }
+
     public static <T> T getLastOrNull(Collection<T> collection) {
         if(isEmpty(collection)) {
             return null;

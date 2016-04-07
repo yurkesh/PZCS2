@@ -5,7 +5,7 @@ import edu.kpi.nesteruk.pzcs.model.primitives.Link;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
 import edu.kpi.nesteruk.pzcs.model.queuing.common.AbstractQueueConstructor;
 import edu.kpi.nesteruk.pzcs.model.queuing.common.GraphPathsData;
-import edu.kpi.nesteruk.pzcs.model.queuing.common.NodesQueue;
+import edu.kpi.nesteruk.pzcs.model.queuing.primitives.CriticalNode;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -22,11 +22,14 @@ public class CriticalPathByTimeForAllNodes3 <N extends Node, L extends Link<N>> 
     }
 
     @Override
-    protected Collection<NodesQueue<N>> constructQueues(Collection<List<N>> allPaths, Collection<L> allLinks, GraphPathsData<N, L> graphPathsData) {
+    protected List<CriticalNode<N>> constructQueues(Collection<List<N>> allPaths, Collection<L> allLinks, GraphPathsData<N> graphPathsData) {
         return graphPathsData.pathsWithLengths.stream()
-                .map(pair -> Pair.create(pair.first, pair.getSecond().getFirst()))
+                //Convert each pair {path, lengthOfPath} to pair {path, lengthOfPath_inWeight}
+                .map(pathWithLength -> Pair.create(pathWithLength.first, pathWithLength.getSecond().getInWeight()))
+                //Sort by weight
                 .sorted(Comparator.<Pair<List<N>, Integer>, Integer>comparing(Pair::getSecond).reversed())
-                .map(pair -> new NodesQueue<>(pair.getFirst(), pair.getSecond()))
+                //Convert to queue(path, weightOfPath}
+                .map(CriticalNode::new)
                 .collect(Collectors.toList());
     }
 }

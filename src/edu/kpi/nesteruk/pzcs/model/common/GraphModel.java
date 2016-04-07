@@ -3,11 +3,8 @@ package edu.kpi.nesteruk.pzcs.model.common;
 import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
 import edu.kpi.nesteruk.pzcs.graph.generation.GraphGenerator;
 import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
-import edu.kpi.nesteruk.pzcs.model.queuing.common.QueueConstructor;
-import edu.kpi.nesteruk.pzcs.model.queuing.common.NodesQueue;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Created by Yurii on 2016-03-13.

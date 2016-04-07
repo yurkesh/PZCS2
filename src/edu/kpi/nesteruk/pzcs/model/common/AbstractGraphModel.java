@@ -8,8 +8,6 @@ import edu.kpi.nesteruk.pzcs.graph.validation.GraphValidator;
 import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
 import edu.kpi.nesteruk.pzcs.model.primitives.Link;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
-import edu.kpi.nesteruk.pzcs.model.queuing.common.NodesQueue;
-import edu.kpi.nesteruk.pzcs.model.queuing.common.QueueConstructor;
 import org.jgrapht.Graph;
 
 import java.util.Collection;
