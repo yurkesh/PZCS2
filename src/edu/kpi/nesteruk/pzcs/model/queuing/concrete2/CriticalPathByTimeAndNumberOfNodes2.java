@@ -1,7 +1,6 @@
 package edu.kpi.nesteruk.pzcs.model.queuing.concrete2;
 
 import edu.kpi.nesteruk.misc.Pair;
-import edu.kpi.nesteruk.pzcs.model.common.GraphModelBundle;
 import edu.kpi.nesteruk.pzcs.model.primitives.Link;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
 import edu.kpi.nesteruk.pzcs.model.queuing.common.*;
@@ -18,26 +17,14 @@ import java.util.stream.Collectors;
 /**
  * Created by Yurii on 2016-03-31.
  */
-public class CriticalPathByTimeAndNumberOfNodes2<N extends Node, L extends Link<N>> implements QueueConstructor<N, L> {
+public class CriticalPathByTimeAndNumberOfNodes2<N extends Node, L extends Link<N>> extends AbstractQueueConstructor<N, L> {
 
-    private static final String TITLE = "Критичний шлях по часу і кількості вершин";
-    private final PathLengthsComputer<N, L> lengthComputer = new PathLengthsComputer<>(false);
+    public CriticalPathByTimeAndNumberOfNodes2() {
+        super(false, "№2 - Критичний шлях по часу і кількості вершин");
+    }
 
     @Override
-    public Pair<String, List<CriticalNode<N>>> constructQueues(GraphModelBundle<N, L> graphModelBundle) {
-        DefaultPathsConstructor<N, L> pathsConstructor = new DefaultPathsConstructor<>(graphModelBundle);
-
-        Collection<List<N>> allPaths = pathsConstructor.getAllPaths();
-
-        Collection<L> allLinks = graphModelBundle.getLinksMap().values();
-        Collection<N> allNodes = graphModelBundle.getNodesMap().values();
-        GraphPathsData<N> graphPathsData = GraphPathsData.compute(
-                lengthComputer,
-                allPaths,
-                allNodes,
-                allLinks
-        );
-
+    protected List<CriticalNode<N>> constructQueues(Collection<N> allNodes, Collection<L> allLinks, Collection<List<N>> allPaths, GraphPathsData<N> graphPathsData) {
         Map<N, Integer> nodeToLengthOfCriticalPathFromBegin = GraphPathsData.computeLengthsOfPaths(
                 lengthComputer, allPaths, allNodes, allLinks, false
         ).stream().collect(Collectors.toMap(
@@ -45,7 +32,7 @@ public class CriticalPathByTimeAndNumberOfNodes2<N extends Node, L extends Link<
                 pathWithLengthFromBegin -> pathWithLengthFromBegin.second.inWeight
         ));
 
-        List<CriticalNode<N>> computedPaths = graphPathsData.pathsWithLengths.stream()
+        return graphPathsData.pathsWithLengths.stream()
                 //Convert pair {path, length} to pathWithAdditionalInfo
                 .map(pathWithLengths -> new PathWithAdditionalInfo<>(
                         pathWithLengths.first,
@@ -57,10 +44,8 @@ public class CriticalPathByTimeAndNumberOfNodes2<N extends Node, L extends Link<
                 //Sort by metric
                 .sorted(Comparator.comparing(Pair::getSecond))
                 //Make queue
-                .map(CriticalNode::new)
+                .map(CriticalNode::makeWithDouble)
                 .collect(Collectors.toList());
-
-        return Pair.create(TITLE, computedPaths);
     }
 
     /**

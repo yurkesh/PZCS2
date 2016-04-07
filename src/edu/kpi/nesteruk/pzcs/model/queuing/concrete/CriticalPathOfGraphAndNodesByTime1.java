@@ -7,7 +7,6 @@ import edu.kpi.nesteruk.pzcs.model.queuing.common.*;
 import edu.kpi.nesteruk.pzcs.model.queuing.primitives.CriticalNode;
 import edu.kpi.nesteruk.pzcs.model.queuing.primitives.PathLength;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,14 +14,14 @@ import java.util.stream.Collectors;
 /**
  * Created by Yurii on 2016-03-31.
  */
-public class CriticalPathOfGraphAndNodesByTime1<N extends Node, L extends Link<N>> extends AbstractQueueConstructor<N, L> {
+public class CriticalPathOfGraphAndNodesByTime1<N extends Node, L extends Link<N>> extends GeneralQueueConstructor<N, L> {
 
     public CriticalPathOfGraphAndNodesByTime1() {
         super(false, "Critical path of graph and nodes by time (#1)");
     }
 
     @Override
-    protected List<CriticalNode<N>> constructQueues(Collection<List<N>> allPaths, Collection<L> allLinks, GraphPathsData<N> graphPathsData) {
+    protected List<CriticalNode<N>> constructQueues(GraphPathsData<N> graphPathsData) {
         final List<Pair<List<N>, PathLength>> pathsWithLengths = graphPathsData.pathsWithLengths;
         final PathLength graphLengths = graphPathsData.graphLengths;
 
@@ -37,8 +36,8 @@ public class CriticalPathOfGraphAndNodesByTime1<N extends Node, L extends Link<N
                 .collect(Collectors.toList());
 
         return pathsSortedByLength.stream()
-                //Make NodesQueue from each pair of {listOfNodes, relativeLength}
-                .map(CriticalNode::new)
+                //Make Critical from each pair of {listOfNodes, relativeLength}
+                .map(CriticalNode::makeWithDouble)
                 .collect(Collectors.toList());
     }
 

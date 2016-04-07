@@ -14,7 +14,7 @@ import java.util.List;
  */
 public abstract class AbstractQueueConstructor<N extends Node, L extends Link<N>> implements QueueConstructor<N, L> {
 
-    private final PathLengthsComputer<N, L> lengthComputer;
+    protected final PathLengthsComputer<N, L> lengthComputer;
     private final String title;
 
     public AbstractQueueConstructor(PathLengthsComputer<N, L> lengthComputer, String title) {
@@ -33,15 +33,17 @@ public abstract class AbstractQueueConstructor<N extends Node, L extends Link<N>
         Collection<List<N>> allPaths = pathsConstructor.getAllPaths();
 
         Collection<L> allLinks = graphModelBundle.getLinksMap().values();
+        Collection<N> allNodes = graphModelBundle.getNodesMap().values();
         GraphPathsData<N> graphPathsData = GraphPathsData.compute(
                 lengthComputer,
                 allPaths,
-                graphModelBundle.getNodesMap().values(),
+                allNodes,
                 allLinks
         );
 
-        return Pair.create(title, constructQueues(allPaths, allLinks, graphPathsData));
+        return Pair.create(title, constructQueues(allNodes, allLinks, allPaths, graphPathsData));
     }
 
-    protected abstract List<CriticalNode<N>> constructQueues(Collection<List<N>> allPaths, Collection<L> allLinks, GraphPathsData<N> graphPathsData);
+    protected abstract List<CriticalNode<N>> constructQueues(Collection<N> allNodes, Collection<L> allLinks, Collection<List<N>> allPaths, GraphPathsData<N> graphPathsData);
+
 }

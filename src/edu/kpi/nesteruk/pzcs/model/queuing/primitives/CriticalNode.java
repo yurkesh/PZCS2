@@ -10,15 +10,15 @@ import java.util.List;
  */
 public class CriticalNode<N extends Node> {
     public final N node;
-    public final double value;
+    public final Object value;
 
-    public CriticalNode(N node, double value) {
+    public CriticalNode(N node, Object value) {
         this.node = node;
         this.value = value;
     }
 
-    public CriticalNode(Pair<List<N>, ? extends Number> pathWithLength) {
-        this(pathWithLength.first.stream().findFirst().get(), pathWithLength.second.doubleValue());
+    public static <N extends Node> CriticalNode<N> makeWithDouble(Pair<List<N>, ? extends Number> pathWithLength) {
+        return new CriticalNode<>(pathWithLength.first.stream().findFirst().get(), pathWithLength.second.doubleValue());
     }
 
     @Override

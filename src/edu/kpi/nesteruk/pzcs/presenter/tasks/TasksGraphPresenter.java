@@ -48,10 +48,10 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
     @Override
     public void onMakeQueues(ActionEvent event) {
         Map<String, List<CriticalNode<Task>>> queuesWithTitles = queueConstructors.stream()
-                .map(queueConstructor -> queueConstructor.constructQueues((
-                        (GraphModelBundle<Task, DirectedLink<Task>>) getModel().getSerializable())
-                ))
-                .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
+                .map(queueConstructor -> queueConstructor.constructQueues((GraphModelBundle<Task, DirectedLink<Task>>) getModel().getSerializable())).collect(Collectors.toMap(
+                titleWithCriticalNodesPair -> titleWithCriticalNodesPair.first,
+                Pair::getSecond
+        ));
 
         queuesWithTitles.forEach((title, queues) -> System.out.println(title + ":\n" + queuesToString(queues) + "\n"));
     }

@@ -1,4 +1,5 @@
 import edu.kpi.nesteruk.pzcs.common.GraphType;
+import edu.kpi.nesteruk.pzcs.model.queuing.concrete2.CriticalPathByNumberOfNodesAndCoherence10;
 import edu.kpi.nesteruk.pzcs.model.queuing.concrete2.CriticalPathByTimeAndNumberOfNodes2;
 import edu.kpi.nesteruk.pzcs.model.system.Processor;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
@@ -15,10 +16,11 @@ public class Main {
         Task.TO_STRING_FORMAT = "Task[%s]: %s";
         Processor.TO_STRING_FORMAT = "Processor[%s]=%s";
 
-        GraphType.queueConstructors = Arrays.asList(
-                new CriticalPathByTimeAndNumberOfNodes2<>()
-        );
         */
+        GraphType.queueConstructors = Arrays.asList(
+                new CriticalPathByTimeAndNumberOfNodes2<>(),
+                new CriticalPathByNumberOfNodesAndCoherence10<>()
+        );
 
         new DashboardView(GraphType.values());
     }
