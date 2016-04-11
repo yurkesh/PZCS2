@@ -12,6 +12,7 @@ import java.util.Arrays;
 public class Main {
 
     public static void main(String[] args) {
+        /*
         GraphStyle.DEFAULT_STYLE = GraphStyle.Alternative;
         Task.TO_STRING_FORMAT = "Task[%s]: %s";
         Processor.TO_STRING_FORMAT = "Processor[%s]=%s";
@@ -21,6 +22,7 @@ public class Main {
                 new CriticalPathByNumberOfNodesAndCoherence10<>(),
                 new CriticalPathByWeightOfNodes14()
         );
+        */
 
         new DashboardView(GraphType.values());
     }

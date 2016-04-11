@@ -3,6 +3,7 @@ package edu.kpi.nesteruk.pzcs.common;
 import com.mxgraph.view.mxStylesheet;
 import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
 import edu.kpi.nesteruk.pzcs.model.queuing.common.QueueConstructor;
+import edu.kpi.nesteruk.pzcs.model.queuing.concrete.CriticalPathByNumberOfNodesAndCoherence11;
 import edu.kpi.nesteruk.pzcs.model.queuing.concrete.CriticalPathByTimeForAllNodes3;
 import edu.kpi.nesteruk.pzcs.model.queuing.concrete.CriticalPathOfGraphAndNodesByTime1;
 import edu.kpi.nesteruk.pzcs.model.system.SystemGraphModel;
@@ -55,7 +56,8 @@ public enum GraphType {
 
     public static Collection<QueueConstructor<Task, DirectedLink<Task>>> queueConstructors = Arrays.asList(
             new CriticalPathOfGraphAndNodesByTime1<>(),
-            new CriticalPathByTimeForAllNodes3<>()
+            new CriticalPathByTimeForAllNodes3<>(),
+            new CriticalPathByNumberOfNodesAndCoherence11()
     );
 
     private final String caption;

@@ -2,7 +2,12 @@ package edu.kpi.nesteruk.util;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -33,6 +38,23 @@ public class CollectionUtils {
         return collection.stream().skip(size - 1).collect(Collectors.toList()).get(0);
     }
 
+    public static class CustomCollectors {
 
+        public static <T> BinaryOperator<T> throwingMerger() {
+            return (u,v) -> { throw new IllegalStateException(String.format("Duplicate key %s", u)); };
+        }
+
+        public static <T, K, U, M extends Map<K, U>>
+        Collector<T, ?, M> toMap(Function<? super T, ? extends K> keyMapper,
+                                        Function<? super T, ? extends U> valueMapper,
+                                        Supplier<M> mapSupplier) {
+            return Collectors.toMap(
+                    keyMapper,
+                    valueMapper,
+                    throwingMerger(),
+                    mapSupplier
+            );
+        }
+    }
 
 }

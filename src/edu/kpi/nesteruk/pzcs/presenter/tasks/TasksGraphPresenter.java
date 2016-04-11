@@ -12,9 +12,11 @@ import edu.kpi.nesteruk.pzcs.presenter.common.CaptionsSupplier;
 import edu.kpi.nesteruk.pzcs.presenter.common.CommonGraphPresenter;
 import edu.kpi.nesteruk.pzcs.presenter.common.GraphVertexSizeSupplier;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
+import edu.kpi.nesteruk.util.CollectionUtils;
 
 import java.awt.event.ActionEvent;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -48,10 +50,14 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
     @Override
     public void onMakeQueues(ActionEvent event) {
         Map<String, List<CriticalNode<Task>>> queuesWithTitles = queueConstructors.stream()
-                .map(queueConstructor -> queueConstructor.constructQueues((GraphModelBundle<Task, DirectedLink<Task>>) getModel().getSerializable())).collect(Collectors.toMap(
-                titleWithCriticalNodesPair -> titleWithCriticalNodesPair.first,
-                Pair::getSecond
-        ));
+                .map(queueConstructor ->
+                        queueConstructor.constructQueues(
+                                (GraphModelBundle<Task, DirectedLink<Task>>) getModel().getSerializable())
+                ).collect(CollectionUtils.CustomCollectors.toMap(
+                        titleWithCriticalNodesPair -> titleWithCriticalNodesPair.first,
+                        Pair::getSecond,
+                        LinkedHashMap::new
+                ));
 
         queuesWithTitles.forEach((title, queues) -> System.out.println(title + ":\n" + queuesToString(queues) + "\n"));
     }
