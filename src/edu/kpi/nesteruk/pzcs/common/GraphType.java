@@ -1,6 +1,7 @@
 package edu.kpi.nesteruk.pzcs.common;
 
 import com.mxgraph.view.mxStylesheet;
+import edu.kpi.nesteruk.pzcs.graph.generation.Params;
 import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
 import edu.kpi.nesteruk.pzcs.model.queuing.common.QueueConstructor;
 import edu.kpi.nesteruk.pzcs.model.queuing.concrete.CriticalPathByNumberOfNodesAndCoherence11;
@@ -37,7 +38,8 @@ public enum GraphType {
                     many -> many ? "tasks" : "task",
                     TasksGraphModel::new,
                     () -> graphStyle.getNodeSize(this),
-                    queueConstructors
+                    queueConstructors,
+                    new Params(1, 10, 6, 0.5, 1, 1)
             );
         }
     },

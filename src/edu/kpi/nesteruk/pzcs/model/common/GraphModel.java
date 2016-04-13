@@ -1,7 +1,7 @@
 package edu.kpi.nesteruk.pzcs.model.common;
 
 import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
-import edu.kpi.nesteruk.pzcs.graph.generation.GraphGenerator;
+import edu.kpi.nesteruk.pzcs.graph.generation.Params;
 import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
 
 import java.util.Collection;
@@ -28,7 +28,7 @@ public interface GraphModel {
 
     GraphModelBundle getSerializable();
 
-    GraphDataAssembly generate(GraphGenerator.Params params);
+    GraphDataAssembly generate(Params params);
 
     GraphDataAssembly restore(GraphModelBundle serializable);
 

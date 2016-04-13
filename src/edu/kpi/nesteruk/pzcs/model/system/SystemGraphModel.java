@@ -46,7 +46,7 @@ public class SystemGraphModel extends AbstractGraphModel<Processor, CongenericLi
     }
 
     @Override
-    protected Pair<CongenericLink<Processor>, String> makeConcreteLink(String srcId, String destId, int weight) {
-        return Pair.create(new CongenericLink<>(getNode(srcId), getNode(destId), weight), getLinkId(srcId, destId));
+    protected Pair<CongenericLink<Processor>, String> makeConcreteLink(Processor source, Processor destination, int weight) {
+        return Pair.create(new CongenericLink<>(source, destination, weight), getLinkId(source.getId(), destination.getId()));
     }
 }

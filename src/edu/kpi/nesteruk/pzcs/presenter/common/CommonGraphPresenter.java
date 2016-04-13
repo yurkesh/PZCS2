@@ -1,5 +1,7 @@
 package edu.kpi.nesteruk.pzcs.presenter.common;
 
+import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
+import com.mxgraph.layout.mxIGraphLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.model.mxGraphModel;
@@ -15,10 +17,9 @@ import edu.kpi.nesteruk.misc.Tuple;
 import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModelBundle;
-import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
-import edu.kpi.nesteruk.pzcs.model.common.NodeBuilder;
 import edu.kpi.nesteruk.pzcs.model.common.LinkBuilder;
-import edu.kpi.nesteruk.pzcs.view.Views;
+import edu.kpi.nesteruk.pzcs.model.common.NodeBuilder;
+import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
 import edu.kpi.nesteruk.util.CollectionUtils;
 
@@ -53,6 +54,7 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
      * {cellId -> nodeId}, {nodeId -> cellId}
      */
     private OneToOneMapper<String, String> cellIdAndNodeIdMapper = new OneToOneMapper<>();
+    private mxIGraphLayout graphLayout;
 
     public CommonGraphPresenter(
             GraphView graphView,
@@ -83,6 +85,8 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
             }
         };
         parent = graph.getDefaultParent();
+
+        graphLayout = new mxHierarchicalLayout(graph);
 
         applyGraphViewSettings(graphStylesheetInterceptor);
         initGraphListeners();
@@ -341,6 +345,13 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
         }
     }
 
+    protected void setGraph(GraphDataAssembly graphDataAssembly) {
+        reset(false);
+        restoreNodes(graphDataAssembly.nodes);
+        restoreLinks(graphDataAssembly.links);
+        graphLayout.execute(parent);
+    }
+
     private void restoreGraph(GraphDataAssembly restoredModel, Map<String, Tuple<Integer>> nodeIdToItsCoordinates) {
         reset(false);
         restoreNodes(restoredModel.nodes, nodeIdToItsCoordinates);
@@ -353,6 +364,10 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
         }
         cellIdAndNodeIdMapper.clear();
         graph.removeCells(graph.getChildVertices(parent));
+    }
+
+    private void restoreNodes(Collection<IdAndValue> nodes) {
+        nodes.forEach(nodeIdAndValue -> addNode(0, 0, nodeIdAndValue));
     }
 
     private void restoreNodes(Collection<IdAndValue> nodes, Map<String, Tuple<Integer>> nodeIdToItsCoordinates) {

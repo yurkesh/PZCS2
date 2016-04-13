@@ -38,6 +38,13 @@ public class CollectionUtils {
         return collection.stream().skip(size - 1).collect(Collectors.toList()).get(0);
     }
 
+    public static <T, C extends Collection<T>> C add(Collection<T> collection, T element, Supplier<C> destinationSupplier) {
+        C destination = destinationSupplier.get();
+        destination.addAll(collection);
+        destination.add(element);
+        return destination;
+    }
+
     public static class CustomCollectors {
 
         public static <T> BinaryOperator<T> throwingMerger() {

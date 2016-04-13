@@ -7,6 +7,7 @@ public class Views {
     public static final int DEFAULT_WINDOW_WIDTH = 600;
     public static final int DEFAULT_WINDOW_HEIGHT = 800;
     public static final int WINDOW_MARGIN_TOP = 100;
+    public static final int WINDOW_MARGIN_LEFT = 400;
 
     public static final int DEFAULT_NODE_WIDTH = 120;
     public static final int DEFAULT_NODE_HEIGHT = 40;

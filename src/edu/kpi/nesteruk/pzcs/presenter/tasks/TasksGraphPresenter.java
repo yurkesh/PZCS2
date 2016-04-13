@@ -2,6 +2,8 @@ package edu.kpi.nesteruk.pzcs.presenter.tasks;
 
 import com.mxgraph.view.mxStylesheet;
 import edu.kpi.nesteruk.misc.Pair;
+import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
+import edu.kpi.nesteruk.pzcs.graph.generation.Params;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModelBundle;
 import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
@@ -12,16 +14,15 @@ import edu.kpi.nesteruk.pzcs.presenter.common.CaptionsSupplier;
 import edu.kpi.nesteruk.pzcs.presenter.common.CommonGraphPresenter;
 import edu.kpi.nesteruk.pzcs.presenter.common.GraphVertexSizeSupplier;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
+import edu.kpi.nesteruk.pzcs.view.tasks.GraphGeneratorFrame;
+import edu.kpi.nesteruk.pzcs.view.tasks.GraphGeneratorParamsInputDialog;
+import edu.kpi.nesteruk.pzcs.view.dialog.Message;
 import edu.kpi.nesteruk.util.CollectionUtils;
 
 import java.awt.event.ActionEvent;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * Created by Yurii on 2016-03-23.
@@ -29,6 +30,9 @@ import java.util.stream.Collectors;
 public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPresenter {
 
     private final Collection<QueueConstructor<Task, DirectedLink<Task>>> queueConstructors;
+    private final Params defaultGeneratorParams;
+
+    private int generatorsCount = 0;
 
     public TasksGraphPresenter(
             GraphView graphView,
@@ -36,15 +40,55 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
             CaptionsSupplier captionsSupplier,
             Supplier<GraphModel> graphModelFactory,
             GraphVertexSizeSupplier vertexSizeSupplier,
-            Collection<QueueConstructor<Task, DirectedLink<Task>>> queueConstructors) {
+            Collection<QueueConstructor<Task, DirectedLink<Task>>> queueConstructors,
+            Params defaultGeneratorParams) {
 
         super(graphView, graphStylesheetInterceptor, captionsSupplier, graphModelFactory, vertexSizeSupplier);
         this.queueConstructors = queueConstructors;
+        this.defaultGeneratorParams = defaultGeneratorParams;
     }
 
     @Override
     public void onNewGraphGenerator(ActionEvent event) {
+        GraphGeneratorParamsInputDialog.showDialog(defaultGeneratorParams).ifPresent(this::checkAndGenerateWithParams);
+    }
 
+    private void checkAndGenerateWithParams(Params params) {
+        Params.CheckResult check = Params.isCorrect(params);
+        if(check == Params.CheckResult.OK) {
+            GraphGeneratorFrame generatorFrame = new GraphGeneratorFrame(
+                    params,
+                    (generatorParams) -> {
+                        GraphDataAssembly generated = getModel().generate(generatorParams);
+                        System.out.println(generated);
+                        setGraph(generated);
+                    }
+            );
+            int frameOffset = generatorsCount * 20;
+            generatorFrame.setLocation(frameOffset, frameOffset);
+            generatorsCount++;
+        } else {
+            Message.showMessage(true, "Incorrect params", getParamsErrorCaption(check));
+        }
+    }
+
+    private static String getParamsErrorCaption(Params.CheckResult check) {
+        switch (check) {
+            case MIN_NODE_WEIGHT_LESS_THAN_ZERO:
+                return "Min weight of node cannot be less than 0";
+            case MAX_NODE_WEIGHT_LESS_THAN_MIN:
+                return "Max weight of node cannot be less than min";
+            case NUMBER_OF_NODES_LESS_THAN_ONE:
+                return "Number of nodes cannot be less than 1";
+            case INCORRECT_COHERENCE:
+                return "Illegal value of coherence: only > 0 and < 1 allowed";
+            case MIN_LINK_WEIGHT_LESS_THAN_ZERO:
+                return "Min weight of link cannot be less than 0";
+            case MAX_LINK_WEIGHT_LESS_THAN_MIN:
+                return "Max weight of link cannot be less than min";
+            default:
+                throw new IllegalArgumentException("Unknown CheckResult = " + check);
+        }
     }
 
     @Override
