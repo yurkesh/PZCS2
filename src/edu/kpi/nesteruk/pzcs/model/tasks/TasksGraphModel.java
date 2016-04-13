@@ -34,7 +34,8 @@ public class TasksGraphModel extends AbstractGraphModel<Task, DirectedLink<Task>
     @Override
     protected Pair<DirectedLink<Task>, String> makeConcreteLink(Task source, Task destination, int weight) {
         DirectedLink<Task> link = new DirectedLink<>(source, destination, weight);
-        return Pair.create(link, link.toString());
+//        return Pair.create(link, link.toString());
+        return Pair.create(link, getLinkId(source.getId(), destination.getId()));
     }
 
     private static String getLinkId(String srcId, String destId) {

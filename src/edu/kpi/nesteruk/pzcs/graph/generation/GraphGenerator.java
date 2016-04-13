@@ -11,6 +11,7 @@ import edu.kpi.nesteruk.util.CollectionUtils;
 import org.jgrapht.Graph;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -37,6 +38,10 @@ public class GraphGenerator<N extends Node, L extends Link<N>> {
 
     public GraphModelBundle<N, L> generate(Params params) {
         Pair<Collection<N>, Map<String, L>> generated = generateInner(params);
+        System.out.println(
+                "NODES_WEIGHT = " + generated.getFirst().stream().mapToDouble(Node::getWeight).sum() + "\n" +
+                "LINKS_WEIGHT = " + generated.getSecond().values().stream().mapToDouble(Link::getWeight).sum()
+        );
         return new GraphModelBundle<>(
                 generated.first.stream().collect(Collectors.toMap(Node::getId, Function.identity())),
                 generated.second
@@ -49,36 +54,96 @@ public class GraphGenerator<N extends Node, L extends Link<N>> {
         final double totalWeightOfLinks = getTotalWeightOfLinks(totalWeightOfNodes, params.coherence);
         final double[] linksWeight = new double[] {0};
         Map<String, L> allLinks = new LinkedHashMap<>();
-        for (double linksWeightReserve = totalWeightOfLinks; linksWeightReserve >= 0; linksWeightReserve -= linksWeight[0]) {
-            double reserve = linksWeightReserve;
+
+//        for (double linksWeightReserve = totalWeightOfLinks; linksWeightReserve >= 0; linksWeightReserve -= linksWeight[0]) {
+//            double reserve = linksWeightReserve;
+//            generateLink(
+//                    Math.min(linksWeightReserve, params.minLinkWeight),
+//                    Math.min(linksWeightReserve, params.maxLinkWeight),
+//                    nodesMap,
+//                    allLinks
+//            ).ifPresent(/*linkWithId -> {
+//                double weightOfGeneratedLink = linkWithId.first.getWeight();
+//                if(weightOfGeneratedLink > Math.round(reserve)) {
+//                    throw new IllegalArgumentException("Weight of generated = " + weightOfGeneratedLink + ", linksWeightReserve = " + reserve);
+//                }
+//                linksWeight[0] += weightOfGeneratedLink;
+//                allLinks.put(linkWithId.second, linkWithId.first);
+//            }*/ new LinkAddPerformer(linksWeightReserve, linksWeight, allLinks).andThen(linkWithId -> reserve -= linkWithId.first.getWeight()));
+//            System.out.println("Total = " + totalWeightOfLinks + ", sum = " + linksWeight[0] + ", reserve = " + linksWeightReserve);
+//        }
+
+        double[] linksWeightReserve = new double[] {totalWeightOfLinks};
+        while (true) {
+            double reserve = totalWeightOfLinks - allLinks.values().stream().mapToDouble(Link::getWeight).sum();
+            if(reserve <= 0) {
+                break;
+            }
+
             generateLink(
-                    params.numberOfNodes,
-                    Math.min(linksWeightReserve, params.minLinkWeight),
-                    Math.min(linksWeightReserve, params.maxLinkWeight),
+                    Math.min(reserve, params.minLinkWeight),
+                    Math.min(reserve, params.maxLinkWeight),
                     nodesMap,
-                    allLinks.values()
-            ).ifPresent(linkWithId -> {
-                double weightOfGeneratedLink = linkWithId.first.getWeight();
-                if(weightOfGeneratedLink > reserve) {
-                    throw new IllegalArgumentException("Weight of generated = " + weightOfGeneratedLink + ", linksWeightReserve = " + reserve);
-                }
-                linksWeight[0] += weightOfGeneratedLink;
-//                linksWeight[0] = linksWeight[0] + weightOfGeneratedLink;
-                allLinks.put(linkWithId.second, linkWithId.first);
-            });
+                    allLinks
+            ).ifPresent(new LinkAddPerformer(linksWeightReserve[0], linksWeight, allLinks).andThen(
+                    linkWithId -> {
+                        int weight = linkWithId.getFirst().getWeight();
+//                        System.out.println("Links weight reserve = " + linksWeightReserve[0]);
+//                        linksWeightReserve[0] -= weight;
+                    }
+            ));
         }
+
         return Pair.create(nodesMap.values(), allLinks);
     }
 
-    private Optional<Pair<L, String>> generateLink(int numberOfNodes, double minLinkWeight, double maxLinkWeight, Map<Integer, N> allNodesMap, Collection<L> links) {
-        Pair<L, String> linkWithId = linkFactory.createLink(
+    private class LinkAddPerformer implements Consumer<Pair<L, String>> {
+
+        private final double reserve;
+        private final double[] linksWeight;
+        private final Map<String, L> allLinks;
+
+        private LinkAddPerformer(double reserve, double[] linksWeight, Map<String, L> allLinks) {
+            this.reserve = reserve;
+            this.linksWeight = linksWeight;
+            this.allLinks = allLinks;
+        }
+
+        @Override
+        public void accept(Pair<L, String> linkWithId) {
+            double weightOfGeneratedLink = linkWithId.first.getWeight();
+//            if(weightOfGeneratedLink > Math.round(reserve)) {
+//                throw new IllegalArgumentException("Weight of generated = " + weightOfGeneratedLink + ", linksWeightReserve = " + reserve);
+//            }
+            linksWeight[0] += weightOfGeneratedLink;
+            allLinks.put(linkWithId.second, linkWithId.first);
+        }
+    }
+
+    private Optional<Pair<L, String>> generateLink(double minLinkWeight, double maxLinkWeight, Map<Integer, N> allNodesMap, Map<String, L> links) {
+        Pair<L, String> linkWithId = generateLink(allNodesMap, minLinkWeight, maxLinkWeight);
+        L equivalent = links.get(linkWithId.getSecond());
+        if(equivalent != null) {
+            L link = linkWithId.first;
+            linkWithId = linkFactory.createLink(link.getFirst(), link.getSecond(), equivalent.getWeight() + link.getWeight());
+        }
+        Collection<L> linksUpdate = CollectionUtils.add(links.values(), linkWithId.first, LinkedHashSet::new);
+        boolean noCycles = checkNoCycles(allNodesMap.values(), linksUpdate);
+        return noCycles ? Optional.of(linkWithId) : Optional.empty();
+    }
+
+//    private Optional<L> getEquivalent(Map<String, L> links, L linkToFind) {
+//        return links.entrySet().stream().filter(entry -> entry.getValue().equals(linkToFind));
+//        return Optional.of(links.stream().collect(Collectors.toMap(Function.identity(), Function.identity())).get(linkToFind));
+//    }
+
+    private Pair<L, String> generateLink(Map<Integer, N> allNodesMap,double minLinkWeight, double maxLinkWeight ) {
+        int numberOfNodes = allNodesMap.size();
+        return linkFactory.createLink(
                 allNodesMap.get(RANDOM.nextInt(numberOfNodes)),
                 allNodesMap.get(RANDOM.nextInt(numberOfNodes)),
                 (int) Math.round(randomFromTo(minLinkWeight, maxLinkWeight))
         );
-        Collection<L> linksUpdate = CollectionUtils.add(links, linkWithId.first, LinkedHashSet::new);
-        boolean noCycles = checkNoCycles(allNodesMap.values(), linksUpdate);
-        return noCycles ? Optional.of(linkWithId) : Optional.empty();
     }
 
     private boolean checkNoCycles(Collection<N> allNodes, Collection<L> links) {

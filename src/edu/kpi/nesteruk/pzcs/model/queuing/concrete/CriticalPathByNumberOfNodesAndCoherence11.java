@@ -36,7 +36,7 @@ public class CriticalPathByNumberOfNodesAndCoherence11<N extends Node, L extends
                 //Key = first node of path
                 pathWithLengthFromBegin -> CollectionUtils.getLastOrNull(pathWithLengthFromBegin.first),
                 //Value = length of path in weight
-                pathWithLengthFromBegin -> pathWithLengthFromBegin.second.inWeight
+                pathWithLengthFromBegin -> pathWithLengthFromBegin.second.inNumberOfNodes
         ));
 
         return graphPathsData.pathsWithLengths.stream()
@@ -66,7 +66,11 @@ public class CriticalPathByNumberOfNodesAndCoherence11<N extends Node, L extends
                         CollectionUtils.getFirstOrNull(pathWithLengthPairWithCoherencePair.first.first),
                         new Tuple<>(
                                 pathWithLengthPairWithCoherencePair.second,
-                                pathWithLengthPairWithCoherencePair.first.second.inNumberOfNodes
+                                nodeToLengthOfCriticalPathFromBegin.get(
+                                        CollectionUtils.getFirstOrNull(
+                                                pathWithLengthPairWithCoherencePair.first.first
+                                        )
+                                )
                         )
                 ))
                 .collect(Collectors.toList());
