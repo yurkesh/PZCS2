@@ -78,7 +78,7 @@ public class Params {
         if (params.minLinkWeight < 0) {
             return CheckResult.MIN_LINK_WEIGHT_LESS_THAN_ZERO;
         }
-        if (params.maxLinkWeight < params.minNodeWeight) {
+        if (params.maxLinkWeight < params.minLinkWeight) {
             return CheckResult.MAX_LINK_WEIGHT_LESS_THAN_MIN;
         }
         return CheckResult.OK;

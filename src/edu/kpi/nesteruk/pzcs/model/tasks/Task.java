@@ -30,7 +30,7 @@ public class Task implements Node {
     }
 
     @Override
-    public Integer getWeight() {
+    public int getWeight() {
         return weight;
     }
 
