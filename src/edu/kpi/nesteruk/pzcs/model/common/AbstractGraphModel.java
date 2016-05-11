@@ -102,9 +102,11 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
         return nodesMap.get(nodeId);
     }
 
+    /*
     protected L getLink(String linkId) {
         return linksMap.get(linkId);
     }
+    */
 
     protected boolean canConnect(String srcId, String destId) {
         return !(graph.containsEdge(srcId, destId) || graph.containsEdge(destId, srcId));
@@ -128,8 +130,8 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     private IdAndValue addLink(L link, String linkId) {
         boolean unique = linksMap.putIfAbsent(linkId, link) == null;
         if(unique) {
-            String srcId = link.getFirst().getId();
-            String destId = link.getSecond().getId();
+            String srcId = link.getFirst();
+            String destId = link.getSecond();
             try {
                 graph.addEdge(srcId, destId, linkId);
             } catch (Exception e) {
@@ -146,10 +148,6 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     }
 
     /**
-     *
-     * @param source
-     * @param destination
-     * @param weight
      * @return {link, idOfLink}
      */
     protected abstract Pair<L, String> makeConcreteLink(N source, N destination, int weight);
@@ -193,8 +191,10 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     }
 
     @Override
-    public GraphDataAssembly restore(GraphModelBundle serializable) {
-        return apply((GraphModelBundle<N, L>) serializable);
+    public GraphDataAssembly restore(GraphModelBundle modelBundle) {
+        @SuppressWarnings("unchecked")
+        GraphModelBundle<N, L> bundle = (GraphModelBundle<N, L>) modelBundle;
+        return apply(bundle);
     }
 
     private GraphDataAssembly apply(GraphModelBundle<N, L> modelSerializable) {
@@ -218,8 +218,8 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
                             L link = linkEntry.getValue();
                             return Pair.create(
                                     Pair.create(
-                                            link.getFirst().getId(),
-                                            link.getSecond().getId()),
+                                            link.getFirst(),
+                                            link.getSecond()),
                                     formatLink(linkEntry.getKey(), link)
                             );
                         })
@@ -233,14 +233,14 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     }
 
     @Override
-    public IdAndValue updateWeight(String idOfLink, String text) {
+    public IdAndValue updateWeightOfLink(String idOfLink, String text) {
         L link = linksMap.get(idOfLink);
         if(link == null) {
             throw new IllegalArgumentException("Cannot find link with id = '" + idOfLink + "'");
         }
         int weight;
         try {
-            weight = Integer.valueOf(text);
+            weight = resolveWeight(text);
         } catch (NumberFormatException e) {
             System.err.println("Cannot convert text = '" + text + "' to weight");
             //Return old value
@@ -250,8 +250,31 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
         linksMap.remove(idOfLink);
         graph.removeEdge(idOfLink);
 
-        String srcId = link.getFirst().getId();
-        String destId = link.getSecond().getId();
+        String srcId = link.getFirst();
+        String destId = link.getSecond();
         return connect(srcId, destId, weight);
+    }
+
+    @Override
+    public IdAndValue updateWeightOfNode(String idOfNode, String text) {
+        N node = nodesMap.get(idOfNode);
+        if(node == null) {
+            throw new IllegalArgumentException("Cannot find node with id = '" + idOfNode + "'");
+        }
+        int weight;
+        try {
+            weight = resolveWeight(text);
+        } catch (NumberFormatException e) {
+            System.err.println("Cannot convert text = '" + text + "' to weight");
+            //Return old value
+            return formatNode(node);
+        }
+
+        return makeNode(idOfNode, weight);
+    }
+
+    private static Integer resolveWeight(String text) {
+        text = text.trim().replaceAll("\n", "").replace("\r", "");
+        return Integer.valueOf(text);
     }
 }

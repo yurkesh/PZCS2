@@ -30,7 +30,7 @@ public class GraphUtils {
         Graph<String, String> graph = graphFactory.get();
         nodes.forEach(node -> graph.addVertex(node.getId()));
         links.forEach(link -> {
-            String insertedEdge = graph.addEdge(link.getFirst().getId(), link.getSecond().getId());
+            String insertedEdge = graph.addEdge(link.getFirst(), link.getSecond());
             if(insertedEdge == null) {
                 throw new IllegalArgumentException("Cannot insert link = '" + link + "'");
             }

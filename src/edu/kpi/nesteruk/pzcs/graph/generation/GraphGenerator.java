@@ -59,6 +59,11 @@ public class GraphGenerator<N extends Node, L extends Link<N>> {
 
     private Pair<Collection<N>, Map<String, L>> generateInner(Params params) {
         Map<Integer, N> nodesMap = generateNodes(params);
+        Map<String, N> nodesMapStr = nodesMap.values().stream().collect(Collectors.toMap(
+                Node::getId,
+                Function.identity()
+        ));
+
         double totalWeightOfNodes = GraphUtils.getWeightSum(nodesMap.values());
         final double totalWeightOfLinks = getTotalWeightOfLinks(totalWeightOfNodes, params.coherence);
         final double[] linksWeight = new double[] {0};
@@ -70,6 +75,7 @@ public class GraphGenerator<N extends Node, L extends Link<N>> {
                     Math.min(minReserve, params.minLinkWeight),
                     Math.min(minReserve, params.maxLinkWeight),
                     nodesMap,
+                    nodesMapStr,
                     allLinks
             ).ifPresent(new LinkAddPerformer(linksWeight, allLinks));
         }
@@ -97,23 +103,28 @@ public class GraphGenerator<N extends Node, L extends Link<N>> {
     }
 
     /**
-     *
-     * @param minLinkWeight
-     * @param maxLinkWeight
-     * @param allNodesMap
-     * @param links
      * @return {weightOfGeneratedLink, {generatedLink, idOfGeneratedLink}}
      */
-    private Optional<Pair<Integer, Pair<L, String>>> generateLink(double minLinkWeight, double maxLinkWeight, Map<Integer, N> allNodesMap, Map<String, L> links) {
-        Pair<L, String> linkWithId = generateLink(allNodesMap, minLinkWeight, maxLinkWeight);
+    private Optional<Pair<Integer, Pair<L, String>>> generateLink(
+            double minLinkWeight,
+            double maxLinkWeight,
+            Map<Integer, N> allNodesMapInt,
+            Map<String, N> allNodesMapStr,
+            Map<String, L> links) {
+
+        Pair<L, String> linkWithId = generateLink(allNodesMapInt, minLinkWeight, maxLinkWeight);
         int weightOfGeneratedLink = linkWithId.first.getWeight();
         L equivalent = links.get(linkWithId.getSecond());
         if(equivalent != null) {
             L link = linkWithId.first;
-            linkWithId = linkFactory.createLink(link.getFirst(), link.getSecond(), equivalent.getWeight() + link.getWeight());
+            linkWithId = linkFactory.createLink(
+                    allNodesMapStr.get(link.getFirst()),
+                    allNodesMapStr.get(link.getSecond()),
+                    equivalent.getWeight() + link.getWeight()
+            );
         }
         Collection<L> linksUpdate = CollectionUtils.add(links.values(), linkWithId.first, LinkedHashSet::new);
-        boolean noCycles = checkNoCycles(allNodesMap.values(), linksUpdate);
+        boolean noCycles = checkNoCycles(allNodesMapInt.values(), linksUpdate);
         return noCycles ? Optional.of(Pair.create(weightOfGeneratedLink, linkWithId)) : Optional.empty();
     }
 
@@ -149,8 +160,6 @@ public class GraphGenerator<N extends Node, L extends Link<N>> {
     }
 
     /**
-     *
-     * @param params
      * @return {idOfNode -> node}
      */
     private Map<Integer, N> generateNodes(Params params) {
@@ -179,10 +188,6 @@ public class GraphGenerator<N extends Node, L extends Link<N>> {
 
     public interface LinkFactory<N extends Node, L extends Link<N>> {
         /**
-         *
-         * @param source
-         * @param destination
-         * @param weight
          * @return {link, idOfLink}
          */
         Pair<L, String> createLink(N source, N destination, int weight);

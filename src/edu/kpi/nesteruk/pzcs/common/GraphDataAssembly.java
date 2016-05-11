@@ -16,6 +16,11 @@ public class GraphDataAssembly {
      */
     public final Collection<Pair<Pair<String, String>, IdAndValue>> links;
 
+    /**
+     *
+     * @param nodes
+     * @param links [{{sourceId, destinationId}, link:idAndValue}]
+     */
     public GraphDataAssembly(Collection<IdAndValue> nodes, Collection<Pair<Pair<String, String>, IdAndValue>> links) {
         this.nodes = nodes;
         this.links = links;

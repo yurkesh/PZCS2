@@ -28,6 +28,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.*;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -93,9 +94,9 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
 
         this.graphComponent = new mxGraphComponent(graph);
 
-        initGraphComponentListeners();
-
         model = graphModelFactory.get();
+
+        initGraphComponentListeners();
 
         graphView.setGraphComponent(graphComponent);
     }
@@ -104,9 +105,50 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
         graph.addListener(mxEvent.CELL_CONNECTED, connectCellsListener);
     }
 
+    private CellEditHandler makeEditHandler(boolean vertex, ModelCellUpdatePerformer modelCellUpdatePerformer) {
+        return makeEditHandler(this, vertex, modelCellUpdatePerformer);
+    }
+
+    private static CellEditHandler makeEditHandler(CommonGraphPresenter presenter, boolean vertex, ModelCellUpdatePerformer modelCellUpdatePerformer) {
+        return new CellEditHandler(
+                cell -> vertex ^ cell.isEdge(),
+                (id, input) -> {
+                    String idOfLink = presenter.cellIdAndNodeIdMapper.getByKey(id);
+                    IdAndValue idAndValue = modelCellUpdatePerformer.apply(idOfLink, input);
+                    String updatedIdOfLink = idAndValue.id;
+                    if (!idOfLink.equals(updatedIdOfLink)) {
+                        presenter.cellIdAndNodeIdMapper.replace(id, idOfLink, updatedIdOfLink);
+                    }
+                    return idAndValue.value;
+                }
+        );
+    }
+
+    private interface ModelCellUpdatePerformer extends BiFunction<String, String, IdAndValue> {
+        /**
+         * Update value (weight) of cell
+         * @param id ID of edited cell
+         * @param input user input = new weight
+         * @return updated IdAndValue of edited cell
+         */
+        @Override
+        IdAndValue apply(String id, String input);
+    }
+
     private void initGraphComponentListeners() {
+        /*
         graphComponent.addListener(mxEvent.START_EDITING, startEditingListener);
         graphComponent.addListener(mxEvent.LABEL_CHANGED, labelChangedListener);
+        */
+        CellEditHandler[] editHandlers = {
+                makeEditHandler(false, model::updateWeightOfLink),
+                makeEditHandler(true, model::updateWeightOfNode)
+        };
+        for (CellEditHandler editHandler : editHandlers) {
+            graphComponent.addListener(mxEvent.START_EDITING, editHandler.getLabelStartEditingListener());
+            graphComponent.addListener(mxEvent.LABEL_CHANGED, editHandler.getLabelChangedListener());
+        }
+        graphComponent.setEnterStopsCellEditing(true);
     }
 
     private void setListenGraphCellConnection(boolean listen) {
@@ -182,6 +224,7 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
         }
     };
 
+    /*
     private mxICell tempEdge;
     private final mxEventSource.mxIEventListener startEditingListener = (sender, evt) -> {
         tempEdge = (mxICell) evt.getProperties().get("cell");
@@ -194,7 +237,7 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
                 String edgeId = edge.getId();
                 String idOfLink = cellIdAndNodeIdMapper.getByKey(edgeId);
                 String text = (String) evt.getProperties().get("value");
-                IdAndValue idAndValue = model.updateWeight(idOfLink, text);
+                IdAndValue idAndValue = model.updateWeightOfLink(idOfLink, text);
                 String updatedIdOfLink = idAndValue.id;
                 if(!idOfLink.equals(updatedIdOfLink)) {
                     cellIdAndNodeIdMapper.replace(edgeId, idOfLink, updatedIdOfLink);
@@ -206,6 +249,7 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
         }
         tempEdge = null;
     };
+    */
 
     private void addIdsMappings(IdAndValue nodeIdAndValue, mxICell cell) {
         cellIdAndNodeIdMapper.add(cell.getId(), nodeIdAndValue.id);

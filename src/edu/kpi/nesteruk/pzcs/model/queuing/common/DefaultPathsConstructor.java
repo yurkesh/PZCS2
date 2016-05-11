@@ -73,13 +73,14 @@ public class DefaultPathsConstructor<N extends Node, L extends Link<N>> {
         return getLinksFrom(node).stream()
                 //Get destination of each node
                 .map(Link::getSecond)
+                .map(nodesMap::get)
                 .collect(Collectors.toList());
     }
 
     public Collection<L> getLinksFrom(N node) {
         return linksMap.entrySet().stream()
                 //Get only links from specified node
-                .filter(entry -> entry.getValue().getFirst().equals(node))
+                .filter(entry -> entry.getValue().getFirst().equals(node.getId()))
                 //Get link from map entry
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toList());

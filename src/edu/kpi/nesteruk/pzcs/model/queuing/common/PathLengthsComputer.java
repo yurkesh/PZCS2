@@ -39,6 +39,9 @@ public class PathLengthsComputer<N extends Node, L extends Link<N>> {
     }
 
     private L getLinkBetween(N src, N dest, Collection<L> links) {
-        return links.stream().filter(link -> link.getFirst().equals(src) && link.getSecond().equals(dest)).findFirst().get();
+        return links.stream()
+                .filter(link -> link.getFirst().equals(src.getId()) && link.getSecond().equals(dest.getId()))
+                .findFirst()
+                .get();
     }
 }

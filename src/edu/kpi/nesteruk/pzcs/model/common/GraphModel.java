@@ -30,7 +30,7 @@ public interface GraphModel {
 
     GraphDataAssembly generate(Params params);
 
-    GraphDataAssembly restore(GraphModelBundle serializable);
+    GraphDataAssembly restore(GraphModelBundle modelBundle);
 
     void reset();
 
@@ -40,5 +40,13 @@ public interface GraphModel {
      * @param text
      * @return new String value to set in corresponding cell
      */
-    IdAndValue updateWeight(String idOfLink, String text);
+    IdAndValue updateWeightOfLink(String idOfLink, String text);
+
+    /**
+     *
+     * @param idOfNode
+     * @param text
+     * @return new String value to set in corresponding cell
+     */
+    IdAndValue updateWeightOfNode(String idOfNode, String text);
 }

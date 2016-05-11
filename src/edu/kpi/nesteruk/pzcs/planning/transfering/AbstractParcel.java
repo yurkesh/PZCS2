@@ -1,4 +1,4 @@
-package edu.kpi.nesteruk.pzcs.planning.parcel;
+package edu.kpi.nesteruk.pzcs.planning.transfering;
 
 import edu.kpi.nesteruk.pzcs.model.primitives.HasId;
 

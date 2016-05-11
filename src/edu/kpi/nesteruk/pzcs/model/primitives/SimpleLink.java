@@ -3,12 +3,16 @@ package edu.kpi.nesteruk.pzcs.model.primitives;
 /**
  * Created by Yurii on 2016-03-13.
  */
-public class SimpleLink<N extends Node> implements Link<N> {
+public class SimpleLink<N extends HasId> implements Link<N> {
 
     private static final long serialVersionUID = -4080347279345838836L;
 
+    /*
     public final N src;
     public final N dest;
+    */
+    public final String src;
+    public final String dest;
     public final int weight;
 
     public SimpleLink(N src, N dest, int weight) {
@@ -18,8 +22,12 @@ public class SimpleLink<N extends Node> implements Link<N> {
         if(dest == null) {
             throw new NullPointerException();
         }
+        /*
         this.src = src;
         this.dest = dest;
+        */
+        this.src = src.getId();
+        this.dest = dest.getId();
         this.weight = weight;
     }
 
@@ -28,12 +36,12 @@ public class SimpleLink<N extends Node> implements Link<N> {
     }
 
     @Override
-    public N getFirst() {
+    public String getFirst() {
         return src;
     }
 
     @Override
-    public N getSecond() {
+    public String getSecond() {
         return dest;
     }
 
@@ -43,8 +51,8 @@ public class SimpleLink<N extends Node> implements Link<N> {
     }
 
     @Override
-    public boolean isIncident(N node) {
-        return src.equals(node) || dest.equals(node);
+    public boolean isIncident(HasId node) {
+        return src.equals(node.getId()) || dest.equals(node.getId());
     }
 
     @Override
