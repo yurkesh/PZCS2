@@ -36,6 +36,8 @@ public class DefaultPathsConstructor<N extends Node, L extends Link<N>> {
         return expandPaths(Collections.singleton(Collections.singletonList(node)));
     }
 
+    private int counter = 0;
+
     private Collection<List<N>> expandPaths(Collection<List<N>> paths) {
         Collection<List<N>> upgradedPaths = new ArrayList<>((paths.size()*3)/2);
         boolean allNotExpanded = true;
@@ -44,7 +46,7 @@ public class DefaultPathsConstructor<N extends Node, L extends Link<N>> {
             Collection<N> nextNodes = getNextNodes(endOfPath);
             if (CollectionUtils.isEmpty(nextNodes)) {
                 upgradedPaths.add(path);
-                upgradedPaths.add(Collections.singletonList(endOfPath));
+//                upgradedPaths.add(Collections.singletonList(endOfPath));
             } else {
                 for (N nextNode : nextNodes) {
                     List<N> upgradedPath = new ArrayList<>(path);
@@ -54,6 +56,12 @@ public class DefaultPathsConstructor<N extends Node, L extends Link<N>> {
                 }
             }
         }
+        if(counter >= 128) {
+            System.out.println("Counter = " + counter);
+        } else {
+            counter++;
+        }
+
         if(allNotExpanded) {
             return paths;
         } else {

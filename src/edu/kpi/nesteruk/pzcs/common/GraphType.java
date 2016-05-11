@@ -5,8 +5,10 @@ import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.layout.mxGraphLayout;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStylesheet;
+import edu.kpi.nesteruk.pzcs.graph.generation.Params;
 import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
 import edu.kpi.nesteruk.pzcs.model.queuing.common.QueueConstructor;
+import edu.kpi.nesteruk.pzcs.model.queuing.concrete.CriticalPathByNumberOfNodesAndCoherence11;
 import edu.kpi.nesteruk.pzcs.model.queuing.concrete.CriticalPathByTimeForAllNodes3;
 import edu.kpi.nesteruk.pzcs.model.queuing.concrete.CriticalPathOfGraphAndNodesByTime1;
 import edu.kpi.nesteruk.pzcs.model.system.SystemGraphModel;
@@ -46,7 +48,8 @@ public enum GraphType {
                     many -> many ? "задачі" : "задачу",
                     TasksGraphModel::new,
                     () -> graphStyle.getNodeSize(this),
-                    queueConstructors
+                    queueConstructors,
+                    new Params(1, 5, 6, 0.1, 1, 3)
             );
         }
     },
@@ -70,7 +73,8 @@ public enum GraphType {
 
     public static Collection<QueueConstructor<Task, DirectedLink<Task>>> queueConstructors = Arrays.asList(
             new CriticalPathOfGraphAndNodesByTime1<>(),
-            new CriticalPathByTimeForAllNodes3<>()
+            new CriticalPathByTimeForAllNodes3<>(),
+            new CriticalPathByNumberOfNodesAndCoherence11()
     );
 
     private final String caption;

@@ -4,6 +4,8 @@ import edu.kpi.nesteruk.misc.IdPool;
 import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
 import edu.kpi.nesteruk.pzcs.graph.generation.GraphGenerator;
+import edu.kpi.nesteruk.pzcs.graph.generation.Params;
+import edu.kpi.nesteruk.pzcs.graph.misc.GraphUtils;
 import edu.kpi.nesteruk.pzcs.graph.validation.GraphValidator;
 import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
 import edu.kpi.nesteruk.pzcs.model.primitives.Link;
@@ -14,7 +16,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -110,9 +111,9 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     }
 
     private IdAndValue connect(String srcId, String destId, int weight) {
-        Pair<L, String> linkWithId = makeConcreteLink(srcId, destId, weight);
+        Pair<L, String> linkWithId = makeConcreteLink(getNode(srcId), getNode(destId), weight);
         try {
-            return addLink(linkWithId.second, linkWithId.first);
+            return addLink(linkWithId);
         } catch (IllegalArgumentException e) {
             logE(e.getMessage());
             e.printStackTrace();
@@ -120,7 +121,11 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
         }
     }
 
-    private IdAndValue addLink(String linkId, L link) {
+    private IdAndValue addLink(Pair<L, String> linkWithId) {
+        return addLink(linkWithId.first, linkWithId.second);
+    }
+
+    private IdAndValue addLink(L link, String linkId) {
         boolean unique = linksMap.putIfAbsent(linkId, link) == null;
         if(unique) {
             String srcId = link.getFirst().getId();
@@ -140,7 +145,14 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
         return new IdAndValue(linkId, String.valueOf(link.getWeight()));
     }
 
-    protected abstract Pair<L, String> makeConcreteLink(String srcId, String destId, int weight);
+    /**
+     *
+     * @param source
+     * @param destination
+     * @param weight
+     * @return {link, idOfLink}
+     */
+    protected abstract Pair<L, String> makeConcreteLink(N source, N destination, int weight);
 
     @Override
     public Collection<String> deleteNode(String id) {
@@ -166,20 +178,8 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
         graph.removeEdge(id);
     }
 
-    public interface GraphCloner<V, E> extends Function<Graph<V, E>, Graph<V, E>> {
-
-        static <V, E, G extends Graph<V, E>> Graph<V, E> cloneGraph(Graph<V, E> srcGraph, G destGraph) {
-            srcGraph.vertexSet().forEach(destGraph::addVertex);
-            for (E edge : srcGraph.edgeSet()) {
-                destGraph.addEdge(srcGraph.getEdgeSource(edge), srcGraph.getEdgeTarget(edge), edge);
-            }
-            return destGraph;
-        }
-
-    }
-
     protected Graph<String, String> cloneGraph(Graph<String, String> graph) {
-        return GraphCloner.cloneGraph(graph, graphFactory.get());
+        return GraphUtils.cloneGraph(graph, graphFactory.get());
     }
 
     @Override
@@ -204,7 +204,7 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     private GraphDataAssembly apply(Collection<N> nodes, Map<String, L> linksMap) {
         reset();
         nodes.forEach(this::addNode);
-        linksMap.entrySet().forEach(linkEntry -> addLink(linkEntry.getKey(), linkEntry.getValue()));
+        linksMap.entrySet().forEach(linkEntry -> addLink(linkEntry.getValue(), linkEntry.getKey()));
         return getForPresenter();
     }
 
@@ -228,8 +228,8 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     }
 
     @Override
-    public GraphDataAssembly generate(GraphGenerator.Params params) {
-        return apply(new GraphGenerator<>(this::makeConcreteNode, this::makeConcreteLink).generate(params));
+    public GraphDataAssembly generate(Params params) {
+        return apply(new GraphGenerator<>(this::makeConcreteNode, this::makeConcreteLink, graphFactory).generate(params));
     }
 
     @Override

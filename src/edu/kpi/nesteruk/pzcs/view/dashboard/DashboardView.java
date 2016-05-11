@@ -18,9 +18,9 @@ public class DashboardView extends JFrame {
     public DashboardView(GraphType... graphTypes) throws HeadlessException {
         super(Localization.getInstance().getLanguage().pzks);
 
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(Views.DEFAULT_WINDOW_WIDTH, Views.DEFAULT_WINDOW_HEIGHT);
-        setLocation(0, Views.WINDOW_MARGIN_TOP);
+        setLocation(Views.WINDOW_MARGIN_LEFT, Views.WINDOW_MARGIN_TOP);
 
         graphPresenter = UnitedGraphPresenter.createDefault(graphTypes);
         setContentPane(graphPresenter.getGraphsContainer());
