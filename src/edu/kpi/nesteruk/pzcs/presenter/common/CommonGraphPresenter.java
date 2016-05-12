@@ -144,11 +144,7 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
                  "Граф " + (error ? "не" : "") + "валідний"
         );
         if (!error) {
-            graph.getModel().beginUpdate();
-            mxGraphLayout mxGraphLayout = graphType.getMxGraphLayout(graph);
-//            mxCompactTreeLayout layout = new mxCompactTreeLayout(graph, true);
-            mxGraphLayout.execute(graph.getDefaultParent());
-            graph.getModel().endUpdate();
+            formatGraph();
         }
     }
 
@@ -357,6 +353,14 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
             e.printStackTrace();
             graphView.showMessage(true, "Cannot open " + captionsSupplier.getCaption(true) + " graph", e.getMessage());
         }
+    }
+
+    protected void formatGraph(){
+        graph.getModel().beginUpdate();
+        mxGraphLayout mxGraphLayout = graphType.getMxGraphLayout(graph);
+//            mxCompactTreeLayout layout = new mxCompactTreeLayout(graph, true);
+        mxGraphLayout.execute(graph.getDefaultParent());
+        graph.getModel().endUpdate();
     }
 
     protected void setGraph(GraphDataAssembly graphDataAssembly) {

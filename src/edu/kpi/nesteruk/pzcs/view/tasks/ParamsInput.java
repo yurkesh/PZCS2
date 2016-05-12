@@ -6,7 +6,7 @@ import edu.kpi.nesteruk.pzcs.graph.generation.Params;
  * Created by Yurii on 2016-04-13.
  */
 public enum ParamsInput {
-    MIN_NODE_WEIGHT("Min weight of node") {
+    MIN_NODE_WEIGHT("Мінімальна вага ноди") {
         @Override
         public Number getValue(Params params) {
             return params.minLinkWeight;
@@ -17,7 +17,7 @@ public enum ParamsInput {
             paramsBuilder.setMinNodeWeight(Integer.valueOf(input));
         }
     },
-    MAX_NODE_WEIGHT("Max weight of node") {
+    MAX_NODE_WEIGHT("Мксимальна вага ноди") {
         @Override
         public Number getValue(Params params) {
             return params.maxNodeWeight;
@@ -28,7 +28,7 @@ public enum ParamsInput {
             paramsBuilder.setMaxNodeWeight(Integer.valueOf(input));
         }
     },
-    NUMBER_OF_NODES("Number of nodes") {
+    NUMBER_OF_NODES("Кількість нод") {
         @Override
         public Number getValue(Params params) {
             return params.numberOfNodes;
@@ -39,7 +39,7 @@ public enum ParamsInput {
             paramsBuilder.setNumberOfNodes(Integer.valueOf(input));
         }
     },
-    COHERENCE("Coherence") {
+    COHERENCE("Кореляція") {
         @Override
         public Number getValue(Params params) {
             return params.coherence;
@@ -50,7 +50,7 @@ public enum ParamsInput {
             paramsBuilder.setCoherence(Double.valueOf(input));
         }
     },
-    MIN_LINK_WEIGHT("Min weight of link") {
+    MIN_LINK_WEIGHT("Мінімальна вага зв'язку") {
         @Override
         public Number getValue(Params params) {
             return params.minLinkWeight;
@@ -61,7 +61,7 @@ public enum ParamsInput {
             paramsBuilder.setMinLinkWeight(Integer.valueOf(input));
         }
     },
-    MAX_LINK_WEIGHT("Max weight of link") {
+    MAX_LINK_WEIGHT("Максимальна вага зв'язку") {
         @Override
         public Number getValue(Params params) {
             return params.maxLinkWeight;

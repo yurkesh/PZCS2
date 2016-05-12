@@ -1,5 +1,6 @@
 package edu.kpi.nesteruk.pzcs.presenter.tasks;
 
+import com.mxgraph.layout.mxGraphLayout;
 import com.mxgraph.view.mxStylesheet;
 import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.common.GraphType;
@@ -58,6 +59,7 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
     private void checkAndGenerateWithParams(Params params) {
         Params.CheckResult check = Params.isCorrect(params);
         if(check == Params.CheckResult.OK) {
+            /*
             GraphGeneratorFrame generatorFrame = new GraphGeneratorFrame(
                     params,
                     (generatorParams) -> {
@@ -66,9 +68,16 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
                         setGraph(generated);
                     }
             );
+            */
+            GraphDataAssembly generated = getModel().generate(params);
+            System.out.println(generated);
+            setGraph(generated);
             int frameOffset = generatorsCount * 20;
+            /*
             generatorFrame.setLocation(frameOffset, frameOffset);
+            */
             generatorsCount++;
+            formatGraph();
         } else {
             Message.showMessage(true, "Incorrect params", getParamsErrorCaption(check));
         }

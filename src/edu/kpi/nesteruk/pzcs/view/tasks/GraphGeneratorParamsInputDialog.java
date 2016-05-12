@@ -5,6 +5,7 @@ import edu.kpi.nesteruk.pzcs.graph.generation.Params;
 import edu.kpi.nesteruk.util.CollectionUtils;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,16 +24,20 @@ public class GraphGeneratorParamsInputDialog {
                 LinkedHashMap::new
         ));
         JPanel panel = new JPanel();
+        GridLayout gridLayout = new GridLayout(inputs.size(), 2);
+        panel.setLayout(gridLayout);
         inputs.forEach((input, captionWithField) -> {
             panel.add(new JLabel(captionWithField.first));
             panel.add(captionWithField.second);
+            /*
             panel.add(Box.createHorizontalStrut(15));
+            */
         });
 
         int result = JOptionPane.showConfirmDialog(
                 null,
                 panel,
-                "Please enter params for graph generator",
+                "Введіть параметри",
                 JOptionPane.OK_CANCEL_OPTION
         );
         if (result == JOptionPane.OK_OPTION) {
@@ -40,7 +45,7 @@ public class GraphGeneratorParamsInputDialog {
             try {
                 inputs.forEach((input, captionWithField) -> input.setValue(captionWithField.second.getText(), paramsBuilder));
             } catch (Exception e) {
-                System.err.println("Cannot fetch value of param. Exception = " + e);
+                System.err.println("Помилка " + e);
             }
             return Optional.of(paramsBuilder.build());
         } else {

@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 public class GraphGeneratorFrame extends JFrame {
 
     public GraphGeneratorFrame(Params params, Consumer<Params> generateListener) {
-        super("Graph generator");
+        super("Генератор графу");
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         setContentPane(mainPanel);
@@ -22,7 +22,7 @@ public class GraphGeneratorFrame extends JFrame {
         addOntoPanel(valuesPanel, params);
         mainPanel.add(valuesPanel, BorderLayout.NORTH);
 
-        JButton generateBtn = new JButton("Generate");
+        JButton generateBtn = new JButton("Генерувати");
         generateBtn.addActionListener(action -> generateListener.accept(params));
         mainPanel.add(generateBtn, BorderLayout.CENTER);
         pack();

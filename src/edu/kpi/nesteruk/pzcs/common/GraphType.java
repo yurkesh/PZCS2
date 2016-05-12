@@ -49,7 +49,7 @@ public enum GraphType {
                     TasksGraphModel::new,
                     () -> graphStyle.getNodeSize(this),
                     queueConstructors,
-                    new Params(1, 5, 6, 0.1, 1, 3)
+                    new Params(1, 3, 5, 0.5, 1, 3)
             );
         }
     },
