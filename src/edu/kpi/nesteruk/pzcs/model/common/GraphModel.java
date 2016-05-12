@@ -3,8 +3,11 @@ package edu.kpi.nesteruk.pzcs.model.common;
 import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
 import edu.kpi.nesteruk.pzcs.graph.generation.Params;
 import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
+import edu.kpi.nesteruk.pzcs.model.primitives.Link;
+import edu.kpi.nesteruk.pzcs.model.primitives.Node;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by Anatolii on 2016-03-13.
@@ -49,4 +52,7 @@ public interface GraphModel {
      * @return new String value to set in corresponding cell
      */
     IdAndValue updateWeightOfNode(String idOfNode, String text);
+
+    Map<String, Node> getNodesMap();
+    Map<String, Link<Node>> getLinksMap();
 }

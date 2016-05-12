@@ -6,9 +6,11 @@ import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.common.GraphType;
 import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
 import edu.kpi.nesteruk.pzcs.graph.generation.Params;
+import edu.kpi.nesteruk.pzcs.graph.misc.GraphUtils;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModelBundle;
 import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
+import edu.kpi.nesteruk.pzcs.model.primitives.Node;
 import edu.kpi.nesteruk.pzcs.model.queuing.common.QueueConstructor;
 import edu.kpi.nesteruk.pzcs.model.queuing.primitives.CriticalNode;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
@@ -26,6 +28,7 @@ import java.awt.event.ActionEvent;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Created by Anatolii on 2016-03-23.
@@ -72,12 +75,14 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
             GraphDataAssembly generated = getModel().generate(params);
             System.out.println(generated);
             setGraph(generated);
+//            double graphCorrelation = GraphUtils.getGraphCorrelation(getModel().getNodesMap().values(), getModel().getLinksMap().values());
+//            System.out.println(graphCorrelation);
             int frameOffset = generatorsCount * 20;
             /*
             generatorFrame.setLocation(frameOffset, frameOffset);
             */
             generatorsCount++;
-            formatGraph();
+//            formatGraph();
         } else {
             Message.showMessage(true, "Incorrect params", getParamsErrorCaption(check));
         }

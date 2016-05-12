@@ -277,4 +277,14 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
         text = text.trim().replaceAll("\n", "").replace("\r", "");
         return Integer.valueOf(text);
     }
+
+    @Override
+    public Map<String, Node> getNodesMap() {
+        return (Map<String, Node>) nodesMap;
+    }
+
+    @Override
+    public Map<String, Link<Node>> getLinksMap() {
+        return (Map<String, Link<Node>>) linksMap;
+    }
 }
