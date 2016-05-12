@@ -1,4 +1,4 @@
-package edu.kpi.nesteruk.pzcs.planning.parcel;
+package edu.kpi.nesteruk.pzcs.planning.transfering;
 
 /**
  * Created by Yurii on 2016-04-20.

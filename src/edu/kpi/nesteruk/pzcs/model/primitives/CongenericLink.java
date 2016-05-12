@@ -3,7 +3,7 @@ package edu.kpi.nesteruk.pzcs.model.primitives;
 /**
  * Created by Anatolii on 2016-03-13.
  */
-public class CongenericLink<N extends Node> extends SimpleLink<N> implements Link<N> {
+public class CongenericLink<N extends HasId> extends SimpleLink<N> {
 
     private static final long serialVersionUID = -2494365671091159475L;
 

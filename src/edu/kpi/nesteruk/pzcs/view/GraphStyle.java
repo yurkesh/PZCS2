@@ -76,7 +76,9 @@ public enum GraphStyle {
         HashMap<String, Object> vertexStyle = new HashMap<>();
         vertexStyle.put(mxConstants.STYLE_FOLDABLE, false);
         vertexStyle.put(mxConstants.STYLE_RESIZABLE, false);
+        /*
         vertexStyle.put(mxConstants.STYLE_EDITABLE, false);
+        */
         return vertexStyle;
     }
 

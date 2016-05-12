@@ -7,13 +7,13 @@ public class ProcessorsParams {
 
     public final int numberOfLinks;
     public final boolean hasIoProcessor;
-    public final Duplex duplex;
+    public final DuplexMode duplexMode;
     public final TransferParams transferParams;
 
-    public ProcessorsParams(int numberOfLinks, boolean hasIoProcessor, Duplex duplex, TransferParams transferParams) {
+    public ProcessorsParams(int numberOfLinks, boolean hasIoProcessor, DuplexMode duplexMode, TransferParams transferParams) {
         this.numberOfLinks = numberOfLinks;
         this.hasIoProcessor = hasIoProcessor;
-        this.duplex = duplex;
+        this.duplexMode = duplexMode;
         this.transferParams = transferParams;
     }
 }
