@@ -3,7 +3,7 @@ package edu.kpi.nesteruk.pzcs.planning.transfering;
 import edu.kpi.nesteruk.pzcs.model.primitives.HasId;
 
 /**
- * Created by Yurii on 2016-04-21.
+ * Created by Anatolii Bed on 2016-04-21.
  */
 public interface Connections {
 

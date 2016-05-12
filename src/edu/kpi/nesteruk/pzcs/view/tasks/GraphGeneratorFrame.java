@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 /**
- * Created by Yurii on 2016-04-13.
+ * Created by Anatolii Bed on 2016-04-13.
  */
 public class GraphGeneratorFrame extends JFrame {
 

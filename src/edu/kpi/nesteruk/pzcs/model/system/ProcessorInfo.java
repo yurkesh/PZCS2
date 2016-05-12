@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Created by Yurii on 2016-04-21.
+ * Created by Anatolii Bed on 2016-04-21.
  */
 public class ProcessorInfo implements Comparable<ProcessorInfo> {
 

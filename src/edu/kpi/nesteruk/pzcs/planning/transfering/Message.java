@@ -1,7 +1,7 @@
 package edu.kpi.nesteruk.pzcs.planning.transfering;
 
 /**
- * Created by Yurii on 2016-04-20.
+ * Created by Anatolii Bed on 2016-04-20.
  */
 public class Message extends AbstractParcel {
 

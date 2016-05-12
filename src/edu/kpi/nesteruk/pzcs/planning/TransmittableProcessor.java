@@ -10,7 +10,7 @@ import java.util.Queue;
 import java.util.Set;
 
 /**
- * Created by Yurii on 2016-04-20.
+ * Created by Anatolii Bed on 2016-04-20.
  */
 public class TransmittableProcessor implements Node {
 

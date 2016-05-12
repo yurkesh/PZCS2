@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 /**
- * Created by Yurii on 2016-04-13.
+ * Created by Anatolii Bed on 2016-04-13.
  */
 public class GraphGeneratorParamsInputDialog {
 

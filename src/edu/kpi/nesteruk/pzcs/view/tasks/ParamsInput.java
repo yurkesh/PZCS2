@@ -3,7 +3,7 @@ package edu.kpi.nesteruk.pzcs.view.tasks;
 import edu.kpi.nesteruk.pzcs.graph.generation.Params;
 
 /**
- * Created by Yurii on 2016-04-13.
+ * Created by Anatolii Bed on 2016-04-13.
  */
 public enum ParamsInput {
     MIN_NODE_WEIGHT("Мінімальна вага ноди") {

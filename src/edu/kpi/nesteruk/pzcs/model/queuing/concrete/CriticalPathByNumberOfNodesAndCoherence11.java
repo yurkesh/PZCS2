@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Created by Yurii on 2016-04-11.
+ * Created by Anatolii Bed on 2016-04-11.
  */
 public class CriticalPathByNumberOfNodesAndCoherence11<N extends Node, L extends Link<N>> extends AbstractQueueConstructor<N, L> {
 

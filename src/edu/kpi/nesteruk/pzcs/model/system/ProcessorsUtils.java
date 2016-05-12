@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by Yurii on 2016-04-21.
+ * Created by Anatolii Bed on 2016-04-21.
  */
 public class ProcessorsUtils {
 

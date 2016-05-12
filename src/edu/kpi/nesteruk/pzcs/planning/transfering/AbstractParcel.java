@@ -6,7 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * Created by Yurii on 2016-04-20.
+ * Created by Anatolii Bed on 2016-04-20.
  */
 public abstract class AbstractParcel implements Parcel {
 

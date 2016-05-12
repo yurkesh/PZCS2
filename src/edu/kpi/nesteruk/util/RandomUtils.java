@@ -3,7 +3,7 @@ package edu.kpi.nesteruk.util;
 import java.util.Random;
 
 /**
- * Created by Yurii on 2016-04-19.
+ * Created by Anatolii Bed on 2016-04-19.
  */
 public class RandomUtils {
 

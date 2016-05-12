@@ -1,7 +1,7 @@
 package edu.kpi.nesteruk.pzcs.graph.generation;
 
 /**
- * Created by Yurii on 2016-04-13.
+ * Created by Anatolii Bed on 2016-04-13.
  */
 public class Params {
     public final int minNodeWeight;

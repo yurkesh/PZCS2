@@ -17,7 +17,7 @@ import static edu.kpi.nesteruk.util.RandomUtils.randomFromTo;
 import static org.testng.Assert.*;
 
 /**
- * Created by Yurii on 2016-04-19.
+ * Created by Anatolii Bed on 2016-04-19.
  */
 public class GraphGeneratorTest extends Assert {
 

@@ -7,7 +7,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Created by Yurii on 2016-04-21.
+ * Created by Anatolii Bed on 2016-04-21.
  */
 public class TaskDependencies {
 
