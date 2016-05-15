@@ -7,6 +7,7 @@ import edu.kpi.nesteruk.pzcs.model.common.AbstractGraphModel;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
 import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
 import org.jgrapht.Graph;
+import org.jgrapht.WeightedGraph;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class TasksGraphModel extends AbstractGraphModel<Task, DirectedLink<Task>
         super(TasksGraphModel::makeGraph, true, new NonAcyclicGraphValidator());
     }
 
-    private static Graph<String, String> makeGraph() {
+    private static WeightedGraph<String, String> makeGraph() {
         return new SimpleDirectedWeightedGraph<>(TasksGraphModel::getLinkId);
     }
 

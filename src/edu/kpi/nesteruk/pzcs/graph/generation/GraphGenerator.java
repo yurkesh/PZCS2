@@ -10,6 +10,7 @@ import edu.kpi.nesteruk.pzcs.model.primitives.Node;
 import edu.kpi.nesteruk.util.CollectionUtils;
 import edu.kpi.nesteruk.util.RandomUtils;
 import org.jgrapht.Graph;
+import org.jgrapht.WeightedGraph;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -30,16 +31,18 @@ public class GraphGenerator<N extends Node, L extends Link<N>> {
     private final Random random;
     private final NodeFactory<N> nodeFactory;
     private final LinkFactory<N, L> linkFactory;
-    private final Supplier<Graph<String, String>> graphFactory;
+    private final Supplier<WeightedGraph<String, String>> graphFactory;
 
-    public GraphGenerator(Random random, NodeFactory<N> nodeFactory, LinkFactory<N, L> linkFactory, Supplier<Graph<String, String>> graphFactory) {
+    public GraphGenerator(Random random, NodeFactory<N> nodeFactory, LinkFactory<N, L> linkFactory, Supplier<? extends WeightedGraph<String, String>> graphFactory) {
         this.random = random;
         this.nodeFactory = nodeFactory;
         this.linkFactory = linkFactory;
-        this.graphFactory = graphFactory;
+        @SuppressWarnings("unchecked")
+        Supplier<WeightedGraph<String, String>> weightedGraphFactory = (Supplier<WeightedGraph<String, String>>) graphFactory;
+        this.graphFactory = weightedGraphFactory;
     }
 
-    public GraphGenerator(NodeFactory<N> nodeFactory, LinkFactory<N, L> linkFactory, Supplier<Graph<String, String>> graphFactory) {
+    public GraphGenerator(NodeFactory<N> nodeFactory, LinkFactory<N, L> linkFactory, Supplier<? extends WeightedGraph<String, String>> graphFactory) {
         this(new Random(42), nodeFactory, linkFactory, graphFactory);
     }
 
@@ -139,8 +142,8 @@ public class GraphGenerator<N extends Node, L extends Link<N>> {
 
     private boolean checkNoCycles(Collection<N> allNodes, Collection<L> links) {
         try {
-            Graph<String, String> graph = GraphUtils.makeGraphCheckAllEdgesAdded(
-                    graphFactory, allNodes, links
+            WeightedGraph<String, String> graph = GraphUtils.makeGraphCheckAllEdgesAdded(
+                     graphFactory, allNodes, links
             );
             return NON_ACYCLIC_VALIDATOR.isValid(graph);
         } catch (Exception e) {

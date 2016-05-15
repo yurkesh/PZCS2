@@ -1,7 +1,8 @@
-package edu.kpi.nesteruk.pzcs.planning;
+package edu.kpi.nesteruk.pzcs.planning.state;
 
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
 import edu.kpi.nesteruk.pzcs.model.system.Processor;
+import edu.kpi.nesteruk.pzcs.planning.params.ProcessorsParams;
 import edu.kpi.nesteruk.pzcs.planning.transfering.Parcel;
 
 import java.util.LinkedHashSet;

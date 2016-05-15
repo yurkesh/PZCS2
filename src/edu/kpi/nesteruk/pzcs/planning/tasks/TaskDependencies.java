@@ -1,10 +1,9 @@
-package edu.kpi.nesteruk.pzcs.model.tasks;
+package edu.kpi.nesteruk.pzcs.planning.tasks;
 
 import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
+import edu.kpi.nesteruk.pzcs.model.tasks.Task;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * Created by Yurii on 2016-04-21.

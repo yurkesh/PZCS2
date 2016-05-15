@@ -10,7 +10,7 @@ import edu.kpi.nesteruk.pzcs.graph.validation.GraphValidator;
 import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
 import edu.kpi.nesteruk.pzcs.model.primitives.Link;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
-import org.jgrapht.Graph;
+import org.jgrapht.WeightedGraph;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -27,13 +27,13 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     private IdPool<String> idPool;
     private Map<String, N> nodesMap;
     private Map<String, L> linksMap;
-    private Graph<String, String> graph;
+    private WeightedGraph<String, String> graph;
 
-    private final Supplier<Graph<String, String>> graphFactory;
+    private final Supplier<? extends WeightedGraph<String, String>> graphFactory;
     private final boolean isNodeWeighted;
     private final GraphValidator<String, String> validator;
 
-    public AbstractGraphModel(Supplier<Graph<String, String>> graphFactory, boolean isNodeWeighted, GraphValidator<String, String> validator) {
+    public AbstractGraphModel(Supplier<? extends WeightedGraph<String, String>> graphFactory, boolean isNodeWeighted, GraphValidator<String, String> validator) {
         this.graphFactory = graphFactory;
         this.isNodeWeighted = isNodeWeighted;
         this.validator = validator;
@@ -176,13 +176,9 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
         graph.removeEdge(id);
     }
 
-    protected Graph<String, String> cloneGraph(Graph<String, String> graph) {
-        return GraphUtils.cloneGraph(graph, graphFactory.get());
-    }
-
     @Override
     public boolean validate() {
-        return validator.isValid(cloneGraph(graph));
+        return validator.isValid(GraphUtils.cloneGraph(graph, graphFactory.get()));
     }
 
     @Override

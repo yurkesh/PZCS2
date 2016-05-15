@@ -8,6 +8,7 @@ import edu.kpi.nesteruk.pzcs.model.common.AbstractGraphModel;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
 import edu.kpi.nesteruk.pzcs.model.primitives.CongenericLink;
 import org.jgrapht.Graph;
+import org.jgrapht.WeightedGraph;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class SystemGraphModel extends AbstractGraphModel<Processor, CongenericLi
         );
     }
 
-    private static Graph<String, String> newGraph() {
+    private static WeightedGraph<String, String> newGraph() {
         return new SimpleWeightedGraph<>(SystemGraphModel::getLinkId);
     }
 

@@ -5,6 +5,8 @@ import edu.kpi.nesteruk.pzcs.model.primitives.Link;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
 import edu.kpi.nesteruk.util.CollectionUtils;
 import org.jgrapht.Graph;
+import org.jgrapht.Graphs;
+import org.jgrapht.WeightedGraph;
 
 import java.util.Collection;
 import java.util.function.Supplier;
@@ -22,15 +24,18 @@ public class GraphUtils {
         return destGraph;
     }
 
-    public static <N extends Node, L extends Link<N>> Graph<String, String> makeGraphCheckAllEdgesAdded(
-            Supplier<Graph<String, String>> graphFactory,
+    public static <N extends Node, L extends Link<N>> WeightedGraph<String, String> makeGraphCheckAllEdgesAdded(
+            Supplier<WeightedGraph<String, String>> graphFactory,
             Collection<N> nodes,
             Collection<L> links) {
 
-        Graph<String, String> graph = graphFactory.get();
+        WeightedGraph<String, String> graph = graphFactory.get();
         nodes.forEach(node -> graph.addVertex(node.getId()));
         links.forEach(link -> {
+            /*
             String insertedEdge = graph.addEdge(link.getFirst(), link.getSecond());
+            */
+            String insertedEdge = Graphs.addEdge(graph, link.getFirst(), link.getSecond(), link.getWeight());
             if(insertedEdge == null) {
                 throw new IllegalArgumentException("Cannot insert link = '" + link + "'");
             }
@@ -56,4 +61,5 @@ public class GraphUtils {
         double linksWeight = CollectionUtils.isEmpty(allLinks) ? 0 : getWeightSum(allLinks);
         return  nodesWeight / (nodesWeight + linksWeight);
     }
+
 }
