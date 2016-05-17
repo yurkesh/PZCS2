@@ -2,13 +2,18 @@ package edu.kpi.nesteruk.pzcs.planning;
 
 import edu.kpi.nesteruk.misc.FunctionWithCache;
 import edu.kpi.nesteruk.misc.Pair;
+import edu.kpi.nesteruk.pzcs.model.primitives.CongenericLink;
+import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
 import edu.kpi.nesteruk.pzcs.model.system.Processor;
+import edu.kpi.nesteruk.pzcs.model.system.ProcessorsGraph;
 import edu.kpi.nesteruk.pzcs.model.system.ProcessorsGraphBundle;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraph;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphBundle;
 import edu.kpi.nesteruk.pzcs.planning.params.PlanningParams;
 import edu.kpi.nesteruk.pzcs.planning.state.StatefulProcessor;
+import edu.kpi.nesteruk.pzcs.planning.tasks.TaskSourceImpl;
+import edu.kpi.nesteruk.pzcs.planning.tasks.TaskWithHostedPredecessors;
 import edu.kpi.nesteruk.pzcs.planning.tasks.TaskWithPredecessors;
 import edu.kpi.nesteruk.pzcs.planning.transfering.Parcel;
 import edu.kpi.nesteruk.util.CollectionUtils;
@@ -16,6 +21,7 @@ import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -25,6 +31,7 @@ import java.util.stream.Collectors;
  */
 abstract class CommonPlanner implements Planner {
 
+    private Function<ProcessorsGraphBundle, ProcessorsGraph> processorsGraphSimplifier;
     private Function<ProcessorsGraphBundle, List<String>> processorsByCoherenceSorter;
     private Function<TasksGraphBundle, List<String>> tasksSorter;
     private Function<TasksGraphBundle, TasksGraph> tasksGraphSimplifier;
@@ -32,7 +39,6 @@ abstract class CommonPlanner implements Planner {
     private int maxTaskTactsDelay;
 
 //    private final QueueConstructor<Task, DirectedLink<Task>> tasksQueueConstructor;
-//    private final Function<ProcessorsGraphBundle, WeightedGraph<String, String>> processorsGraphSimplifier;
 //    private TaskReadinessPredicate taskReadinessPredicate;
 
 
@@ -62,6 +68,8 @@ abstract class CommonPlanner implements Planner {
         Function<String, TaskWithPredecessors> taskWithPredecessorsMapper = getTaskWithPredecessorsMapper(tasksGraph, taskPredecessorsProvider);
         Function<String, String> taskToExecutingProcessorMapper = getTaskToExecutingProcessorMapper();
 
+        BiFunction<Processor, Processor, List<CongenericLink<Processor>>> router = getRouter(processorsGraphSimplifier.apply(processorsGraphBundle), processorsGraphBundle);
+
         int tact = 0;
         do {
             //Get all ready tasks
@@ -74,22 +82,55 @@ abstract class CommonPlanner implements Planner {
                     .filter(readyTasks::contains)
                     //Map task -> TaskWithPredecessors
                     .map(taskWithPredecessorsMapper)
-                    .forEach(taskWithPredecessors -> {
-                        //Need to search for processor which provides minimal start time
-                        //1) Get transfers from all direct predecessors
-                        Map<String, Integer> transfersFromPredecessors = taskWithPredecessors.getTransfersFromPredecessors();
-                        //2) Get processors of predecessors: {task -> processor}
+
+                    //Need to search for processor which provides minimal start time
+                    //Step-by-step:
+
+                    .map(taskWithPredecessors -> {
+                        //1) Get transfers IDs from all direct predecessors: {task -> link_between_tasks_id}
+                        Map<String, String> transfersFromPredecessorsIds = taskWithPredecessors.getTransfersFromPredecessors();
+
+                        //2) Get transfers from all direct predecessors: {task -> link_between_tasks}
+                        Map<String, DirectedLink<Task>> transfersFromPredecessors = transfersFromPredecessorsIds.entrySet().stream()
+                                .collect(Collectors.toMap(
+                                        Map.Entry::getKey,
+                                        entry -> tasksGraphBundle.getLinksMap().get(entry.getValue())
+                                ));
+
+                        //3) Get processors of predecessors: {task -> processor}
                         Map<String, String> tasksOnProcessors = transfersFromPredecessors.keySet().stream()
                                 .collect(Collectors.toMap(
                                         Function.identity(),
                                         taskToExecutingProcessorMapper
                                 ));
-                        
+
+                        //4) Get sources of task - transfer from each processor without assuming links between processors
+                        List<TaskSourceImpl> taskSources = transfersFromPredecessors.entrySet().stream()
+                                .map(entry -> new TaskSourceImpl(
+                                        entry.getValue(),
+                                        allProcessors.get(tasksOnProcessors.get(entry.getKey()))
+                                ))
+                                .collect(Collectors.toList());
+
+                        return new TaskWithHostedPredecessors(taskWithPredecessors.task, taskSources);
+                    })
+                    .forEach(taskWithHostedPredecessors -> {
+
                     });
 
             //repeat until all tasks are done
         } while (doneTasks.containsAll(allTasks.keySet()));
 
+        return null;
+    }
+
+    /**
+     * @return function that accepts source and destination processors and returns list of links between processors that
+     * provide minimal total weight
+     */
+    private static BiFunction<Processor, Processor, List<CongenericLink<Processor>>> getRouter(
+            ProcessorsGraph processorsGraph,
+            ProcessorsGraphBundle processorsGraphBundle) {
         return null;
     }
 
@@ -105,7 +146,7 @@ abstract class CommonPlanner implements Planner {
                 task,
                 tasksPredecessorsProvider,
                 //Use cache
-                new FunctionWithCache<>(predecessor -> (int) tasksGraph.getEdgeWeight(tasksGraph.getEdge(predecessor, task)))
+                new FunctionWithCache<>(predecessor -> tasksGraph.getEdge(predecessor, task))
         );
     }
 

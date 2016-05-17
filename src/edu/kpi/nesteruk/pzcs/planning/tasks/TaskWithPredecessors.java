@@ -17,9 +17,9 @@ public class TaskWithPredecessors {
 
     public final String task;
     private final Function<String, Collection<String>> predecessorsProvider;
-    private final Function<String, Integer> transferFromPredecessorProvider;
+    private final Function<String, String> transferFromPredecessorProvider;
 
-    public TaskWithPredecessors(String task, Function<String, Collection<String>> predecessorsProvider, Function<String, Integer> transferFromPredecessorProvider) {
+    public TaskWithPredecessors(String task, Function<String, Collection<String>> predecessorsProvider, Function<String, String> transferFromPredecessorProvider) {
         this.task = task;
         this.predecessorsProvider = predecessorsProvider;
         this.transferFromPredecessorProvider = transferFromPredecessorProvider;
@@ -29,7 +29,10 @@ public class TaskWithPredecessors {
         return predecessorsProvider.apply(task);
     }
 
-    public Map<String, Integer> getTransfersFromPredecessors() {
+    /**
+     * @return {predecessor_id -> link_id}
+     */
+    public Map<String, String> getTransfersFromPredecessors() {
         return getPredecessors().stream()
                 .collect(Collectors.toMap(
                         Function.identity(),
