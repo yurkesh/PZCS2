@@ -16,4 +16,5 @@ public interface GraphPresenter extends FileActionHandler {
 
     void onValidate(ActionEvent event);
 
+    void setGraph(Object graph);
 }

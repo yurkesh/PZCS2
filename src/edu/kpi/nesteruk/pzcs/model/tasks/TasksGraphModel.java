@@ -1,32 +1,34 @@
 package edu.kpi.nesteruk.pzcs.model.tasks;
 
 import edu.kpi.nesteruk.misc.Pair;
+import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
 import edu.kpi.nesteruk.pzcs.graph.generation.GraphGenerator;
+import edu.kpi.nesteruk.pzcs.graph.generation.Params;
 import edu.kpi.nesteruk.pzcs.graph.validation.NonAcyclicGraphValidator;
 import edu.kpi.nesteruk.pzcs.model.common.AbstractGraphModel;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
+import edu.kpi.nesteruk.pzcs.model.common.GraphModelBundle;
 import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
+import edu.kpi.nesteruk.pzcs.model.primitives.Link;
+import edu.kpi.nesteruk.pzcs.model.primitives.Node;
 import org.jgrapht.Graph;
 import org.jgrapht.WeightedGraph;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Created by Yurii on 3/10/2016.
  */
-public class TasksGraphModel extends AbstractGraphModel<Task, DirectedLink<Task>> implements GraphModel {
+public class TasksGraphModel extends AbstractGraphModel<Task, DirectedLink<Task>, TasksGraphBundle> implements GraphModel {
 
     public TasksGraphModel() {
         super(TasksGraphModel::makeGraph, true, new NonAcyclicGraphValidator());
     }
 
-    private static WeightedGraph<String, String> makeGraph() {
-        return new SimpleDirectedWeightedGraph<>(TasksGraphModel::getLinkId);
+    public static TasksGraph makeGraph() {
+        return new TasksGraph(TasksGraphModel::getLinkId);
     }
 
     @Override
@@ -43,6 +45,11 @@ public class TasksGraphModel extends AbstractGraphModel<Task, DirectedLink<Task>
         return makeLink(source, destination, weight);
     }
 
+    @Override
+    protected TasksGraphBundle makeBundle(Map<String, Task> nodesMap, Map<String, DirectedLink<Task>> linksMap) {
+        return new TasksGraphBundle(nodesMap, linksMap);
+    }
+
     private static Pair<DirectedLink<Task>, String> makeLink(Task source, Task destination, int weight) {
         DirectedLink<Task> link = new DirectedLink<>(source, destination, weight);
         return Pair.create(link, getLinkId(source.getId(), destination.getId()));
@@ -56,7 +63,22 @@ public class TasksGraphModel extends AbstractGraphModel<Task, DirectedLink<Task>
         return idsList.stream().collect(Collectors.joining("=-="));
     }
 
-    public static GraphGenerator<Task, DirectedLink<Task>> makeGenerator(Random random) {
-        return new GraphGenerator<>(random, TasksGraphModel::makeNode, TasksGraphModel::makeLink, TasksGraphModel::makeGraph);
+    public GraphDataAssembly generate(Params params) {
+        return apply(new GraphGenerator<>(
+                this::makeConcreteNode,
+                this::makeConcreteLink,
+                TasksGraphModel::makeGraph,
+                this::makeBundle
+        ).generate(params));
+    }
+
+    public static GraphGenerator<Task, DirectedLink<Task>, TasksGraphBundle> makeGenerator(Random random) {
+        return new GraphGenerator<>(
+                random,
+                TasksGraphModel::makeNode,
+                TasksGraphModel::makeLink,
+                TasksGraphModel::makeGraph,
+                TasksGraphBundle::new
+        );
     }
 }

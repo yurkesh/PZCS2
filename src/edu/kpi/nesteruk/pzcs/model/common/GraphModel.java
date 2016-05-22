@@ -26,9 +26,11 @@ public interface GraphModel {
 
     boolean validate();
 
-    GraphModelBundle getSerializable();
+    GraphModelBundle getBundle();
 
+    /*
     GraphDataAssembly generate(Params params);
+    */
 
     GraphDataAssembly restore(GraphModelBundle modelBundle);
 

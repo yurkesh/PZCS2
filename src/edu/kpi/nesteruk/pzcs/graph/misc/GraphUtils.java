@@ -1,5 +1,6 @@
 package edu.kpi.nesteruk.pzcs.graph.misc;
 
+import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.model.primitives.HasWeight;
 import edu.kpi.nesteruk.pzcs.model.primitives.Link;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
@@ -9,7 +10,10 @@ import org.jgrapht.Graphs;
 import org.jgrapht.WeightedGraph;
 
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Created by Yurii on 2016-04-13.
@@ -24,12 +28,12 @@ public class GraphUtils {
         return destGraph;
     }
 
-    public static <N extends Node, L extends Link<N>> WeightedGraph<String, String> makeGraphCheckAllEdgesAdded(
-            Supplier<WeightedGraph<String, String>> graphFactory,
+    public static <N extends Node, L extends Link<N>, G extends Graph<String, String>> G makeGraphCheckAllEdgesAdded(
+            Supplier<G> graphFactory,
             Collection<N> nodes,
             Collection<L> links) {
 
-        WeightedGraph<String, String> graph = graphFactory.get();
+        G graph = graphFactory.get();
         nodes.forEach(node -> graph.addVertex(node.getId()));
         links.forEach(link -> {
             /*
@@ -62,4 +66,23 @@ public class GraphUtils {
         return  nodesWeight / (nodesWeight + linksWeight);
     }
 
+    public static List<String> sortVertexesByCoherence(Graph<String, String> graph) {
+        return graph.vertexSet().stream()
+                //Map to pair {vertex, neighbours_of_vertex}
+                .map(vertex -> Pair.create(vertex, Graphs.neighborListOf(graph, vertex)))
+                //Sort by number of neighbors (desc) than by id (asc)
+                .sorted(
+                        Comparator.<Pair<String, List<String>>, Integer>comparing(
+                                //By number of neighbors (asc)
+                                pair -> pair.second.size()
+                        )
+                        //By number of neighbors (desc)
+                        .reversed()
+                        //By id asc
+                        .thenComparing(Pair::getFirst)
+                )
+                //Get vertex
+                .map(Pair::getFirst)
+                .collect(Collectors.toList());
+    }
 }

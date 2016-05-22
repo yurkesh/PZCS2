@@ -13,6 +13,7 @@ import org.jgrapht.Graph;
 import org.jgrapht.WeightedGraph;
 
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -22,7 +23,7 @@ import java.util.stream.IntStream;
 /**
  * Created by Yurii on 2016-03-24.
  */
-public class GraphGenerator<N extends Node, L extends Link<N>> {
+public class GraphGenerator<N extends Node, L extends Link<N>, G extends GraphModelBundle<N, L>> {
 
     private static final boolean DEBUG_LOG_ENABLED = false;
 
@@ -31,22 +32,32 @@ public class GraphGenerator<N extends Node, L extends Link<N>> {
     private final Random random;
     private final NodeFactory<N> nodeFactory;
     private final LinkFactory<N, L> linkFactory;
-    private final Supplier<WeightedGraph<String, String>> graphFactory;
+    private final Supplier<? extends Graph<String, String>> graphFactory;
+    private final BiFunction<Map<String, N>, Map<String, L>, G> graphBundleFactory;
 
-    public GraphGenerator(Random random, NodeFactory<N> nodeFactory, LinkFactory<N, L> linkFactory, Supplier<? extends WeightedGraph<String, String>> graphFactory) {
+    public GraphGenerator(
+            Random random,
+            NodeFactory<N> nodeFactory,
+            LinkFactory<N, L> linkFactory,
+            Supplier<? extends Graph<String, String>> graphFactory,
+            BiFunction<Map<String, N>, Map<String, L>, G> graphBundleFactory) {
+
         this.random = random;
         this.nodeFactory = nodeFactory;
         this.linkFactory = linkFactory;
-        @SuppressWarnings("unchecked")
-        Supplier<WeightedGraph<String, String>> weightedGraphFactory = (Supplier<WeightedGraph<String, String>>) graphFactory;
-        this.graphFactory = weightedGraphFactory;
+        this.graphFactory = graphFactory;
+        this.graphBundleFactory = graphBundleFactory;
     }
 
-    public GraphGenerator(NodeFactory<N> nodeFactory, LinkFactory<N, L> linkFactory, Supplier<? extends WeightedGraph<String, String>> graphFactory) {
-        this(new Random(42), nodeFactory, linkFactory, graphFactory);
+    public GraphGenerator(
+            NodeFactory<N> nodeFactory,
+            LinkFactory<N, L> linkFactory,
+            Supplier<? extends Graph<String, String>> graphFactory,
+            BiFunction<Map<String, N>, Map<String, L>, G> graphBundleFactory) {
+        this(new Random(42), nodeFactory, linkFactory, graphFactory, graphBundleFactory);
     }
 
-    public GraphModelBundle<N, L> generate(Params params) {
+    public G generate(Params params) {
         Pair<Collection<N>, Map<String, L>> generated = generateInner(params);
         if(DEBUG_LOG_ENABLED) {
             System.out.println(
@@ -54,7 +65,7 @@ public class GraphGenerator<N extends Node, L extends Link<N>> {
                             "LINKS_WEIGHT = " + generated.getSecond().values().stream().mapToDouble(Link::getWeight).sum()
             );
         }
-        return new GraphModelBundle<>(
+        return graphBundleFactory.apply(
                 generated.first.stream().collect(Collectors.toMap(Node::getId, Function.identity())),
                 generated.second
         );
@@ -142,8 +153,8 @@ public class GraphGenerator<N extends Node, L extends Link<N>> {
 
     private boolean checkNoCycles(Collection<N> allNodes, Collection<L> links) {
         try {
-            WeightedGraph<String, String> graph = GraphUtils.makeGraphCheckAllEdgesAdded(
-                     graphFactory, allNodes, links
+            Graph<String, String> graph = GraphUtils.makeGraphCheckAllEdgesAdded(
+                    graphFactory, allNodes, links
             );
             return NON_ACYCLIC_VALIDATOR.isValid(graph);
         } catch (Exception e) {

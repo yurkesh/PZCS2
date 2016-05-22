@@ -10,6 +10,7 @@ import edu.kpi.nesteruk.pzcs.graph.validation.GraphValidator;
 import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
 import edu.kpi.nesteruk.pzcs.model.primitives.Link;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
+import org.jgrapht.Graph;
 import org.jgrapht.WeightedGraph;
 
 import java.util.Collection;
@@ -22,18 +23,18 @@ import java.util.stream.Collectors;
 /**
  * Created by Yurii on 2016-03-20.
  */
-public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> implements GraphModel {
+public abstract class AbstractGraphModel<N extends Node, L extends Link<N>, G extends GraphModelBundle<N, L>> implements GraphModel {
 
     private IdPool<String> idPool;
     private Map<String, N> nodesMap;
     private Map<String, L> linksMap;
-    private WeightedGraph<String, String> graph;
+    private Graph<String, String> graph;
 
-    private final Supplier<? extends WeightedGraph<String, String>> graphFactory;
+    private final Supplier<? extends Graph<String, String>> graphFactory;
     private final boolean isNodeWeighted;
     private final GraphValidator<String, String> validator;
 
-    public AbstractGraphModel(Supplier<? extends WeightedGraph<String, String>> graphFactory, boolean isNodeWeighted, GraphValidator<String, String> validator) {
+    public AbstractGraphModel(Supplier<? extends Graph<String, String>> graphFactory, boolean isNodeWeighted, GraphValidator<String, String> validator) {
         this.graphFactory = graphFactory;
         this.isNodeWeighted = isNodeWeighted;
         this.validator = validator;
@@ -182,19 +183,21 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
     }
 
     @Override
-    public GraphModelBundle<N, L> getSerializable() {
-        return new GraphModelBundle<>(nodesMap, linksMap);
+    public G getBundle() {
+        return makeBundle(nodesMap, linksMap);
     }
+
+    protected abstract G makeBundle(Map<String, N> nodesMap, Map<String, L> linksMap);
 
     @Override
     public GraphDataAssembly restore(GraphModelBundle modelBundle) {
         @SuppressWarnings("unchecked")
-        GraphModelBundle<N, L> bundle = (GraphModelBundle<N, L>) modelBundle;
+        G bundle = (G) modelBundle;
         return apply(bundle);
     }
 
-    private GraphDataAssembly apply(GraphModelBundle<N, L> modelSerializable) {
-        return apply(modelSerializable.getNodesMap().values(), modelSerializable.getLinksMap());
+    protected GraphDataAssembly apply(G modelBundle) {
+        return apply(modelBundle.getNodesMap().values(), modelBundle.getLinksMap());
     }
 
     private GraphDataAssembly apply(Collection<N> nodes, Map<String, L> linksMap) {
@@ -223,10 +226,19 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>> impl
         );
     }
 
+    /*
     @Override
     public GraphDataAssembly generate(Params params) {
-        return apply(new GraphGenerator<>(this::makeConcreteNode, this::makeConcreteLink, graphFactory).generate(params));
+        return apply(
+                new GraphGenerator<>(
+                        this::makeConcreteNode,
+                        this::makeConcreteLink,
+                        graphFactory,
+                        this::makeBundle
+                ).generate(params)
+        );
     }
+    */
 
     @Override
     public IdAndValue updateWeightOfLink(String idOfLink, String text) {

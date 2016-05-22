@@ -5,39 +5,53 @@ import edu.kpi.nesteruk.pzcs.model.system.Processor;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
 
 /**
+ * Contains info about dependency of concrete task (source)
  * Created by Yurii on 2016-05-18.
  */
-public class TaskSourceImpl implements TaskDependencySource {
+public class TaskHostedDependency {
 
     public final DirectedLink<Task> transferBetweenTasks;
     public final Processor sourceTaskHost;
 
-    public TaskSourceImpl(DirectedLink<Task> transferBetweenTasks, Processor sourceTaskHost) {
+    public TaskHostedDependency(DirectedLink<Task> transferBetweenTasks, Processor sourceTaskHost) {
         this.transferBetweenTasks = transferBetweenTasks;
         this.sourceTaskHost = sourceTaskHost;
     }
 
-    @Override
+    /**
+     *
+     * @return id of source (predecessor) task
+     */
     public String getSourceTaskId() {
         return transferBetweenTasks.getFirst();
     }
 
-    @Override
-    public String getTargetTaskId() {
+    /**
+     * @return id of destination (dependent/successor) task
+     */
+    public String getDestinationTaskId() {
         return transferBetweenTasks.getSecond();
     }
 
-    @Override
+    /**
+     * @return id of processor holding source tasl
+     */
     public String getProcessorId() {
         return sourceTaskHost.getId();
     }
 
     /**
-     * @return weight of transfer without assuming link between processors
+     * @return weight of transfer (volume of data) that needs to be transferred from source to destination
      */
-    @Override
     public int getTransferWeight() {
         return transferBetweenTasks.getWeight();
     }
 
+    @Override
+    public String toString() {
+        return "TaskHostedDependency{" +
+                "transferBetweenTasks=" + transferBetweenTasks +
+                ", sourceTaskHost=" + sourceTaskHost +
+                '}';
+    }
 }

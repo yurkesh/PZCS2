@@ -1,11 +1,13 @@
 package edu.kpi.nesteruk.pzcs.view.dashboard;
 
 import edu.kpi.nesteruk.pzcs.common.GraphType;
+import edu.kpi.nesteruk.pzcs.presenter.common.DefaultPresenter;
 import edu.kpi.nesteruk.pzcs.presenter.common.UnitedGraphPresenter;
 import edu.kpi.nesteruk.pzcs.view.Views;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 
 /**
  * Created by Yurii on 09.09.2014.
@@ -121,5 +123,13 @@ public class DashboardView extends JFrame {
             exit.addActionListener(graphPresenter::onExit);
             menuBar.add(exit);
         }
+    }
+
+    public static DashboardView defaultStart() {
+        return new DashboardView(GraphType.values());
+    }
+
+    public UnitedGraphPresenter getGraphPresenter() {
+        return graphPresenter;
     }
 }

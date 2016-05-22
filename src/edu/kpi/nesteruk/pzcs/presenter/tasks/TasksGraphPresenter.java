@@ -5,11 +5,12 @@ import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
 import edu.kpi.nesteruk.pzcs.graph.generation.Params;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
-import edu.kpi.nesteruk.pzcs.model.common.GraphModelBundle;
 import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
 import edu.kpi.nesteruk.pzcs.model.queuing.common.QueueConstructor;
 import edu.kpi.nesteruk.pzcs.model.queuing.primitives.CriticalNode;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
+import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphBundle;
+import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphModel;
 import edu.kpi.nesteruk.pzcs.presenter.common.CaptionsSupplier;
 import edu.kpi.nesteruk.pzcs.presenter.common.CommonGraphPresenter;
 import edu.kpi.nesteruk.pzcs.presenter.common.GraphVertexSizeSupplier;
@@ -59,7 +60,8 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
             GraphGeneratorFrame generatorFrame = new GraphGeneratorFrame(
                     params,
                     (generatorParams) -> {
-                        GraphDataAssembly generated = getModel().generate(generatorParams);
+                        GraphModel model = getModel();
+                        GraphDataAssembly generated = ((TasksGraphModel) model).generate(generatorParams);
                         System.out.println(generated);
                         setGraph(generated);
                     }
@@ -69,6 +71,17 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
             generatorsCount++;
         } else {
             Message.showMessage(true, "Incorrect params", getParamsErrorCaption(check));
+        }
+    }
+
+
+
+    @Override
+    public void setGraph(Object graph) {
+        if(graph instanceof TasksGraphBundle) {
+            setGraph(getModel().restore((TasksGraphBundle) graph));
+        } else {
+            throw new IllegalArgumentException("Cannot set graph = " + graph);
         }
     }
 
@@ -94,10 +107,10 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
     @Override
     public void onMakeQueues(ActionEvent event) {
         Map<String, List<CriticalNode<Task>>> queuesWithTitles = queueConstructors.stream()
-                .map(queueConstructor ->
-                        queueConstructor.constructQueues(
-                                (GraphModelBundle<Task, DirectedLink<Task>>) getModel().getSerializable())
-                ).collect(CollectionUtils.CustomCollectors.toMap(
+                .map(queueConstructor -> queueConstructor.constructQueues(
+                        (TasksGraphBundle) getModel().getBundle()
+                ))
+                .collect(CollectionUtils.CustomCollectors.toMap(
                         titleWithCriticalNodesPair -> titleWithCriticalNodesPair.first,
                         Pair::getSecond,
                         LinkedHashMap::new

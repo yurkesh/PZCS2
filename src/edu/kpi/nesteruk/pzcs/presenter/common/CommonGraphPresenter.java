@@ -445,7 +445,7 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
     }
 
     private void saveGraph(String filePath) {
-        GraphModelBundle modelSerializable = model.getSerializable();
+        GraphModelBundle modelSerializable = model.getBundle();
         LinkedHashSet<String> nodesIds = modelSerializable.getNodesIds();
         Map<String, Tuple<Integer>> nodeIdToCoordinates = nodesIds.stream()
                 .collect(Collectors.toMap(

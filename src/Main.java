@@ -23,7 +23,9 @@ public class Main {
                 new CriticalPathByWeightOfNodes14()
         );
         */
-
+        /*
         new DashboardView(GraphType.values());
+        */
+        DashboardView.defaultStart();
     }
 }
