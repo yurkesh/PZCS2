@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 class TasksGraphPlanner {
 
     private final Consumer<Object> logger;
-    private final SingleTaskScheduleSearcher singleTaskPlanner;
+    private final SingleTaskHostSearcher singleTaskPlanner;
     private final List<String> processorsSorted;
     private final Map<String, StatefulProcessor> statefulProcessorMap;
     private final Map<String, Task> tasksMap;
@@ -36,7 +36,7 @@ class TasksGraphPlanner {
 
     TasksGraphPlanner(
             Consumer<Object> logger,
-            SingleTaskScheduleSearcher singleTaskPlanner,
+            SingleTaskHostSearcher singleTaskPlanner,
             List<String> processorsSorted,
             Map<String, StatefulProcessor> statefulProcessorMap,
             Map<String, Task> tasksMap,
@@ -64,7 +64,7 @@ class TasksGraphPlanner {
         this.router = router;
     }
 
-    public Map<Processor, List<Pair<Task, Parcel>>> getPlannedWork() {
+    public Map<String, List<Pair<String, Parcel>>> getPlannedWork() {
 
         Set<String> executingTasks = new LinkedHashSet<>();
 
@@ -81,7 +81,7 @@ class TasksGraphPlanner {
                     .collect(Collectors.toList());
 
             //Add them to holder
-            doneTasksHolder.addDoneTasks(doneTasks);
+            doneTasksHolder.addDoneTasks(tact, doneTasks);
 
             if(!doneTasksHolder.hasNotDone()) {
                 break;
@@ -109,7 +109,11 @@ class TasksGraphPlanner {
                                         .map(statefulProcessor -> new ProcessorWithStartTime(
                                                 statefulProcessor,
                                                 singleTaskPlanner.getStartTime(
-                                                        router, tact, taskWithHostedPredecessors, statefulProcessor
+                                                        router,
+                                                        tact,
+                                                        taskWithHostedPredecessors,
+                                                        statefulProcessor,
+                                                        doneTasksHolder
                                                 )
                                         ))
                                         //Sort by startTime, asc
@@ -177,7 +181,11 @@ class TasksGraphPlanner {
             //repeat until all tasks are done
         } while (doneTasksHolder.hasNotDone());
 
-        return null;
+        Map<String, List<Pair<String, Parcel>>> collect = statefulProcessorMap.values().stream().collect(Collectors.toMap(
+                StatefulProcessor::getProcessorId,
+                StatefulProcessor::getScheduledWork
+        ));
+        return collect;
     }
 
 

@@ -1,6 +1,8 @@
 package edu.kpi.nesteruk.pzcs.planning.state;
 
+import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.model.system.Processor;
+import edu.kpi.nesteruk.pzcs.planning.transfering.Parcel;
 import edu.kpi.nesteruk.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -63,6 +65,11 @@ public class StatefulProcessorImpl implements StatefulProcessor {
     @Override
     public void addIdleTransfer(int tact) {
         transfers.add(tact, new ArrayList<>());
+    }
+
+    @Override
+    public List<Pair<String, Parcel>> getScheduledWork() {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override

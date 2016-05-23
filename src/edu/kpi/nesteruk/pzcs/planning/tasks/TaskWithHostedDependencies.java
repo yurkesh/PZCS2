@@ -1,6 +1,10 @@
 package edu.kpi.nesteruk.pzcs.planning.tasks;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Created by Yurii on 2016-05-18.
@@ -16,10 +20,18 @@ public class TaskWithHostedDependencies {
      * Dependencies of this task that contain info about processor hosting them
      */
     public final List<TaskHostedDependency> dependencySources;
+    /**
+     * The same as {@link #dependencySources} but in map {TaskHostedDependency#sourceTaskId -> TaskHostedDependency}
+     */
+    public final Map<String, TaskHostedDependency> dependencySourcesMap;
 
-    public TaskWithHostedDependencies(String task, List<? extends TaskHostedDependency> dependencySources) {
+    public TaskWithHostedDependencies(String task, List<TaskHostedDependency> dependencySources) {
         this.task = task;
-        this.dependencySources = (List<TaskHostedDependency>) dependencySources;
+        this.dependencySources = dependencySources;
+        this.dependencySourcesMap = Collections.unmodifiableMap(dependencySources.stream().collect(Collectors.toMap(
+                TaskHostedDependency::getSourceTaskId,
+                Function.identity()
+        )));
     }
 
     @Override
@@ -48,5 +60,15 @@ public class TaskWithHostedDependencies {
                 .filter(processorHost -> !processor.equals(processorHost))
                 .findAny()
                 .isPresent();
+    }
+
+    /**
+     * @param processorIdToExclude id of processor to exclude
+     * @return all dependencies that are hosted on processors different than specified
+     */
+    public List<TaskHostedDependency> getAllDependenciesExcluding(String processorIdToExclude) {
+        return dependencySources.stream()
+                .filter(dependencySource -> !processorIdToExclude.equals(dependencySource.getProcessorId()))
+                .collect(Collectors.toList());
     }
 }

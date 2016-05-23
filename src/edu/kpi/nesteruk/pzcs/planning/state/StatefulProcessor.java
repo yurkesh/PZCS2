@@ -1,6 +1,10 @@
 package edu.kpi.nesteruk.pzcs.planning.state;
 
+import edu.kpi.nesteruk.misc.Pair;
+import edu.kpi.nesteruk.pzcs.planning.transfering.Parcel;
+
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,6 +31,8 @@ public interface StatefulProcessor {
     void addIdleExecution(int tact);
 
     void addIdleTransfer(int tact);
+
+    List<Pair<String, Parcel>> getScheduledWork();
 
 
     /*

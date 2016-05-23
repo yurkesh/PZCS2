@@ -7,13 +7,14 @@ import edu.kpi.nesteruk.pzcs.planning.tasks.TaskWithHostedDependencies;
  * Created by Yurii on 2016-05-22.
  */
 @FunctionalInterface
-public interface SingleTaskScheduleSearcher {
+public interface SingleTaskHostSearcher {
 
     int getStartTime(
             TaskTransferRouter router,
             int tact,
             TaskWithHostedDependencies task,
-            StatefulProcessor processor
+            StatefulProcessor processor,
+            TaskFinishTimeProvider taskFinishTimeProvider
     );
 
 }

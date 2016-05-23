@@ -19,7 +19,7 @@ import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphBundle;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphModel;
 import edu.kpi.nesteruk.pzcs.planning.params.PlanningParams;
 import edu.kpi.nesteruk.pzcs.planning.planner.CommonPlanner;
-import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskScheduleSearcherImpl;
+import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcherImpl;
 import edu.kpi.nesteruk.pzcs.planning.transfering.Parcel;
 import edu.kpi.nesteruk.pzcs.view.dashboard.DashboardView;
 import edu.kpi.nesteruk.pzcs.view.dashboard.UnitedGraphsView;
@@ -72,7 +72,7 @@ public class CommonPlannerTesting {
                         .map(Task::getId)
                         .collect(Collectors.toList())
                 ,
-                new SingleTaskScheduleSearcherImpl(),
+                new SingleTaskHostSearcherImpl(),
                 System.out::println
         );
     }

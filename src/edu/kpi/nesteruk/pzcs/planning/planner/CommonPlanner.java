@@ -11,7 +11,6 @@ import edu.kpi.nesteruk.pzcs.planning.Planner;
 import edu.kpi.nesteruk.pzcs.planning.params.PlanningParams;
 import edu.kpi.nesteruk.pzcs.planning.state.StatefulProcessor;
 import edu.kpi.nesteruk.pzcs.planning.state.StatefulProcessorImpl;
-import edu.kpi.nesteruk.pzcs.planning.tasks.TaskWithHostedDependencies;
 import edu.kpi.nesteruk.pzcs.planning.transfering.Parcel;
 import edu.kpi.nesteruk.util.CollectionUtils;
 
@@ -28,7 +27,7 @@ public class CommonPlanner implements Planner {
     private final Function<ProcessorsGraph, List<String>> processorsByCoherenceDescSorter;
     private final Function<TasksGraphBundle, TasksGraph> tasksGraphSimplifier;
     private final Function<TasksGraphBundle, List<String>> tasksSorter;
-    private final SingleTaskScheduleSearcher singleTaskPlanner;
+    private final SingleTaskHostSearcher singleTaskPlanner;
     private final Consumer<Object> logger;
 
     public CommonPlanner(
@@ -36,7 +35,7 @@ public class CommonPlanner implements Planner {
             Function<ProcessorsGraph, List<String>> processorsByCoherenceDescSorter,
             Function<TasksGraphBundle, TasksGraph> tasksGraphSimplifier,
             Function<TasksGraphBundle, List<String>> tasksSorter,
-            SingleTaskScheduleSearcher singleTaskPlanner,
+            SingleTaskHostSearcher singleTaskPlanner,
             Consumer<Object> logger) {
 
         this.processorsGraphSimplifier = processorsGraphSimplifier;
@@ -99,8 +98,7 @@ public class CommonPlanner implements Planner {
 
         TaskTransferRouter router = TaskTransferRouter.getRouter(
                 processorsGraph,
-                processorsGraphBundle,
-                statefulProcessorMap
+                processorsGraphBundle
         );
 
         TasksGraphPlanner planner = new TasksGraphPlanner(
@@ -119,7 +117,14 @@ public class CommonPlanner implements Planner {
                 router
         );
 
-        return planner.getPlannedWork();
+        // TODO: 2016-05-24 [REFACTOR] Make it look better
+        return planner.getPlannedWork().entrySet().stream()
+                .collect(Collectors.toMap(
+                        allProcessors::get,
+                        entry -> entry.getValue().stream()
+                                .map(pair -> Pair.create(tasksMap.get(pair.first), pair.second))
+                                .collect(Collectors.toList())
+                ));
     }
 
     private static Map<String, StatefulProcessor> makeStatefulProcessors(Collection<Processor> processors) {
