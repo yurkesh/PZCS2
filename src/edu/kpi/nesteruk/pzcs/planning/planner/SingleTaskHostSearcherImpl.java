@@ -20,7 +20,8 @@ public class SingleTaskHostSearcherImpl implements SingleTaskHostSearcher {
             int tact,
             TaskWithHostedDependencies task,
             StatefulProcessor processor,
-            TaskFinishTimeProvider taskFinishTimeProvider) {
+            TaskFinishTimeProvider taskFinishTimeProvider,
+            LockedStatefulProcessorProvider processorProvider) {
 
         int startTime;
 
@@ -31,8 +32,8 @@ public class SingleTaskHostSearcherImpl implements SingleTaskHostSearcher {
                 //Return current tact
                 startTime = tact;
             } else {
-                //Processor can start execute task right after becoming free
-                startTime = processor.getFreeTime();
+                //Processor can start execute task immediately after becoming free
+                startTime = processor.getReleaseTime();
             }
         } else {
             List<String> dependencies = task.dependencySources.stream()
@@ -48,15 +49,18 @@ public class SingleTaskHostSearcherImpl implements SingleTaskHostSearcher {
 
             if(allTasksAreOnProcessor) {
                 // If all dependencies of specified task were executed on current processor
-                // we can start it right after processor becomes free
-                startTime = processor.getFreeTime();
+                // we can start it immediately after processor becomes free
+                startTime = processor.getReleaseTime();
             } else {
+                //Need to transfer data from parent tasks located on other processors. Time of arrival of the last data
+                // transfer => time of start
                 startTime = getMinAvailableStartTimeOfTaskDependingOnTransfers(
                         tact,
                         taskFinishTimeProvider,
                         task,
                         processor,
-                        router
+                        router,
+                        processorProvider
                 );
             }
         }
@@ -68,7 +72,8 @@ public class SingleTaskHostSearcherImpl implements SingleTaskHostSearcher {
             TaskFinishTimeProvider taskFinishTimeProvider,
             TaskWithHostedDependencies task,
             StatefulProcessor processor,
-            TaskTransferRouter router) {
+            TaskTransferRouter router,
+            LockedStatefulProcessorProvider processorProvider) {
 
         // TODO: 2016-05-24 Add metric customization
         TaskDependencyTransferPriorityComparator taskTransferPriorityComparator =
@@ -81,20 +86,58 @@ public class SingleTaskHostSearcherImpl implements SingleTaskHostSearcher {
         return nonOnThisProcessorDependencies.stream()
                 //Sort all these dependencies tasks by their metric
                 .sorted((t1, t2) -> taskTransferPriorityComparator.compare(t1.getSourceTaskId(), t2.getSourceTaskId()))
-                //For all dependencies find the time of transfer arrival on this processor
-                .map(taskHostedDependency -> {
+                //For all dependencies find the time of transfer arrival on this processor:
+                .mapToInt(taskHostedDependency -> {
+                    //Get all possible routes for this transfer.
                     List<List<CongenericLink<Processor>>> allRoutes = router.getAllRoutesBetweenProcessors(
                             taskHostedDependency.getProcessorId(),
                             processor.getProcessorId()
                     );
-                    //TODO schedule and find the best route
-                    return Integer.MAX_VALUE;
+                    //Between all routes
+                    return allRoutes.stream()
+                            //Find the best transfer time
+                            .mapToInt(route -> getTransferTime(
+                                    tact,
+                                    taskHostedDependency.getTransferWeight(),
+                                    route,
+                                    processorProvider
+                            ))
+                            .max()
+                            .getAsInt();
                 })
-                .mapToInt(Integer::intValue)
                 //Get max time of transfer arrival -> this is the time of start of task, because task cannot be
                 // started before all its dependencies transfers arrive
                 .max()
                 .getAsInt();
+    }
+
+    private static int getTransferTime(
+            int tact,
+            int transferWeight,
+            List<CongenericLink<Processor>> route,
+            LockedStatefulProcessorProvider processorProvider) {
+
+        //For all links in route:
+        return route.stream()
+                //Calculate the time of completion for all transfers between processors in route for specified transfer
+                // between tasks
+                .reduce(
+                        //Start counting from specified task
+                        tact,
+                        //Use previous calculated value as start for current processors pair
+                        (startTact, processorsLink) -> {
+                            StatefulProcessor sender = processorProvider.getLockedStatefulProcessor(
+                                    processorsLink.getSource()
+                            );
+                            StatefulProcessor receiver = processorProvider.getLockedStatefulProcessor(
+                                    processorsLink.getDestination()
+                            );
+                            //Get time of receiving of message
+                            return sender.sendTo(startTact, transferWeight, receiver);
+                        },
+                        //Return sum
+                        Integer::sum
+                );
     }
 
     private static TaskDependencyTransferPriorityComparator getTaskDependencyTransferPriorityComparator(

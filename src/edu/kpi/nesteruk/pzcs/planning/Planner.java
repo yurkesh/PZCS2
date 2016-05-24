@@ -5,7 +5,7 @@ import edu.kpi.nesteruk.pzcs.model.system.Processor;
 import edu.kpi.nesteruk.pzcs.model.system.ProcessorsGraphBundle;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphBundle;
-import edu.kpi.nesteruk.pzcs.planning.params.PlanningParams;
+import edu.kpi.nesteruk.pzcs.planning.params.ProcessorsParams;
 import edu.kpi.nesteruk.pzcs.planning.transfering.Parcel;
 
 import java.util.List;
@@ -19,6 +19,6 @@ public interface Planner {
     Map<Processor, List<Pair<Task, Parcel>>> getPlannedWork(
             ProcessorsGraphBundle processorsGraphBundle,
             TasksGraphBundle tasksGraphBundle,
-            PlanningParams params
+            ProcessorsParams params
     );
 }

@@ -15,6 +15,14 @@ public class CongenericLink<N extends HasId> extends SimpleLink<N> {
         super(src, dest);
     }
 
+    public String getSource() {
+        return getFirst();
+    }
+
+    public String getDestination() {
+        return getSecond();
+    }
+
     @Override
     public String toString() {
         return "(" + src + ", " + dest + ')';

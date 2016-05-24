@@ -1,6 +1,8 @@
 package edu.kpi.nesteruk.pzcs.planning.state;
 
 import edu.kpi.nesteruk.misc.Pair;
+import edu.kpi.nesteruk.pzcs.model.system.Processor;
+import edu.kpi.nesteruk.pzcs.planning.params.ProcessorsParams;
 import edu.kpi.nesteruk.pzcs.planning.transfering.Parcel;
 
 import java.util.Collection;
@@ -12,11 +14,15 @@ import java.util.Optional;
  */
 public interface StatefulProcessor {
 
+    static StatefulProcessor make(Processor processor, ProcessorsParams processorsParams) {
+        return new StatefulProcessorImpl(processor, processorsParams);
+    }
+
     String getProcessorId();
 
     StatefulProcessor copy();
 
-    int getFreeTime();
+    int getReleaseTime();
 
     boolean isFree(int tact);
 
@@ -33,6 +39,15 @@ public interface StatefulProcessor {
     void addIdleTransfer(int tact);
 
     List<Pair<String, Parcel>> getScheduledWork();
+
+    /**
+     *
+     * @param startTact number of tact from which transfer begins
+     * @param weight weight of full message
+     * @param receiver processor connected to current that receives message
+     * @return time of receiving of message
+     */
+    int sendTo(int startTact, int weight, StatefulProcessor receiver);
 
 
     /*

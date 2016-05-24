@@ -2,8 +2,8 @@ package edu.kpi.nesteruk.pzcs.planning.state;
 
 import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.model.system.Processor;
+import edu.kpi.nesteruk.pzcs.planning.params.ProcessorsParams;
 import edu.kpi.nesteruk.pzcs.planning.transfering.Parcel;
-import edu.kpi.nesteruk.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,17 +16,23 @@ import java.util.Optional;
 public class StatefulProcessorImpl implements StatefulProcessor {
 
     private final Processor processor;
+    private final ProcessorsParams processorsParams;
 
+    /*
     private List<String> execution = new ArrayList<>();
+    */
+    private final ProcessorExecution execution;
     private List<List<String>> transfers = new ArrayList<>();
 
-    public StatefulProcessorImpl(Processor processor) {
+    public StatefulProcessorImpl(Processor processor, ProcessorsParams processorsParams) {
         this.processor = processor;
+        this.processorsParams = processorsParams;
+        this.execution = new ProcessorExecution(processor.getId(), processor.getWeight());
     }
 
     @Override
     public StatefulProcessor copy() {
-        return new StatefulProcessorImpl(processor);
+        return new StatefulProcessorImpl(processor, processorsParams);
     }
 
     @Override
@@ -36,30 +42,45 @@ public class StatefulProcessorImpl implements StatefulProcessor {
 
     @Override
     public boolean isFree(int tact) {
+        /*
         return execution.size() == tact || execution.get(tact) == null;
+        */
+        return execution.isFree(tact);
     }
 
     @Override
-    public int getFreeTime() {
+    public int getReleaseTime() {
+        /*
         return execution.size();
+        */
+        return execution.getReleaseTime();
     }
 
     @Override
     public boolean hasTask(String task) {
+        /*
         return execution.contains(task);
+        */
+        return execution.hasTask(task);
     }
 
     @Override
     public boolean hasAllTasks(Collection<String> tasks) {
+        /*
         if(CollectionUtils.isEmpty(tasks)) {
             throw new IllegalArgumentException("Tasks are empty = " + tasks);
         }
         return execution.containsAll(tasks);
+        */
+        return execution.hasAllTasks(tasks);
     }
 
     @Override
     public void addIdleExecution(int tact) {
+        /*
         execution.add(tact, null);
+        */
+        execution.addIdleExecution(tact);
     }
 
     @Override
@@ -73,7 +94,13 @@ public class StatefulProcessorImpl implements StatefulProcessor {
     }
 
     @Override
+    public int sendTo(int startTact, int weight, StatefulProcessor receiver) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    @Override
     public void assignTask(int tact, String task, int weight) {
+        /*
         if(execution.size() < tact) {
             //If number of elements in execution is less than tact -> need to fill execution with empty tacts
             for (int i = 0; i < tact - execution.size() - 1; i++) {
@@ -83,10 +110,13 @@ public class StatefulProcessorImpl implements StatefulProcessor {
         for (int i = 0; i < weight; i++) {
             execution.add(task);
         }
+        */
+        execution.assignTask(tact, task, weight);
     }
 
     @Override
     public Optional<String> getDoneTask(int tact) {
+        /*
         if(execution.size() < tact) {
             throw new IllegalArgumentException("Processor = " + processor.getId() + ". Tact = " + tact + ". Execution = " + execution);
         }
@@ -120,6 +150,8 @@ public class StatefulProcessorImpl implements StatefulProcessor {
                 }
             }
         }
+        */
+        return execution.getDoneTask(tact);
     }
 
     @Override

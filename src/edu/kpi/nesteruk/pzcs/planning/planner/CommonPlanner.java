@@ -8,14 +8,14 @@ import edu.kpi.nesteruk.pzcs.model.tasks.Task;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraph;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphBundle;
 import edu.kpi.nesteruk.pzcs.planning.Planner;
-import edu.kpi.nesteruk.pzcs.planning.params.PlanningParams;
+import edu.kpi.nesteruk.pzcs.planning.params.ProcessorsParams;
 import edu.kpi.nesteruk.pzcs.planning.state.StatefulProcessor;
-import edu.kpi.nesteruk.pzcs.planning.state.StatefulProcessorImpl;
 import edu.kpi.nesteruk.pzcs.planning.transfering.Parcel;
 import edu.kpi.nesteruk.util.CollectionUtils;
 
 import java.util.*;
-import java.util.function.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -51,7 +51,7 @@ public class CommonPlanner implements Planner {
     public Map<Processor, List<Pair<Task, Parcel>>> getPlannedWork(
             ProcessorsGraphBundle processorsGraphBundle,
             TasksGraphBundle tasksGraphBundle,
-            PlanningParams params) {
+            ProcessorsParams params) {
 
         Map<String, Processor> allProcessors = processorsGraphBundle.getNodesMap();
 
@@ -61,7 +61,7 @@ public class CommonPlanner implements Planner {
         List<String> processorsSorted = processorsByCoherenceDescSorter.apply(processorsGraph);
         logger.accept("Sorted processors:\n" + processorsSorted);
 
-        Map<String, StatefulProcessor> statefulProcessorMap = makeStatefulProcessors(allProcessors.values());
+        Map<String, StatefulProcessor> statefulProcessorMap = makeStatefulProcessors(allProcessors.values(), params);
 
         Map<String, Task> tasksMap = tasksGraphBundle.getNodesMap();
 
@@ -127,11 +127,11 @@ public class CommonPlanner implements Planner {
                 ));
     }
 
-    private static Map<String, StatefulProcessor> makeStatefulProcessors(Collection<Processor> processors) {
+    private static Map<String, StatefulProcessor> makeStatefulProcessors(Collection<Processor> processors, ProcessorsParams params) {
         return processors.stream()
                 .collect(CollectionUtils.CustomCollectors.toMap(
                         Processor::getId,
-                        StatefulProcessorImpl::new,
+                        processor -> StatefulProcessor.make(processor, params),
                         LinkedHashMap::new
                 ));
     }

@@ -1,7 +1,6 @@
 package edu.kpi.nesteruk.pzcs.planning.planner;
 
 import edu.kpi.nesteruk.misc.Pair;
-import edu.kpi.nesteruk.pzcs.model.system.Processor;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
 import edu.kpi.nesteruk.pzcs.planning.state.ProcessorWithStartTime;
 import edu.kpi.nesteruk.pzcs.planning.state.StatefulProcessor;
@@ -113,7 +112,8 @@ class TasksGraphPlanner {
                                                         tact,
                                                         taskWithHostedPredecessors,
                                                         statefulProcessor,
-                                                        doneTasksHolder
+                                                        doneTasksHolder,
+                                                        statefulProcessorMap::get
                                                 )
                                         ))
                                         //Sort by startTime, asc
@@ -150,9 +150,9 @@ class TasksGraphPlanner {
 
             //For all processors that on this tact:
             // did not received scheduled task
-            // and
+            // &
             // are not busy
-            // - mark this tact as idle
+            // -> mark this tact as idle
             statefulProcessorMap.values().stream()
                     .filter(statefulProcessor -> !scheduledProcessors.contains(statefulProcessor))
                     .filter(statefulProcessor -> statefulProcessor.isFree(tact))

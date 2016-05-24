@@ -14,7 +14,7 @@ public interface SingleTaskHostSearcher {
             int tact,
             TaskWithHostedDependencies task,
             StatefulProcessor processor,
-            TaskFinishTimeProvider taskFinishTimeProvider
-    );
+            TaskFinishTimeProvider taskFinishTimeProvider,
+            LockedStatefulProcessorProvider processorProvider);
 
 }
