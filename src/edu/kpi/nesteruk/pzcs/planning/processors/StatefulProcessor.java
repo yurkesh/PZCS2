@@ -3,6 +3,7 @@ package edu.kpi.nesteruk.pzcs.planning.processors;
 import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.model.system.Processor;
 import edu.kpi.nesteruk.pzcs.planning.params.ProcessorsParams;
+import edu.kpi.nesteruk.pzcs.planning.planner.ProcessorTransfer;
 
 import java.util.Collection;
 import java.util.List;
@@ -20,15 +21,28 @@ public class StatefulProcessor {
     private final ProcessorTransfers transfers;
 
     public StatefulProcessor(Processor processor, ProcessorsParams processorsParams) {
+        this(
+                processor,
+                processorsParams,
+                new ProcessorExecution(processor.getId(), processor.getWeight()),
+                new ProcessorTransfers(processor.getId(), ProcessorsParams.numberOfChannelsNullSafe(processorsParams))
+        );
+    }
+
+    private StatefulProcessor(Processor processor, ProcessorsParams processorsParams, ProcessorExecution execution, ProcessorTransfers transfers) {
         this.processor = processor;
         this.processorsParams = processorsParams;
-        String processorId = processor.getId();
-        this.execution = new ProcessorExecution(processorId, processor.getWeight());
-        this.transfers = new ProcessorTransfers(processorId, ProcessorsParams.numberOfChannelsNullSafe(processorsParams));
+        this.execution = execution;
+        this.transfers = transfers;
     }
 
     public StatefulProcessor copy() {
-        return new StatefulProcessor(processor, processorsParams);
+        return new StatefulProcessor(
+                processor,
+                processorsParams,
+                execution.copy(),
+                transfers.copy()
+        );
     }
 
     public String getId() {
@@ -59,8 +73,31 @@ public class StatefulProcessor {
         execution.assignTask(tact, task, weight);
     }
 
-    public void assignTransfer(ChannelTransfer transfer) {
-        transfers.addTransfer(transfer.srcChannel, transfer.startTact, transfer.weight, transfer.receiver, transfer.transfer);
+    public void assignTransfer(ProcessorTransfer processorTransfer) {
+        ChannelTransfer transfer = processorTransfer.channelTransfer;
+        boolean isReceiver = processorTransfer.destProcessor.equals(processor.getId());
+        int channel = isReceiver ? transfer.destChannel : transfer.srcChannel;
+        String anotherProcessor = isReceiver ? processorTransfer.srcProcessor : processorTransfer.destProcessor;
+        transfers.addTransfer(
+                channel,
+                transfer.startTact,
+                transfer.weight,
+//                anotherProcessor,
+                transfer.receiver,
+                transfer.transfer
+        );
+    }
+
+    public String getExecutingTask(int tact) {
+        return execution.getTask(tact);
+    }
+
+    public int getNumberOfChannels() {
+        return transfers.getNumberOfChannels();
+    }
+
+    public String getTransfer(int channel, int tact) {
+        return transfers.getTransfer(channel, tact);
     }
 
     public Optional<String> getDoneTask(int tact) {

@@ -48,4 +48,14 @@ public class CongenericLink<N extends HasId> extends SimpleLink<N> {
     public int hashCode() {
         return src.hashCode() + dest.hashCode();
     }
+
+    public String getReceiver(String sender) {
+        if(sender.equals(src)) {
+            return dest;
+        } else if(sender.equals(dest)) {
+            return src;
+        } else {
+            throw new IllegalArgumentException("Cannot eval receiver. Sender = '" + sender + "'");
+        }
+    }
 }

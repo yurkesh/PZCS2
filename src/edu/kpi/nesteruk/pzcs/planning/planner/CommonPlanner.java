@@ -1,6 +1,5 @@
 package edu.kpi.nesteruk.pzcs.planning.planner;
 
-import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.model.system.Processor;
 import edu.kpi.nesteruk.pzcs.model.system.ProcessorsGraph;
 import edu.kpi.nesteruk.pzcs.model.system.ProcessorsGraphBundle;

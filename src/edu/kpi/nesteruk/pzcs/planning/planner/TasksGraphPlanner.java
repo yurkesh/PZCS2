@@ -1,10 +1,11 @@
 package edu.kpi.nesteruk.pzcs.planning.planner;
 
-import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
 import edu.kpi.nesteruk.pzcs.planning.processors.ProcessorWithTaskEstimate;
 import edu.kpi.nesteruk.pzcs.planning.processors.StatefulProcessor;
 import edu.kpi.nesteruk.pzcs.planning.tasks.TaskWithHostedDependencies;
+import edu.kpi.nesteruk.pzcs.view.print.Table;
+import edu.kpi.nesteruk.pzcs.view.print.TableRepresentationBuilder;
 import edu.kpi.nesteruk.util.CollectionUtils;
 
 import java.util.*;
@@ -112,7 +113,7 @@ class TasksGraphPlanner {
                                                         taskWithHostedPredecessors,
                                                         statefulProcessor,
                                                         doneTasksHolder,
-                                                        statefulProcessorMap::get
+                                                        processorID -> statefulProcessorMap.get(processorID).copy()
                                                 )
                                         ))
                                         //Get {StatefulProcessor, startTime} with the lowest (best) startTime (sort by
@@ -157,10 +158,114 @@ class TasksGraphPlanner {
 
             tactCounter.incrementAndGet();
 
+
+
             //repeat until all tasks are done
         } while (doneTasksHolder.hasNotDone());
 
+        {
+            Table executionTable = makeExecutionTable(tactCounter.get());
+            String executionTableStr = new TableRepresentationBuilder(executionTable).getRepresentation();
+            System.out.println("\n\n" + executionTableStr);
+        }
+
+        {
+            Table transfersTable = makeTransfersTable(tactCounter.get());
+            String transfersTableStr = new TableRepresentationBuilder(transfersTable).getRepresentation();
+            System.out.println("\n\n" + transfersTableStr);
+        }
+
         return tactCounter.decrementAndGet();
+    }
+
+    private Table makeTransfersTable(int tacts) {
+        int processors = statefulProcessorMap.size();
+        int channels = statefulProcessorMap.get(String.valueOf("1")).getNumberOfChannels() + 1;
+
+        return new Table() {
+            @Override
+            public String[] getColumnsNames() {
+                String[] columns = new String[tacts + 1];
+                columns[0] = "#";
+                for (int i = 1; i <= tacts; i++) {
+                    columns[i] = String.valueOf(i - 1);
+                }
+                return columns;
+            }
+
+            @Override
+            public String[][] getColumnsData() {
+                String[][] data = new String[processors * channels][];
+                for (int processor = 0; processor < processors; processor++) {
+                    String processorId = String.valueOf(processor + 1);
+                    for (int channel = 0; channel < channels; channel++) {
+                        int globalChannel = processor * channels + channel;
+                        if(channel == channels - 1) {
+                            String[] div = new String[tacts + 1];
+                            Arrays.fill(div, TableRepresentationBuilder.DIV_ESCAPE + "-");
+                            data[globalChannel] = div;
+                            continue;
+                        }
+                        data[globalChannel] = new String[tacts + 1];
+                        if(channel == 0) {
+                            data[globalChannel][0] = processorId;
+                        }
+
+                        StatefulProcessor statefulProcessor = statefulProcessorMap.get(processorId);
+                        String transfer;
+                        for (int tact = 0; tact < tacts; tact++) {
+                            transfer = statefulProcessor.getTransfer(channel, tact);
+                            data[globalChannel][tact + 1] = transfer;
+                        }
+                    }
+                }
+                return data;
+            }
+        };
+    }
+
+    private Table makeExecutionTable(int tacts) {
+        int numberOfProcessors = statefulProcessorMap.size();
+
+        return new Table() {
+            @Override
+            public String[] getColumnsNames() {
+                String[] columns = new String[tacts + 1];
+                columns[0] = "#";
+                for (int i = 1; i <= tacts; i++) {
+                    columns[i] = String.valueOf(i - 1);
+                }
+                return columns;
+            }
+
+            @Override
+            public String[][] getColumnsData() {
+                String[][] data = new String[numberOfProcessors * 2][];
+                String previousTask = null;
+                for (int globalProcessor = 0; globalProcessor < numberOfProcessors * 2; globalProcessor++) {
+                    if(globalProcessor % 2 == 0) {
+                        String[] div = new String[tacts + 1];
+                        Arrays.fill(div, TableRepresentationBuilder.DIV_ESCAPE + "-");
+                        data[globalProcessor] = div;
+                        continue;
+                    }
+                    int processor = globalProcessor / 2 + 1;
+                    data[globalProcessor] = new String[tacts + 1];
+                    String processorId = String.valueOf(processor);
+                    data[globalProcessor][0] = processorId;
+
+                    StatefulProcessor statefulProcessor = statefulProcessorMap.get(processorId);
+                    String task;
+                    for (int tact = 0; tact < tacts; tact++) {
+                        task = statefulProcessor.getExecutingTask(tact);
+                        String cell = task == null ? "" : (task.equals(previousTask) ? task : "*" + task);
+                        previousTask = task;
+                        data[globalProcessor][tact + 1] = cell;
+                    }
+                }
+                return data;
+            }
+        };
     }
 
     private void applyTransfers(Collection<TaskTransfer> taskTransfers) {
@@ -168,10 +273,10 @@ class TasksGraphPlanner {
                 .forEach(taskTransfer -> taskTransfer.processorTransfers.stream()
                         .forEach(processorTransfer -> {
                             statefulProcessorMap.get(processorTransfer.srcProcessor).assignTransfer(
-                                    processorTransfer.channelTransfer
+                                    processorTransfer
                             );
                             statefulProcessorMap.get(processorTransfer.destProcessor).assignTransfer(
-                                    processorTransfer.channelTransfer
+                                    processorTransfer
                             );
                         })
                 );

@@ -10,6 +10,7 @@ import edu.kpi.nesteruk.pzcs.planning.tasks.TaskHostedDependency;
 import edu.kpi.nesteruk.pzcs.planning.tasks.TaskWithHostedDependencies;
 
 import java.util.*;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -99,7 +100,7 @@ public class SingleTaskHostSearcherImpl implements SingleTaskHostSearcher {
         final Function<String, StatefulProcessor> cachedProcessorProvider = new FunctionWithCache<>(
                 processorProvider::getLockedStatefulProcessor
         );
-        LockedStatefulProcessorProvider localProcessorProvider = cachedProcessorProvider::apply;
+//        LockedStatefulProcessorProvider localProcessorProvider = cachedProcessorProvider::apply;
 
         //Get and process all dependencies of current task that are hosted not on current processor
         List<TaskHostedDependency> nonOnThisProcessorDependencies =
@@ -124,13 +125,17 @@ public class SingleTaskHostSearcherImpl implements SingleTaskHostSearcher {
                                     tact,
                                     taskHostedDependency.getTransferWeight(),
                                     taskHostedDependency.getTransferId(),
+                                    taskHostedDependency.getProcessorId(),
                                     route,
-                                    localProcessorProvider
+                                    cachedProcessorProvider
                             ))
                             .min(Comparator.comparing(Pair::getFirst))
                             .get();
 
-                    // TODO: 2016-05-26 Apply transfer on local processor state
+                    bestEstimate.second.stream().forEach(processorTransfer -> {
+                        cachedProcessorProvider.apply(processorTransfer.srcProcessor).assignTransfer(processorTransfer);
+                        cachedProcessorProvider.apply(processorTransfer.destProcessor).assignTransfer(processorTransfer);
+                    });
 
                     taskTransfers.add(
                             new TaskTransfer(
@@ -155,41 +160,47 @@ public class SingleTaskHostSearcherImpl implements SingleTaskHostSearcher {
             int tact,
             int transferWeight,
             String transfer,
+            String initialSender,
             List<CongenericLink<Processor>> route,
-            LockedStatefulProcessorProvider processorProvider) {
+            Function<String, StatefulProcessor> processorProvider) {
 
         List<ProcessorTransfer> processorTransfers = new ArrayList<>();
-        int transferLength = route.stream()
+        Pair<Integer, String> transferPair = route.stream()
                 //For all links in route:
                 //Calculate the time of completion for all transfers between processors in route for specified transfer
                 // between tasks
                 .reduce(
-                        //Start counting from specified task
-                        tact,
+                        //Start counting from specified task and specified processor
+                        new Pair<>(tact, initialSender),
                         //Use previous calculated value as start for current processors pair
-                        (startTact, processorsLink) -> {
-                            StatefulProcessor sender = processorProvider.getLockedStatefulProcessor(
-                                    processorsLink.getSource()
-                            );
-                            StatefulProcessor receiver = processorProvider.getLockedStatefulProcessor(
-                                    processorsLink.getDestination()
-                            );
+                        (previousTact, processorsLink) -> {
+                            String senderId = previousTact.second;
+                            String receiverId = processorsLink.getReceiver(senderId);
+                            StatefulProcessor sender = processorProvider.apply(senderId);
+                            StatefulProcessor receiver = processorProvider.apply(receiverId);
                             //Get estimate of transferring message
-                            ChannelTransfer channelTransfer = sender.getSendingEstimate(startTact, transferWeight, receiver);
+                            ChannelTransfer channelTransfer = sender.getSendingEstimate(previousTact.first, transferWeight, receiver);
                             //Check: we cannot use estimate that returns earlier time that we specified
-                            if (channelTransfer.startTact < startTact) {
+                            if (channelTransfer.startTact < previousTact.first) {
                                 throw new IllegalStateException();
                             }
                             channelTransfer.setTransfer(transfer);
                             processorTransfers.add(
-                                    new ProcessorTransfer(sender.getId(), receiver.getId(), channelTransfer)
+                                    new ProcessorTransfer(senderId, receiverId, channelTransfer)
                             );
                             //Return only amount of time between specified startTact and end of receiving
-                            return channelTransfer.startTact + transferWeight;
+                            return new Pair<>(
+                                    channelTransfer.startTact + transferWeight,
+                                    receiverId
+                            );
                         },
                         //This will be used to combine results of parallel operations (not needed for us now)
-                        Integer::sum
+                        (u, u2) -> {
+                            throw new UnsupportedOperationException();
+                        }
                 );
+
+        int transferLength = transferPair.first;
 
         return Pair.create(transferLength, processorTransfers);
     }

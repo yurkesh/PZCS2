@@ -11,10 +11,21 @@ class ProcessorChannel {
 
     public final int id;
 
-    private final Map<Integer, Parcel> transfers = new TreeMap<>();
+    private final Map<Integer, Parcel> transfers;
 
     ProcessorChannel(int id) {
+        this(id,  new TreeMap<>());
+    }
+
+    private ProcessorChannel(int id, Map<Integer, Parcel> transfers) {
         this.id = id;
+        this.transfers = transfers;
+    }
+
+    public ProcessorChannel copy() {
+        Map<Integer, Parcel> transfersCopy = new TreeMap<>();
+        transfersCopy.putAll(transfers);
+        return new ProcessorChannel(id, transfersCopy);
     }
 
     /**
@@ -69,6 +80,11 @@ class ProcessorChannel {
         return id;
     }
 
+    public String getTransfer(int tact) {
+        Parcel parcel = transfers.get(tact);
+        return parcel == null ? null : parcel.transfer + "(" + parcel.receiver + ")";
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -99,9 +115,7 @@ class ProcessorChannel {
         @Override
         public String toString() {
             return "Parcel{" +
-                    "receiver='" + receiver + '\'' +
-                    ", transfer='" + transfer + '\'' +
-                    ", totalWeight=" + totalWeight +
+                    "" + transfer + " (" + receiver + ") [" + totalWeight + "]" +
                     '}';
         }
     }

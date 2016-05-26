@@ -5,7 +5,7 @@ package edu.kpi.nesteruk.pzcs.planning.params;
  */
 public class ProcessorsParams {
 
-    public static final int DEFAULT_NUMBER_OF_CHANNELS = 1;
+    public static final int DEFAULT_NUMBER_OF_CHANNELS = 6;
 
     public final int numberOfChannels;
     public final boolean hasIoProcessor;

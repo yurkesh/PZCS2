@@ -8,16 +8,27 @@ import java.util.stream.IntStream;
 /**
  * Created by Yurii on 2016-05-25.
  */
-public class ProcessorExecution {
+class ProcessorExecution {
 
     private final String processorId;
     private final int power;
 
-    private Map<Integer, String> execution = new TreeMap<>();
+    private final Map<Integer, String> execution;
 
     public ProcessorExecution(String processorId, int power) {
+        this(processorId, power, new TreeMap<>());
+    }
+
+    private ProcessorExecution(String processorId, int power, Map<Integer, String> execution) {
         this.processorId = processorId;
         this.power = power;
+        this.execution = execution;
+    }
+
+    public ProcessorExecution copy() {
+        Map<Integer, String> eCopy = new TreeMap<>();
+        eCopy.putAll(execution);
+        return new ProcessorExecution(processorId, power, eCopy);
     }
 
     public int size() {
@@ -119,6 +130,10 @@ public class ProcessorExecution {
                 return Optional.of(task);
             }
         }
+    }
+
+    public String getTask(int tact) {
+        return execution.get(tact);
     }
 
     @Override

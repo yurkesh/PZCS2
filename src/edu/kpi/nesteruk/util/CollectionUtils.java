@@ -65,13 +65,46 @@ public class CollectionUtils {
         }
     }
 
-    public static <K, V> void addToMultimap(Map<K, List<V>> map, K key, V value) {
-        List<V> vList = map.get(key);
-        if(vList == null) {
-            vList = new ArrayList<>();
-            map.put(key, vList);
+    public static <T> String join(T[] entities, AppenderTextProvider<T> appenderTextProvider, String delimiter) {
+        return join(Arrays.asList(entities), appenderTextProvider, delimiter);
+    }
+
+    public static <T> String join(Collection<T> entities, AppenderTextProvider<T> appenderTextProvider, String delimiter) {
+        return join(new StringBuilder(), entities, appenderTextProvider, delimiter).toString();
+    }
+
+    public static <T> StringBuilder join(StringBuilder sb, T[] entities, AppenderTextProvider<T> appenderTextProvider, String delimiter) {
+        return join(sb, Arrays.asList(entities), appenderTextProvider, delimiter);
+    }
+
+    public static <T> StringBuilder join(StringBuilder sb, Collection<T> entities, AppenderTextProvider<T> appenderTextProvider, String delimiter) {
+        if (sb == null) {
+            sb = new StringBuilder();
         }
-        vList.add(value);
+        boolean firstTime = true;
+        for (T entity : entities) {
+            if (firstTime) {
+                firstTime = false;
+            } else {
+                sb.append(delimiter);
+            }
+            appenderTextProvider.appendText(sb, entity);
+        }
+        return sb;
+    }
+
+    public interface AppenderTextProvider<T> {
+        void appendText(StringBuilder sb, T entity);
+    }
+
+    public static abstract class SimpleAppenderTextProvider<T> implements AppenderTextProvider<T> {
+
+        protected abstract String getTextRepresentation(T entity);
+
+        @Override
+        public void appendText(StringBuilder sb, T entity) {
+            sb.append(getTextRepresentation(entity));
+        }
     }
 
 }

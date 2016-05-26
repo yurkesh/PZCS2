@@ -17,6 +17,9 @@ import edu.kpi.nesteruk.pzcs.model.system.SystemGraphModel;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphBundle;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphModel;
+import edu.kpi.nesteruk.pzcs.planning.params.DuplexMode;
+import edu.kpi.nesteruk.pzcs.planning.params.ProcessorsParams;
+import edu.kpi.nesteruk.pzcs.planning.params.TransferParams;
 import edu.kpi.nesteruk.pzcs.planning.planner.CommonPlanner;
 import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcherImpl;
 import edu.kpi.nesteruk.pzcs.planning.processors.StatefulProcessor;
@@ -38,10 +41,10 @@ public class CommonPlannerTesting {
         Collection<StatefulProcessor> plannedWork = makePlanner().getPlannedWork(
                 processors,
                 tasks,
-                null
+                new ProcessorsParams(3, false, DuplexMode.Full, TransferParams.messages())
         );
 
-        System.out.println("Planning result:\n" + plannedWork);
+//        System.out.println("Planning result:\n" + plannedWork);
 
         DashboardView dashboardView = DashboardView.defaultStart();
         UnitedGraphsView graphPresenter = (UnitedGraphsView) dashboardView.getGraphPresenter();

@@ -1,9 +1,11 @@
 package edu.kpi.nesteruk.pzcs.planning.processors;
 
+import edu.kpi.nesteruk.pzcs.planning.planner.ProcessorTransfer;
 import edu.kpi.nesteruk.util.CollectionUtils;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -33,6 +35,21 @@ class ProcessorTransfers {
                                 LinkedHashMap::new
                         ))
         );
+    }
+
+    private ProcessorTransfers(String processorId, Map<Integer, ProcessorChannel> channels) {
+        this.processorId = processorId;
+        this.channels = channels;
+    }
+
+    public ProcessorTransfers copy() {
+        Map<Integer, ProcessorChannel> channelsCopy = new LinkedHashMap<>();
+        channels.entrySet().forEach(entry -> channelsCopy.put(entry.getKey(), entry.getValue().copy()));
+        return new ProcessorTransfers(processorId, channelsCopy);
+    }
+
+    public int getNumberOfChannels() {
+        return channels.size();
     }
 
     /**
@@ -127,8 +144,12 @@ class ProcessorTransfers {
         channels.get(channel).addTransfer(startTact, length, receiver, transfer);
     }
 
+    public String getTransfer(int channel, int tact) {
+        return channels.get(channel).getTransfer(tact);
+    }
+
     @Override
     public String toString() {
-        return "" + channels.values();
+        return channels.values().stream().map(Object::toString).collect(Collectors.joining("\n"));
     }
 }
