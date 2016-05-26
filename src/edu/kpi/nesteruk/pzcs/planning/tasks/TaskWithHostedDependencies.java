@@ -16,6 +16,8 @@ public class TaskWithHostedDependencies {
      */
     public final String task;
 
+    public final int weight;
+
     /**
      * Dependencies of this task that contain info about processor hosting them
      */
@@ -25,8 +27,9 @@ public class TaskWithHostedDependencies {
      */
     public final Map<String, TaskHostedDependency> dependencySourcesMap;
 
-    public TaskWithHostedDependencies(String task, List<TaskHostedDependency> dependencySources) {
+    public TaskWithHostedDependencies(String task, int weight, List<TaskHostedDependency> dependencySources) {
         this.task = task;
+        this.weight = weight;
         this.dependencySources = dependencySources;
         this.dependencySourcesMap = Collections.unmodifiableMap(dependencySources.stream().collect(Collectors.toMap(
                 TaskHostedDependency::getSourceTaskId,
@@ -38,11 +41,12 @@ public class TaskWithHostedDependencies {
     public String toString() {
         return "TaskWithHostedDependencies{" +
                 "task='" + task + '\'' +
+                "weight=" + task +
                 ", dependencySources=" + dependencySources +
                 '}';
     }
 
-    public String getTaskId() {
+    public String getId() {
         return task;
     }
 

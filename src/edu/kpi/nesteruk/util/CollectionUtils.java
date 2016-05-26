@@ -1,9 +1,6 @@
 package edu.kpi.nesteruk.util;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -17,6 +14,10 @@ public class CollectionUtils {
 
     public static boolean isEmpty(Collection collection) {
         return collection == null || collection.isEmpty();
+    }
+
+    public static boolean isEmpty(Map map) {
+        return map == null || map.isEmpty();
     }
 
     public static boolean isEmpty(Object[] array) {
@@ -62,6 +63,15 @@ public class CollectionUtils {
                     mapSupplier
             );
         }
+    }
+
+    public static <K, V> void addToMultimap(Map<K, List<V>> map, K key, V value) {
+        List<V> vList = map.get(key);
+        if(vList == null) {
+            vList = new ArrayList<>();
+            map.put(key, vList);
+        }
+        vList.add(value);
     }
 
 }

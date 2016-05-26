@@ -17,17 +17,13 @@ import edu.kpi.nesteruk.pzcs.model.system.SystemGraphModel;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphBundle;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphModel;
-import edu.kpi.nesteruk.pzcs.planning.params.PlanningParams;
 import edu.kpi.nesteruk.pzcs.planning.planner.CommonPlanner;
 import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcherImpl;
-import edu.kpi.nesteruk.pzcs.planning.transfering.Parcel;
+import edu.kpi.nesteruk.pzcs.planning.processors.StatefulProcessor;
 import edu.kpi.nesteruk.pzcs.view.dashboard.DashboardView;
 import edu.kpi.nesteruk.pzcs.view.dashboard.UnitedGraphsView;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -39,10 +35,10 @@ public class CommonPlannerTesting {
         TasksGraphBundle tasks = makeTasks();
         ProcessorsGraphBundle processors = makeProcessors();
 
-        Map<Processor, List<Pair<Task, Parcel>>> plannedWork = makePlanner().getPlannedWork(
+        Collection<StatefulProcessor> plannedWork = makePlanner().getPlannedWork(
                 processors,
                 tasks,
-                new PlanningParams()
+                null
         );
 
         System.out.println("Planning result:\n" + plannedWork);

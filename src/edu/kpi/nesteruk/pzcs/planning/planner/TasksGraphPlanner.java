@@ -2,10 +2,9 @@ package edu.kpi.nesteruk.pzcs.planning.planner;
 
 import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
-import edu.kpi.nesteruk.pzcs.planning.state.ProcessorWithStartTime;
-import edu.kpi.nesteruk.pzcs.planning.state.StatefulProcessor;
+import edu.kpi.nesteruk.pzcs.planning.processors.ProcessorWithTaskEstimate;
+import edu.kpi.nesteruk.pzcs.planning.processors.StatefulProcessor;
 import edu.kpi.nesteruk.pzcs.planning.tasks.TaskWithHostedDependencies;
-import edu.kpi.nesteruk.pzcs.planning.transfering.Parcel;
 import edu.kpi.nesteruk.util.CollectionUtils;
 
 import java.util.*;
@@ -63,7 +62,7 @@ class TasksGraphPlanner {
         this.router = router;
     }
 
-    public Map<String, List<Pair<String, Parcel>>> getPlannedWork() {
+    public int getPlannedWorkTime() {
 
         Set<String> executingTasks = new LinkedHashSet<>();
 
@@ -90,7 +89,7 @@ class TasksGraphPlanner {
             Collection<String> readyTasks = readyTasksSupplier.getIdOfReadyTasks();
             readyTasks.removeAll(executingTasks);
 
-            Map<TaskWithHostedDependencies, ProcessorWithStartTime> map = tasksSorted.stream()
+            Map<TaskWithHostedDependencies, ProcessorWithTaskEstimate> map = tasksSorted.stream()
                     //Iterate over all ready task keeping initial order
                     .filter(readyTasks::contains)
                     //taskId -> TaskWithPredecessors
@@ -101,11 +100,11 @@ class TasksGraphPlanner {
                             Function.<TaskWithHostedDependencies>identity(),
                             taskWithHostedPredecessors -> {
                                 //Find processor with the best start time for this task
-                                Optional<ProcessorWithStartTime> processorWithTheBestStartTimeOpt = processorsSorted.stream()
+                                ProcessorWithTaskEstimate processorWithTaskEstimate = processorsSorted.stream()
                                         //processorId -> StatefulProcessor
                                         .map(statefulProcessorMap::get)
                                         //StatefulProcessor -> {StatefulProcessor, startTime}
-                                        .map(statefulProcessor -> new ProcessorWithStartTime(
+                                        .map(statefulProcessor -> new ProcessorWithTaskEstimate(
                                                 statefulProcessor,
                                                 singleTaskPlanner.getStartTime(
                                                         router,
@@ -116,55 +115,39 @@ class TasksGraphPlanner {
                                                         statefulProcessorMap::get
                                                 )
                                         ))
-                                        //Sort by startTime, asc
-                                        .sorted(Comparator.comparing(ProcessorWithStartTime::getStartTime))
-                                        //Get {StatefulProcessor, startTime} with the lowest (best) startTime
-                                        .findFirst();
+                                        //Get {StatefulProcessor, startTime} with the lowest (best) startTime (sort by
+                                        // startTime, asc)
+                                        .min(Comparator.comparing(ProcessorWithTaskEstimate::getStartTime))
+                                        .get();
 
-                                if (processorWithTheBestStartTimeOpt.isPresent()) {
-                                    ProcessorWithStartTime processorWithStartTime = processorWithTheBestStartTimeOpt.get();
-                                    String taskId = taskWithHostedPredecessors.task;
-                                    //Need to schedule task on found processor to change state of processors system
-                                    // before scheduling next task
-                                    processorWithStartTime.statefulProcessor.assignTask(
-                                            tact, taskId, tasksMap.get(taskId).getWeight()
-                                    );
-                                    return processorWithStartTime;
-                                } else {
-                                    //What shall I do?
-                                    throw new IllegalStateException("Cannot find processor for task = " + taskWithPredecessorsMapper);
+                                String taskId = taskWithHostedPredecessors.task;
+                                //Need to schedule task on found processor to change state of processors system
+                                // before scheduling next task
+                                processorWithTaskEstimate.statefulProcessor.assignTask(
+                                        processorWithTaskEstimate.getStartTime(),
+                                        taskId,
+                                        tasksMap.get(taskId).getWeight()
+                                );
+                                //Also need to schedule all transfers
+                                if(processorWithTaskEstimate.taskEstimate.transfersNeeded) {
+                                    applyTransfers(processorWithTaskEstimate.taskEstimate.taskTransfers);
                                 }
+                                return processorWithTaskEstimate;
                             },
                             LinkedHashMap::new
                     ));
 
             //Get ids of tasks scheduled in this tact
             List<String> scheduledTasks = map.keySet().stream()
-                    .map(TaskWithHostedDependencies::getTaskId)
+                    .map(TaskWithHostedDependencies::getId)
                     .collect(Collectors.toList());
-            
-            //Get all processors that received scheduled task on this tact
-            List<StatefulProcessor> scheduledProcessors = map.values().stream()
-                    .map(processorWithStartTime -> statefulProcessorMap.get(processorWithStartTime.getProcessorId()))
-                    .collect(Collectors.toList());
-
-            //For all processors that on this tact:
-            // did not received scheduled task
-            // &
-            // are not busy
-            // -> mark this tact as idle
-            statefulProcessorMap.values().stream()
-                    .filter(statefulProcessor -> !scheduledProcessors.contains(statefulProcessor))
-                    .filter(statefulProcessor -> statefulProcessor.isFree(tact))
-                    .forEach(statefulProcessor -> statefulProcessor.addIdleExecution(tact));
-
 
             //Add scheduled tasks to executing
             executingTasks.addAll(scheduledTasks);
 
             logger.accept("[" + tact + "]\nPlaced tasks\n" + map.entrySet().stream()
                     .sorted(
-                            Comparator.<Map.Entry<TaskWithHostedDependencies, ProcessorWithStartTime>, String>comparing(
+                            Comparator.<Map.Entry<TaskWithHostedDependencies, ProcessorWithTaskEstimate>, String>comparing(
                                     entry -> entry.getValue().getProcessorId()
                             ).reversed()
                     )
@@ -174,18 +157,24 @@ class TasksGraphPlanner {
 
             tactCounter.incrementAndGet();
 
-            if(tact > 10) {
-                break;
-            }
-
             //repeat until all tasks are done
         } while (doneTasksHolder.hasNotDone());
 
-        Map<String, List<Pair<String, Parcel>>> collect = statefulProcessorMap.values().stream().collect(Collectors.toMap(
-                StatefulProcessor::getProcessorId,
-                StatefulProcessor::getScheduledWork
-        ));
-        return collect;
+        return tactCounter.decrementAndGet();
+    }
+
+    private void applyTransfers(Collection<TaskTransfer> taskTransfers) {
+        taskTransfers.stream()
+                .forEach(taskTransfer -> taskTransfer.processorTransfers.stream()
+                        .forEach(processorTransfer -> {
+                            statefulProcessorMap.get(processorTransfer.srcProcessor).assignTransfer(
+                                    processorTransfer.channelTransfer
+                            );
+                            statefulProcessorMap.get(processorTransfer.destProcessor).assignTransfer(
+                                    processorTransfer.channelTransfer
+                            );
+                        })
+                );
     }
 
 

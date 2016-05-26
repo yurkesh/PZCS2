@@ -40,6 +40,10 @@ public class TaskHostedDependency {
         return sourceTaskHost.getId();
     }
 
+    public String getTransferId() {
+        return transferBetweenTasks.getFirst() + "-" + transferBetweenTasks.getSecond();
+    }
+
     /**
      * @return weight of transfer (volume of data) that needs to be transferred from source to destination
      */

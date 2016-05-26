@@ -55,7 +55,9 @@ interface TaskWithHostedPredecessorsProvider {
                     ))
                     .collect(Collectors.toList());
 
-            return new TaskWithHostedDependencies(taskWithPredecessors.getTaskId(), taskSources);
+            String taskId = taskWithPredecessors.getTaskId();
+            int weight = tasksGraphBundle.getNodesMap().get(taskId).getWeight();
+            return new TaskWithHostedDependencies(taskId, weight, taskSources);
         };
     }
 }

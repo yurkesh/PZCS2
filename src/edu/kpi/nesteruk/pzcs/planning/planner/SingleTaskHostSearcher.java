@@ -1,6 +1,6 @@
 package edu.kpi.nesteruk.pzcs.planning.planner;
 
-import edu.kpi.nesteruk.pzcs.planning.state.StatefulProcessor;
+import edu.kpi.nesteruk.pzcs.planning.processors.StatefulProcessor;
 import edu.kpi.nesteruk.pzcs.planning.tasks.TaskWithHostedDependencies;
 
 /**
@@ -9,7 +9,7 @@ import edu.kpi.nesteruk.pzcs.planning.tasks.TaskWithHostedDependencies;
 @FunctionalInterface
 public interface SingleTaskHostSearcher {
 
-    int getStartTime(
+    TaskWithTransfersEstimate getStartTime(
             TaskTransferRouter router,
             int tact,
             TaskWithHostedDependencies task,

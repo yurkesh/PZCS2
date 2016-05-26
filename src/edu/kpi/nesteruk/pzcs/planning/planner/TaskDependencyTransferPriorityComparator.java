@@ -39,12 +39,13 @@ interface TaskDependencyTransferPriorityComparator extends Comparator<String> {
 //
 //        };
 
-        return (TaskDependencyTransferPriorityComparator) Comparator
+        Comparator<String> comparator = Comparator
                 //First compare by weight of transfer (desc): higher weight - earlier start of transfer is needed
                 .comparing(transferWeightProvider::getTransferWeightFromDependency).reversed()
                 //Then compare by finish time (asc): lower time - earlier start of transfer is needed
-                .thenComparing(finishTimeProvider::getFinishTimeOfTask)
-                ;
+                .thenComparing(finishTimeProvider::getFinishTimeOfTask);
+
+        return comparator::compare;
     }
 
 }

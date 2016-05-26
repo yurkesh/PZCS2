@@ -1,6 +1,6 @@
 package edu.kpi.nesteruk.pzcs.planning.planner;
 
-import edu.kpi.nesteruk.pzcs.planning.state.StatefulProcessor;
+import edu.kpi.nesteruk.pzcs.planning.processors.StatefulProcessor;
 
 import java.util.Collection;
 
@@ -21,6 +21,6 @@ interface ProcessorExecutingTaskProvider {
                 .filter(statefulProcessor -> statefulProcessor.hasTask(task))
                 .findFirst()
                 .get()
-                .getProcessorId();
+                .getId();
     }
 }

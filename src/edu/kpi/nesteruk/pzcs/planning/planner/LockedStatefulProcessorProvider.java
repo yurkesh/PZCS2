@@ -1,6 +1,6 @@
 package edu.kpi.nesteruk.pzcs.planning.planner;
 
-import edu.kpi.nesteruk.pzcs.planning.state.StatefulProcessor;
+import edu.kpi.nesteruk.pzcs.planning.processors.StatefulProcessor;
 
 /**
  * Created by Yurii on 2016-05-25.
