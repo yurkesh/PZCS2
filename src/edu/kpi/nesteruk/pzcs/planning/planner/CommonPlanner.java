@@ -1,5 +1,6 @@
 package edu.kpi.nesteruk.pzcs.planning.planner;
 
+import edu.kpi.nesteruk.pzcs.graph.misc.GraphUtils;
 import edu.kpi.nesteruk.pzcs.model.system.Processor;
 import edu.kpi.nesteruk.pzcs.model.system.ProcessorsGraph;
 import edu.kpi.nesteruk.pzcs.model.system.ProcessorsGraphBundle;
@@ -59,6 +60,10 @@ public class CommonPlanner implements Planner {
         List<String> processorsSorted = processorsByCoherenceDescSorter.apply(processorsGraph);
         logger.accept("Sorted processors:\n" + processorsSorted);
 
+
+        params = params.numberOfChannels == -1 ? new ProcessorsParams(
+                GraphUtils.getMaxCoherence(processorsGraph)
+        ) : params;
         Map<String, StatefulProcessor> statefulProcessorMap = makeStatefulProcessors(allProcessors.values(), params);
 
         Map<String, Task> tasksMap = tasksGraphBundle.getNodesMap();

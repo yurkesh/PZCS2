@@ -12,6 +12,7 @@ import org.jgrapht.WeightedGraph;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -84,5 +85,13 @@ public class GraphUtils {
                 //Get vertex
                 .map(Pair::getFirst)
                 .collect(Collectors.toList());
+    }
+
+    public static int getMaxCoherence(Graph<String, String> graph) {
+        return graph.vertexSet().stream()
+                //Map to pair {vertex, neighbours_of_vertex}
+                .map(vertex -> Graphs.neighborListOf(graph, vertex).size())
+                .max(Integer::compare)
+                .get();
     }
 }

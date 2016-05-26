@@ -19,6 +19,11 @@ public class ProcessorsParams {
         this.transferParams = transferParams;
     }
 
+    public ProcessorsParams(int numberOfChannels) {
+        this(numberOfChannels, false, null, null);
+
+    }
+
     public static int numberOfChannelsNullSafe(ProcessorsParams params) {
         return params == null ? ProcessorsParams.DEFAULT_NUMBER_OF_CHANNELS : params.numberOfChannels;
     }

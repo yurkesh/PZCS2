@@ -41,7 +41,7 @@ public class CommonPlannerTesting {
         Collection<StatefulProcessor> plannedWork = makePlanner().getPlannedWork(
                 processors,
                 tasks,
-                new ProcessorsParams(3, false, DuplexMode.Full, TransferParams.messages())
+                new ProcessorsParams(2, false, DuplexMode.Full, TransferParams.messages())
         );
 
 //        System.out.println("Planning result:\n" + plannedWork);
@@ -79,16 +79,16 @@ public class CommonPlannerTesting {
     private static TasksGraphBundle makeTasks() {
         return makeGraph(
                 new TasksGraphModel(),
-                PlannerTestingData.tasksWeight1,
-                PlannerTestingData.tasksLinks1
+                PlannerTestingData.tasksWeight2,
+                PlannerTestingData.tasksLinks2
         );
     }
 
     private static ProcessorsGraphBundle makeProcessors() {
         return makeGraph(
                 new SystemGraphModel(),
-                PlannerTestingData.processors1,
-                PlannerTestingData.processorsLinks1
+                PlannerTestingData.processors2,
+                PlannerTestingData.processorsLinks2
         );
     }
 
@@ -144,6 +144,14 @@ public class CommonPlannerTesting {
             put(20, 3);
         }};
 
+        static Map<Integer, Integer> tasksWeight2 = new LinkedHashMap<Integer, Integer>() {{
+            put(1, 5);
+            put(2, 1);
+            put(3, 6);
+            put(4, 2);
+            put(5, 1);
+        }};
+
         static List<Connection> tasksLinks1 = Arrays.asList(
                 c(1, 14, 3),
                 c(2, 9, 1),
@@ -171,6 +179,13 @@ public class CommonPlannerTesting {
                 c(17, 20, 1)
         );
 
+        static List<Connection> tasksLinks2 = Arrays.asList(
+                c(1, 5, 2),
+                c(2, 5, 8),
+                c(3, 5, 1),
+                c(4, 5, 8)
+        );
+
         static Map<Integer, Integer> processors1 = new LinkedHashMap<Integer, Integer>() {{
             put(1, 1);
             put(2, 1);
@@ -180,6 +195,13 @@ public class CommonPlannerTesting {
             put(6, 1);
             put(7, 1);
             put(8, 1);
+        }};
+
+        static Map<Integer, Integer> processors2 = new LinkedHashMap<Integer, Integer>() {{
+            put(1, 1);
+            put(2, 1);
+            put(3, 1);
+            put(4, 1);
         }};
 
         static List<Connection> processorsLinks1 = Arrays.asList(
@@ -197,6 +219,12 @@ public class CommonPlannerTesting {
                 c(5, 7),
                 c(6, 8),
                 c(7, 8)
+        );
+
+        static List<Connection> processorsLinks2 = Arrays.asList(
+                c(1, 2),
+                c(2, 3),
+                c(3, 4)
         );
 
         public static Connection c(int src, int dest, int weight) {
