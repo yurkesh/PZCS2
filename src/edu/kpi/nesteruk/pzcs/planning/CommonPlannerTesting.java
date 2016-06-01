@@ -79,16 +79,16 @@ public class CommonPlannerTesting {
     private static TasksGraphBundle makeTasks() {
         return makeGraph(
                 new TasksGraphModel(),
-                PlannerTestingData.tasksWeight2,
-                PlannerTestingData.tasksLinks2
+                PlannerTestingData.tasksWeight1,
+                PlannerTestingData.tasksLinks1
         );
     }
 
     private static ProcessorsGraphBundle makeProcessors() {
         return makeGraph(
                 new SystemGraphModel(),
-                PlannerTestingData.processors2,
-                PlannerTestingData.processorsLinks2
+                PlannerTestingData.processors1,
+                PlannerTestingData.processorsLinks1
         );
     }
 
