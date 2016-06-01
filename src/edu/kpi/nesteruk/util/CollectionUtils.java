@@ -1,9 +1,6 @@
 package edu.kpi.nesteruk.util;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -17,6 +14,10 @@ public class CollectionUtils {
 
     public static boolean isEmpty(Collection collection) {
         return collection == null || collection.isEmpty();
+    }
+
+    public static boolean isEmpty(Map map) {
+        return map == null || map.isEmpty();
     }
 
     public static boolean isEmpty(Object[] array) {
@@ -61,6 +62,48 @@ public class CollectionUtils {
                     throwingMerger(),
                     mapSupplier
             );
+        }
+    }
+
+    public static <T> String join(T[] entities, AppenderTextProvider<T> appenderTextProvider, String delimiter) {
+        return join(Arrays.asList(entities), appenderTextProvider, delimiter);
+    }
+
+    public static <T> String join(Collection<T> entities, AppenderTextProvider<T> appenderTextProvider, String delimiter) {
+        return join(new StringBuilder(), entities, appenderTextProvider, delimiter).toString();
+    }
+
+    public static <T> StringBuilder join(StringBuilder sb, T[] entities, AppenderTextProvider<T> appenderTextProvider, String delimiter) {
+        return join(sb, Arrays.asList(entities), appenderTextProvider, delimiter);
+    }
+
+    public static <T> StringBuilder join(StringBuilder sb, Collection<T> entities, AppenderTextProvider<T> appenderTextProvider, String delimiter) {
+        if (sb == null) {
+            sb = new StringBuilder();
+        }
+        boolean firstTime = true;
+        for (T entity : entities) {
+            if (firstTime) {
+                firstTime = false;
+            } else {
+                sb.append(delimiter);
+            }
+            appenderTextProvider.appendText(sb, entity);
+        }
+        return sb;
+    }
+
+    public interface AppenderTextProvider<T> {
+        void appendText(StringBuilder sb, T entity);
+    }
+
+    public static abstract class SimpleAppenderTextProvider<T> implements AppenderTextProvider<T> {
+
+        protected abstract String getTextRepresentation(T entity);
+
+        @Override
+        public void appendText(StringBuilder sb, T entity) {
+            sb.append(getTextRepresentation(entity));
         }
     }
 

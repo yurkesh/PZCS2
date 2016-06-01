@@ -68,11 +68,11 @@ public class UnitedGraphsView implements UnitedGraphPresenter {
         return tClass.cast(typedGraphViews.get(graphType).getPresenter());
     }
 
-    private TasksPresenter getTasksPresenter() {
+    public TasksPresenter getTasksPresenter() {
         return getGraphPresenter(GraphType.TASKS, TasksPresenter.class);
     }
 
-    private SystemPresenter getSystemPresenter() {
+    public SystemPresenter getSystemPresenter() {
         return getGraphPresenter(GraphType.SYSTEM, SystemPresenter.class);
     }
 
@@ -169,5 +169,10 @@ public class UnitedGraphsView implements UnitedGraphPresenter {
     @Override
     public void onValidate(ActionEvent event) {
         getGraphPresenter().onValidate(event);
+    }
+
+    @Override
+    public void setGraph(Object graph) {
+        throw new UnsupportedOperationException();
     }
 }

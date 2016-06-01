@@ -5,6 +5,7 @@ import edu.kpi.nesteruk.pzcs.model.common.GraphModelBundle;
 import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
 import edu.kpi.nesteruk.pzcs.model.primitives.HasWeight;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
+import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphBundle;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphModel;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
@@ -35,7 +36,7 @@ public class GraphGeneratorTest extends Assert {
     public static final int MIN_LINK_WEIGHT = 1;
     public static final int MAX_LINK_WEIGHT = 1000;
 
-    private GraphGenerator<Task, DirectedLink<Task>> graphGenerator;
+    private GraphGenerator<Task, DirectedLink<Task>, TasksGraphBundle> graphGenerator;
 
     @BeforeTest
     public void setupGenerator() {

@@ -21,6 +21,14 @@ public class CriticalNode<N extends Node> {
         return new CriticalNode<>(pathWithLength.first.stream().findFirst().get(), pathWithLength.second.doubleValue());
     }
 
+    public N getNode() {
+        return node;
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
     @Override
     public String toString() {
         return "CriticalNode{" +

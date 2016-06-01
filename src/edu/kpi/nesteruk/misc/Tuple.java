@@ -5,47 +5,23 @@ import java.io.Serializable;
 /**
  * Created by Anatolii on 3/9/2016.
  */
-public class Tuple<K> implements Serializable {
+public class Tuple<K> extends Pair<K, K> implements Serializable {
 
     private static final long serialVersionUID = 1178827501986487743L;
 
-    public final K first;
-    public final K second;
-
     public Tuple(K first, K second) {
-        this.first = first;
-        this.second = second;
+        super(first, second);
     }
 
-    public K getFirst() {
-        return first;
-    }
-
-    public K getSecond() {
-        return second;
+    public static <K> Tuple<K> of(K first, K second) {
+        return new Tuple<>(first, second);
     }
 
     @Override
     public String toString() {
-        return "(" + first + ", " + second + ')';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Tuple<?> tuple = (Tuple<?>) o;
-
-        if (first != null ? !first.equals(tuple.first) : tuple.first != null) return false;
-        return second != null ? second.equals(tuple.second) : tuple.second == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = first != null ? first.hashCode() : 0;
-        result = 31 * result + (second != null ? second.hashCode() : 0);
-        return result;
+        return "Tuple{" +
+                "first=" + first +
+                ", second=" + second +
+                "}";
     }
 }

@@ -12,7 +12,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by Anatolii on 2016-03-31.
+ * Created by Yurii on 2016-03-31.
+ *
+ * From laboratory works task:
+ * Number:                      #3
+ * Difficulty:                  3
+ * Queue forming:               У порядку спадання критичного по часу шляхів до кінця графа задачі.
+ * Graph characteristics usage: Критичний шлях по часу для всіх вершин
  */
 public class CriticalPathByTimeForAllNodes3 <N extends Node, L extends Link<N>> extends GeneralQueueConstructor<N, L> {
 

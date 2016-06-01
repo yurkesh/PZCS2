@@ -1,4 +1,4 @@
-package edu.kpi.nesteruk.pzcs.planning;
+package edu.kpi.nesteruk.pzcs.planning.params;
 
 /**
  * Created by Anatolii Bed on 2016-04-20.

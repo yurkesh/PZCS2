@@ -6,6 +6,9 @@ import java.awt.event.ActionEvent;
  * Created by Anatolii on 2016-03-23.
  */
 public interface DefaultPresenter {
+
+    int ACTION_EVENT_OPEN_FILE = 1;
+
     void onGantDiagram(ActionEvent event);
 
     void onStatistics(ActionEvent event);

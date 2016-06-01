@@ -6,19 +6,22 @@ import edu.kpi.nesteruk.pzcs.graph.validation.NoIsolatedEdgesGraphValidator;
 import edu.kpi.nesteruk.pzcs.graph.validation.NonSplitGraphValidator;
 import edu.kpi.nesteruk.pzcs.model.common.AbstractGraphModel;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
+import edu.kpi.nesteruk.pzcs.model.common.GraphModelBundle;
 import edu.kpi.nesteruk.pzcs.model.primitives.CongenericLink;
 import org.jgrapht.Graph;
+import org.jgrapht.WeightedGraph;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * Created by Anatolii on 2016-03-13.
  */
-public class SystemGraphModel extends AbstractGraphModel<Processor, CongenericLink<Processor>> implements GraphModel {
+public class SystemGraphModel extends AbstractGraphModel<Processor, CongenericLink<Processor>, ProcessorsGraphBundle> implements GraphModel {
 
     public SystemGraphModel() {
         super(
@@ -28,8 +31,8 @@ public class SystemGraphModel extends AbstractGraphModel<Processor, CongenericLi
         );
     }
 
-    private static Graph<String, String> newGraph() {
-        return new SimpleWeightedGraph<>(SystemGraphModel::getLinkId);
+    public static ProcessorsGraph newGraph() {
+        return new ProcessorsGraph(SystemGraphModel::getLinkId);
     }
 
     private static String getLinkId(String srcId, String destId) {
@@ -48,5 +51,10 @@ public class SystemGraphModel extends AbstractGraphModel<Processor, CongenericLi
     @Override
     protected Pair<CongenericLink<Processor>, String> makeConcreteLink(Processor source, Processor destination, int weight) {
         return Pair.create(new CongenericLink<>(source, destination, weight), getLinkId(source.getId(), destination.getId()));
+    }
+
+    @Override
+    protected ProcessorsGraphBundle makeBundle(Map<String, Processor> nodesMap, Map<String, CongenericLink<Processor>> linksMap) {
+        return new ProcessorsGraphBundle(nodesMap, linksMap);
     }
 }
