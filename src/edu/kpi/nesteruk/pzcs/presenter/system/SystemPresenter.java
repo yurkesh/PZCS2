@@ -1,5 +1,6 @@
 package edu.kpi.nesteruk.pzcs.presenter.system;
 
+import edu.kpi.nesteruk.pzcs.model.system.ProcessorsGraphBundle;
 import edu.kpi.nesteruk.pzcs.presenter.common.GraphPresenter;
 
 import java.awt.event.ActionEvent;
@@ -21,4 +22,6 @@ public interface SystemPresenter extends GraphPresenter {
     }
 
     void onProcessorsParams(ActionEvent event);
+
+    ProcessorsGraphBundle getProcessorsGraphBundle();
 }

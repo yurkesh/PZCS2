@@ -1,11 +1,22 @@
 package edu.kpi.nesteruk.pzcs.view.dashboard;
 
+import edu.kpi.nesteruk.misc.Tuple;
 import edu.kpi.nesteruk.pzcs.common.GraphType;
+import edu.kpi.nesteruk.pzcs.model.system.ProcessorsGraphBundle;
+import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphBundle;
+import edu.kpi.nesteruk.pzcs.planning.CommonPlannerTesting;
+import edu.kpi.nesteruk.pzcs.planning.PlanningParams;
+import edu.kpi.nesteruk.pzcs.planning.SchedulingResult;
+import edu.kpi.nesteruk.pzcs.planning.params.ProcessorsParams;
 import edu.kpi.nesteruk.pzcs.presenter.common.*;
 import edu.kpi.nesteruk.pzcs.presenter.system.SystemPresenter;
 import edu.kpi.nesteruk.pzcs.presenter.tasks.TasksPresenter;
 import edu.kpi.nesteruk.pzcs.view.common.CommonGraphView;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
+import edu.kpi.nesteruk.pzcs.view.print.Table;
+import edu.kpi.nesteruk.pzcs.view.print.TableRepresentationBuilder;
+import edu.kpi.nesteruk.pzcs.view.processors.PlannedWorkPresenter;
+import edu.kpi.nesteruk.pzcs.view.processors.PlanningParamsInputDialog;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -27,7 +38,26 @@ public class UnitedGraphsView implements UnitedGraphPresenter {
     private final DefaultPresenter defaultPresenter = new DefaultPresenter() {
         @Override
         public void onGantDiagram(ActionEvent event) {
+            PlannedWorkPresenter presenter = schedulingResult -> {
+                Tuple<Table> executionAndTransfersTables = schedulingResult.getExecutionAndTransfersTables();
+                System.out.println(
+                        "Planning result:\nExecution:\n" +
+                                new TableRepresentationBuilder(executionAndTransfersTables.first, true).getRepresentation()
+                                + "\nTransfers:\n" +
+                                new TableRepresentationBuilder(executionAndTransfersTables.second, true).getRepresentation()
+                );
+            };
 
+            PlanningParamsInputDialog.showDialog(PlanningParams.DEFAULT, params -> {
+                TasksGraphBundle tasks = getTasksPresenter().getTasksGraphBundle();
+                ProcessorsGraphBundle processors = getSystemPresenter().getProcessorsGraphBundle();
+                SchedulingResult schedulingResult = CommonPlannerTesting.makePlanner(params.labWork).getPlannedWork(
+                        processors,
+                        tasks,
+                        new ProcessorsParams(params.numberOfChannels)
+                );
+                presenter.displaySchedule(schedulingResult);
+            });
         }
 
         @Override
@@ -173,6 +203,16 @@ public class UnitedGraphsView implements UnitedGraphPresenter {
 
     @Override
     public void setGraph(Object graph) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ProcessorsGraphBundle getProcessorsGraphBundle() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public TasksGraphBundle getTasksGraphBundle() {
         throw new UnsupportedOperationException();
     }
 }

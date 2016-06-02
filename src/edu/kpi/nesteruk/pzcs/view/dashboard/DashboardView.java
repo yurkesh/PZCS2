@@ -86,9 +86,11 @@ public class DashboardView extends JFrame {
             JMenu modeling = new JMenu("Modeling");
             menuBar.add(modeling);
             {
+                /*
                 JMenuItem processorsParams = new JMenuItem("Processors params");
                 processorsParams.addActionListener(graphPresenter::onProcessorsParams);
                 modeling.add(processorsParams);
+                */
 
                 JMenuItem gantDiagram = new JMenuItem("Gant diagram");
                 gantDiagram.addActionListener(graphPresenter::onGantDiagram);

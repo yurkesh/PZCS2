@@ -5,11 +5,21 @@ package edu.kpi.nesteruk.pzcs.common;
  */
 public enum LabWork {
 
-    LAB_2,
-    LAB_3,
-    LAB_4,
-    LAB_6,
-    LAB_7
+    LAB_2(2),
+    LAB_3(3),
+    LAB_4(4),
+    LAB_6(6),
+    LAB_7(7)
     ;
+
+    private final int number;
+
+    LabWork(int number) {
+        this.number = number;
+    }
+
+    public int getNumber() {
+        return number;
+    }
 
 }
