@@ -129,15 +129,15 @@ public class CommonPlannerTesting {
 
     private static PlannerTestingData getTasks() {
         return new
-//                ControlWorkExampleCaseTasks()
-                LabDeliveryCase1Tasks()
+                ControlWorkExampleCaseTasks()
+//                LabDeliveryCase1Tasks()
                 ;
     }
 
     private static PlannerTestingData getProcessors() {
         return new
-//                ControlWorkExampleCaseProcessors()
-                LabDeliveryCase1Processors()
+                ControlWorkExampleCaseProcessors()
+//                LabDeliveryCase1Processors()
                 ;
     }
 
