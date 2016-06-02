@@ -52,7 +52,7 @@ public class CommonPlannerTesting {
         //ScheduledJobsHolder.USE_EXTENDED_TRANSFER_FORMATTING;
         // TODO: 2016-06-02 Set correct variants
         SingleTaskHostSearcherFactory.setLabs67Variants(2, 4);
-        LAB_WORK = LabWork.LAB_6;
+        LAB_WORK = CommonPlannerParameters.LAB_WORK;
     }
 
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
@@ -73,16 +73,17 @@ public class CommonPlannerTesting {
         SchedulingResult schedulingResult = makePlanner(LAB_WORK).getPlannedWork(
                 processors,
                 tasks,
-                new ProcessorsParams(1, false, DuplexMode.Full, TransferParams.messages())
+                new ProcessorsParams(CommonPlannerParameters.NUMBER_OF_LINKS, false, DuplexMode.Full, TransferParams.messages())
         );
         Tuple<Table> executionAndTransfersTables = schedulingResult.getExecutionAndTransfersTables();
+        /*
         System.out.println(
                 "Planning result:\nExecution:\n" +
                         new TableRepresentationBuilder(executionAndTransfersTables.first, true).getRepresentation()
                 + "\nTransfers:\n" +
                         new TableRepresentationBuilder(executionAndTransfersTables.second, true).getRepresentation()
         );
-
+        */
         GantDiagrmView.showDiagramForProcessors(executionAndTransfersTables.first, "Processors");
         GantDiagrmView.showDiagramForProcessors(executionAndTransfersTables.second, "Transfers");
 
@@ -128,15 +129,15 @@ public class CommonPlannerTesting {
 
     private static PlannerTestingData getTasks() {
         return new
-                ControlWorkExampleCaseTasks()
-//                LabDeliveryCase1Tasks()
+//                ControlWorkExampleCaseTasks()
+                LabDeliveryCase1Tasks()
                 ;
     }
 
     private static PlannerTestingData getProcessors() {
         return new
-                ControlWorkExampleCaseProcessors()
-//                LabDeliveryCase1Processors()
+//                ControlWorkExampleCaseProcessors()
+                LabDeliveryCase1Processors()
                 ;
     }
 

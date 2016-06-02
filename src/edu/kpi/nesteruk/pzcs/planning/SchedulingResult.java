@@ -54,7 +54,7 @@ public class SchedulingResult {
                     String task;
                     for (int tact = 0; tact < tacts; tact++) {
                         task = jobsHolder.getExecutingTask(tact);
-                        String cell = task == null ? "" : (task.equals(previousTask) ? task : "*" + task);
+                        String cell = task == null ? "" : (task.equals(previousTask) ? task : ">" + task + "<");
                         previousTask = task;
                         data[processor][tact + 1] = cell;
                     }
