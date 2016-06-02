@@ -67,6 +67,10 @@ public class StatefulProcessor implements ScheduledJobsHolder {
         return execution.getMinStartTime(startTact, weight);
     }
 
+    public int getIdleTime(int tact) {
+        return execution.getIdleTime(tact);
+    }
+
     public void assignTask(int tact, String task, int weight) {
         execution.assignTask(tact, task, weight);
     }
@@ -75,13 +79,18 @@ public class StatefulProcessor implements ScheduledJobsHolder {
         ChannelTransfer transfer = processorTransfer.channelTransfer;
         boolean isReceiver = processorTransfer.destProcessor.equals(processor.getId());
         int channel = isReceiver ? transfer.destChannel : transfer.srcChannel;
-        String anotherProcessor = isReceiver ? processorTransfer.srcProcessor : processorTransfer.destProcessor;
+        String anotherProcessor;
+        if(USE_EXTENDED_TRANSFER_FORMATTING) {
+            anotherProcessor = isReceiver ? ">>" + processorTransfer.srcProcessor : "<<" + processorTransfer.destProcessor;
+        } else {
+            anotherProcessor = transfer.receiver;
+        }
         transfers.addTransfer(
                 channel,
                 transfer.startTact,
                 transfer.weight,
-//                anotherProcessor,
-                transfer.receiver,
+                anotherProcessor,
+//                transfer.receiver,
                 transfer.transfer
         );
     }

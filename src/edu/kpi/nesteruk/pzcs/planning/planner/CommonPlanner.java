@@ -40,7 +40,7 @@ public class CommonPlanner implements Planner {
         this.processorsSorter = processorsSorter;
         this.tasksGraphSimplifier = tasksGraphSimplifier;
         this.tasksSorter = tasksSorter;
-        this.singleTaskPlanner = singleTaskPlanner;
+        this.singleTaskPlanner = Objects.requireNonNull(singleTaskPlanner);
         this.logger = logger;
     }
 

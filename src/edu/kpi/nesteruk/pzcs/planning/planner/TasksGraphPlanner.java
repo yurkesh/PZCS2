@@ -1,5 +1,6 @@
 package edu.kpi.nesteruk.pzcs.planning.planner;
 
+import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
 import edu.kpi.nesteruk.pzcs.planning.SchedulingResult;
 import edu.kpi.nesteruk.pzcs.planning.processors.ProcessorWithTaskEstimate;
@@ -66,6 +67,14 @@ class TasksGraphPlanner {
 
     public SchedulingResult getPlannedWork() {
 
+        final List<StatefulProcessor> statefulProcessorsSorted = Collections.unmodifiableList(
+                processorsSorted.stream()
+                        .map(statefulProcessorMap::get)
+                        .collect(Collectors.toList())
+        );
+
+        final LockedStatefulProcessorProvider lockedStatefulProcessorProvider = processorID -> statefulProcessorMap.get(processorID).copy();
+
         Set<String> executingTasks = new LinkedHashSet<>();
 
         AtomicInteger tactCounter = new AtomicInteger();
@@ -98,44 +107,40 @@ class TasksGraphPlanner {
                     .map(taskWithPredecessorsMapper::getTaskWithItsPredecessors)
                     //TaskWithPredecessors -> TaskWithHostedDependencies
                     .map(taskWithHostedPredecessorsMapper::getTaskWithHostedPredecessors)
-                    .collect(CollectionUtils.CustomCollectors.toMap(
-                            Function.<TaskWithHostedDependencies>identity(),
-                            taskWithHostedPredecessors -> {
-                                //Find processor with the best start time for this task
-                                ProcessorWithTaskEstimate processorWithTaskEstimate = processorsSorted.stream()
-                                        //processorId -> StatefulProcessor
-                                        .map(statefulProcessorMap::get)
-                                        //StatefulProcessor -> {StatefulProcessor, startTime}
-                                        .map(statefulProcessor -> new ProcessorWithTaskEstimate(
-                                                statefulProcessor,
-                                                singleTaskPlanner.getStartTime(
-                                                        router,
-                                                        tact,
-                                                        taskWithHostedPredecessors,
-                                                        statefulProcessor,
-                                                        doneTasksHolder,
-                                                        processorID -> statefulProcessorMap.get(processorID).copy()
-                                                )
-                                        ))
-                                        //Get {StatefulProcessor, startTime} with the lowest (best) startTime (sort by
-                                        // startTime, asc)
-                                        .min(Comparator.comparing(ProcessorWithTaskEstimate::getStartTime))
-                                        .get();
+                    //TaskWithHostedDependencies -> {TaskWithHostedDependencies, ProcessorWithTaskEstimate}
+                    .map(taskWithHostedPredecessors -> {
+                        Optional<ProcessorWithTaskEstimate> processorWithTaskEstimateOpt = singleTaskPlanner.getStartTime(
+                                router,
+                                tact,
+                                taskWithHostedPredecessors,
+                                doneTasksHolder,
+                                statefulProcessorsSorted,
+                                lockedStatefulProcessorProvider
+                        );
+                        return Pair.create(taskWithHostedPredecessors, processorWithTaskEstimateOpt);
+                    })
+                    //Remain with estimates only
+                    .filter(pair -> pair.second.isPresent())
+                    .peek(pair -> {
+                        TaskWithHostedDependencies taskWithHostedPredecessors = pair.first;
+                        ProcessorWithTaskEstimate processorWithTaskEstimate = pair.second.get();
 
-                                String taskId = taskWithHostedPredecessors.task;
-                                //Need to schedule task on found processor to change state of processors system
-                                // before scheduling next task
-                                processorWithTaskEstimate.statefulProcessor.assignTask(
-                                        processorWithTaskEstimate.getStartTime(),
-                                        taskId,
-                                        tasksMap.get(taskId).getWeight()
-                                );
-                                //Also need to schedule all transfers
-                                if(processorWithTaskEstimate.taskEstimate.transfersNeeded) {
-                                    applyTransfers(processorWithTaskEstimate.taskEstimate.taskTransfers);
-                                }
-                                return processorWithTaskEstimate;
-                            },
+                        String taskId = taskWithHostedPredecessors.task;
+                        //Need to schedule task on found processor to change state of processors system
+                        // before scheduling next task
+                        processorWithTaskEstimate.statefulProcessor.assignTask(
+                                processorWithTaskEstimate.getStartTime(),
+                                taskId,
+                                tasksMap.get(taskId).getWeight()
+                        );
+                        //Also need to schedule all transfers
+                        if(processorWithTaskEstimate.taskEstimate.transfersNeeded) {
+                            applyTransfers(processorWithTaskEstimate.taskEstimate.taskTransfers);
+                        }
+                    })
+                    .collect(CollectionUtils.CustomCollectors.toMap(
+                            Pair::getFirst,
+                            pair -> pair.second.get(),
                             LinkedHashMap::new
                     ));
 

@@ -8,16 +8,17 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Created by Yurii on 2016-05-22.
+ * Created by Yurii on 2016-06-02.
  */
-@FunctionalInterface
-public interface SingleTaskHostSearcher {
-
-    Optional<ProcessorWithTaskEstimate> getStartTime(
+public class Variant5EarliestStartWithPrediction implements SingleTaskHostSearcher {
+    @Override
+    public Optional<ProcessorWithTaskEstimate> getStartTime(
             TaskTransferRouter router,
             int tact,
             TaskWithHostedDependencies task,
             TaskFinishTimeProvider taskFinishTimeProvider,
-            List<StatefulProcessor> processorsSorted, LockedStatefulProcessorProvider processorCopyProvider);
+            List<StatefulProcessor> processorsSorted, LockedStatefulProcessorProvider processorCopyProvider) {
 
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 }

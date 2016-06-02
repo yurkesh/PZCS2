@@ -1,6 +1,7 @@
 package edu.kpi.nesteruk.pzcs.planning;
 
 import edu.kpi.nesteruk.misc.Tuple;
+import edu.kpi.nesteruk.pzcs.common.LabWork;
 import edu.kpi.nesteruk.pzcs.graph.misc.GraphUtils;
 import edu.kpi.nesteruk.pzcs.model.common.AbstractGraphModel;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModelBundle;
@@ -20,7 +21,9 @@ import edu.kpi.nesteruk.pzcs.planning.params.DuplexMode;
 import edu.kpi.nesteruk.pzcs.planning.params.ProcessorsParams;
 import edu.kpi.nesteruk.pzcs.planning.params.TransferParams;
 import edu.kpi.nesteruk.pzcs.planning.planner.CommonPlanner;
-import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcherImpl;
+import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcherFactory;
+import edu.kpi.nesteruk.pzcs.planning.planner.Variant4EarliestStartWithoutPrediction;
+import edu.kpi.nesteruk.pzcs.planning.processors.ScheduledJobsHolder;
 import edu.kpi.nesteruk.pzcs.view.dashboard.DashboardView;
 import edu.kpi.nesteruk.pzcs.view.dashboard.UnitedGraphsView;
 import edu.kpi.nesteruk.pzcs.view.print.Table;
@@ -37,11 +40,21 @@ import java.util.stream.Collectors;
  */
 public class CommonPlannerTesting {
 
+    private static final LabWork LAB_WORK;
+
+    static {
+        // TODO: 2016-06-02 Set correct formatting
+//        ScheduledJobsHolder.USE_EXTENDED_TRANSFER_FORMATTING;
+        // TODO: 2016-06-02 Set correct variants
+        SingleTaskHostSearcherFactory.setLabs67Variants(2, 4);
+        LAB_WORK = LabWork.LAB_6;
+    }
+
     public static void main(String[] args) {
         TasksGraphBundle tasks = makeTasks();
         ProcessorsGraphBundle processors = makeProcessors();
 
-        SchedulingResult schedulingResult = makePlanner().getPlannedWork(
+        SchedulingResult schedulingResult = makePlanner(LAB_WORK).getPlannedWork(
                 processors,
                 tasks,
                 new ProcessorsParams(2, false, DuplexMode.Full, TransferParams.messages())
@@ -60,7 +73,7 @@ public class CommonPlannerTesting {
         graphPresenter.getSystemPresenter().setGraph(processors);
     }
 
-    public static Planner makePlanner() {
+    public static Planner makePlanner(LabWork labWork) {
         return new CommonPlanner(
                 processorsGraphBundle -> GraphUtils.makeGraphCheckAllEdgesAdded(
                         SystemGraphModel::newGraph,
@@ -80,7 +93,7 @@ public class CommonPlannerTesting {
                         .map(Task::getId)
                         .collect(Collectors.toList())
                 ,
-                new SingleTaskHostSearcherImpl(),
+                SingleTaskHostSearcherFactory.getSearcher(labWork),
                 System.out::println
         );
     }
@@ -95,15 +108,15 @@ public class CommonPlannerTesting {
 
     private static PlannerTestingData getTasks() {
         return new
-//                ControlWorkExampleCaseTasks()
-                LabDeliveryCase1Tasks()
+                ControlWorkExampleCaseTasks()
+//                LabDeliveryCase1Tasks()
                 ;
     }
 
     private static PlannerTestingData getProcessors() {
         return new
-//                ControlWorkExampleCaseProcessors()
-                LabDeliveryCase1Processors()
+                ControlWorkExampleCaseProcessors()
+//                LabDeliveryCase1Processors()
                 ;
     }
 
@@ -258,6 +271,7 @@ public class CommonPlannerTesting {
                 put(3, 6);
                 put(4, 2);
                 put(5, 1);
+//                put(6, 2);
             }};
         }
 
