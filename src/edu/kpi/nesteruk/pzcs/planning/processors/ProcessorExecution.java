@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 /**
- * Created by Yurii on 2016-05-25.
+ * Created by Anatolii Bed on 2016-05-25.
  */
 class ProcessorExecution {
 

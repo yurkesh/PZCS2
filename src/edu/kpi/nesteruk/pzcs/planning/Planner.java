@@ -5,7 +5,7 @@ import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphBundle;
 import edu.kpi.nesteruk.pzcs.planning.params.ProcessorsParams;
 
 /**
- * Created by Yurii on 2016-05-15.
+ * Created by Anatolii Bed on 2016-05-15.
  */
 public interface Planner {
 

@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * Created by Yurii on 2016-05-16.
+ * Created by Anatolii Bed on 2016-05-16.
  */
 public class FunctionWithCache<T, R> implements Function<T, R> {
 

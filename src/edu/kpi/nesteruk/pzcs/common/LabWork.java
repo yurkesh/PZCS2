@@ -1,7 +1,7 @@
 package edu.kpi.nesteruk.pzcs.common;
 
 /**
- * Created by Yurii on 2016-06-02.
+ * Created by Anatolii Bed on 2016-06-02.
  */
 public enum LabWork {
 

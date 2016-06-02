@@ -5,7 +5,7 @@ import java.util.TreeMap;
 import java.util.stream.IntStream;
 
 /**
- * Created by Yurii on 2016-05-26.
+ * Created by Anatolii Bed on 2016-05-26.
  */
 class ProcessorChannel {
 

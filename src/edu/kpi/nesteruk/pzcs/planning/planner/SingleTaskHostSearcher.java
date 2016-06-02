@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Created by Yurii on 2016-05-22.
+ * Created by Anatolii Bed on 2016-05-22.
  */
 @FunctionalInterface
 public interface SingleTaskHostSearcher {

@@ -7,7 +7,7 @@ import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 /**
- * Created by Yurii on 2016-05-15.
+ * Created by Anatolii Bed on 2016-05-15.
  */
 public class TasksGraph extends SimpleDirectedWeightedGraph<String, String> {
 

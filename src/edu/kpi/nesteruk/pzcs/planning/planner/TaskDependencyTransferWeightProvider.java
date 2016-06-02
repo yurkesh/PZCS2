@@ -5,7 +5,7 @@ import edu.kpi.nesteruk.pzcs.planning.tasks.TaskHostedDependency;
 import edu.kpi.nesteruk.pzcs.planning.tasks.TaskWithHostedDependencies;
 
 /**
- * Created by Yurii on 2016-05-24.
+ * Created by Anatolii Bed on 2016-05-24.
  */
 @FunctionalInterface
 interface TaskDependencyTransferWeightProvider {

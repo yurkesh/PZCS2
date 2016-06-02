@@ -5,7 +5,7 @@ import edu.kpi.nesteruk.pzcs.planning.processors.StatefulProcessor;
 import java.util.Collection;
 
 /**
- * Created by Yurii on 2016-05-22.
+ * Created by Anatolii Bed on 2016-05-22.
  */
 @FunctionalInterface
 interface ProcessorExecutingTaskProvider {

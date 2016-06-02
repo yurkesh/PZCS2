@@ -10,7 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Created by Yurii on 2016-05-22.
+ * Created by Anatolii Bed on 2016-05-22.
  */
 @FunctionalInterface
 interface ReadyTasksSupplier {

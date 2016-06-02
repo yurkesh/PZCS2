@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Yurii on 2016-05-23.
+ * Created by Anatolii Bed on 2016-05-23.
  */
 interface DoneTasksHolder extends TaskFinishTimeProvider {
     void addDoneTasks(int tact, Collection<String> doneTasks);

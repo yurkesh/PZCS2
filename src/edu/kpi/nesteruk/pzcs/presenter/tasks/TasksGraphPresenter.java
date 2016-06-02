@@ -15,6 +15,7 @@ import edu.kpi.nesteruk.pzcs.presenter.common.CaptionsSupplier;
 import edu.kpi.nesteruk.pzcs.presenter.common.CommonGraphPresenter;
 import edu.kpi.nesteruk.pzcs.presenter.common.GraphVertexSizeSupplier;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
+import edu.kpi.nesteruk.pzcs.view.dashboard.TableView;
 import edu.kpi.nesteruk.pzcs.view.tasks.GraphGeneratorFrame;
 import edu.kpi.nesteruk.pzcs.view.tasks.GraphGeneratorParamsInputDialog;
 import edu.kpi.nesteruk.pzcs.view.dialog.Message;
@@ -117,6 +118,7 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
                 ));
 
         queuesWithTitles.forEach((title, queues) -> System.out.println(title + ":\n" + queuesToString(queues) + "\n"));
+        queuesWithTitles.forEach((title, queues) -> TableView.showTable(title, queues));
     }
 
     private static String queuesToString(Collection<CriticalNode<Task>> criticalNodes) {

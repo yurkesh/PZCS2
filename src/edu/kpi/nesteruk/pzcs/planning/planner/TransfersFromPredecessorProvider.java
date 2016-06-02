@@ -6,7 +6,7 @@ import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraph;
 import java.util.function.Function;
 
 /**
- * Created by Yurii on 2016-05-22.
+ * Created by Anatolii Bed on 2016-05-22.
  */
 @FunctionalInterface
 interface TransfersFromPredecessorProvider {

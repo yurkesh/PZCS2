@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Created by Yurii on 2016-06-02.
+ * Created by Anatolii Bed on 2016-06-02.
  */
 public class SchedulingResult {
 

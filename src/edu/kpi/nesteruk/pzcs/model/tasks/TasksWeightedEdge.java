@@ -5,7 +5,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import java.util.Objects;
 
 /**
- * Created by Yurii on 2016-05-22.
+ * Created by Anatolii Bed on 2016-05-22.
  */
 public class TasksWeightedEdge extends DefaultWeightedEdge {
 

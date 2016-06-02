@@ -4,7 +4,7 @@ import edu.kpi.nesteruk.pzcs.model.system.ProcessorsGraph;
 import edu.kpi.nesteruk.pzcs.model.system.ProcessorsGraphBundle;
 
 /**
- * Created by Yurii on 2016-06-02.
+ * Created by Anatolii Bed on 2016-06-02.
  */
 @FunctionalInterface
 public interface ProcessorsGraphSimplifier {

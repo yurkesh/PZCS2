@@ -12,6 +12,7 @@ import edu.kpi.nesteruk.pzcs.model.primitives.Link;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
 import edu.kpi.nesteruk.pzcs.model.queuing.concrete.CriticalPathByTimeForAllNodes3;
 import edu.kpi.nesteruk.pzcs.model.queuing.primitives.CriticalNode;
+import edu.kpi.nesteruk.pzcs.model.system.Processor;
 import edu.kpi.nesteruk.pzcs.model.system.ProcessorsGraphBundle;
 import edu.kpi.nesteruk.pzcs.model.system.SystemGraphModel;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
@@ -24,12 +25,15 @@ import edu.kpi.nesteruk.pzcs.planning.planner.CommonPlanner;
 import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcherFactory;
 import edu.kpi.nesteruk.pzcs.planning.planner.Variant4EarliestStartWithoutPrediction;
 import edu.kpi.nesteruk.pzcs.planning.processors.ScheduledJobsHolder;
+import edu.kpi.nesteruk.pzcs.view.GraphStyle;
 import edu.kpi.nesteruk.pzcs.view.dashboard.DashboardView;
+import edu.kpi.nesteruk.pzcs.view.dashboard.GantDiagrmView;
 import edu.kpi.nesteruk.pzcs.view.dashboard.UnitedGraphsView;
 import edu.kpi.nesteruk.pzcs.view.localization.Localization;
 import edu.kpi.nesteruk.pzcs.view.print.Table;
 import edu.kpi.nesteruk.pzcs.view.print.TableRepresentationBuilder;
 
+import javax.swing.*;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -37,7 +41,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Created by Yurii on 2016-05-22.
+ * Created by Anatolii Bed on 2016-05-22.
  */
 public class CommonPlannerTesting {
 
@@ -45,14 +49,23 @@ public class CommonPlannerTesting {
 
     static {
         // TODO: 2016-06-02 Set correct formatting
-//        ScheduledJobsHolder.USE_EXTENDED_TRANSFER_FORMATTING;
+        //ScheduledJobsHolder.USE_EXTENDED_TRANSFER_FORMATTING;
         // TODO: 2016-06-02 Set correct variants
         SingleTaskHostSearcherFactory.setLabs67Variants(2, 4);
         LAB_WORK = LabWork.LAB_6;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
         Localization.getInstance().init(Localization.Language.UA);
+        for (UIManager.LookAndFeelInfo lookAndFeelInfo : UIManager.getInstalledLookAndFeels()) {
+            if ("Windows".equals(lookAndFeelInfo.getName())) {
+                UIManager.setLookAndFeel(lookAndFeelInfo.getClassName());
+                break;
+            }
+        }
+        GraphStyle.DEFAULT_STYLE = GraphStyle.Alternative;
+        Task.TO_STRING_FORMAT = "T[%s]: %s";
+        Processor.TO_STRING_FORMAT = "P[%s]=%s";
 
         TasksGraphBundle tasks = makeTasks();
         ProcessorsGraphBundle processors = makeProcessors();
@@ -60,7 +73,7 @@ public class CommonPlannerTesting {
         SchedulingResult schedulingResult = makePlanner(LAB_WORK).getPlannedWork(
                 processors,
                 tasks,
-                new ProcessorsParams(2, false, DuplexMode.Full, TransferParams.messages())
+                new ProcessorsParams(1, false, DuplexMode.Full, TransferParams.messages())
         );
         Tuple<Table> executionAndTransfersTables = schedulingResult.getExecutionAndTransfersTables();
         System.out.println(
@@ -69,6 +82,10 @@ public class CommonPlannerTesting {
                 + "\nTransfers:\n" +
                         new TableRepresentationBuilder(executionAndTransfersTables.second, true).getRepresentation()
         );
+
+        GantDiagrmView.showDiagramForProcessors(executionAndTransfersTables.first, "Processors");
+        GantDiagrmView.showDiagramForProcessors(executionAndTransfersTables.second, "Transfers");
+
 
         DashboardView dashboardView = DashboardView.defaultStart();
         UnitedGraphsView graphPresenter = (UnitedGraphsView) dashboardView.getGraphPresenter();

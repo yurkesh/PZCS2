@@ -4,7 +4,7 @@ import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraph;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphBundle;
 
 /**
- * Created by Yurii on 2016-06-02.
+ * Created by Anatolii Bed on 2016-06-02.
  */
 @FunctionalInterface
 public interface TasksGraphSimplifier {

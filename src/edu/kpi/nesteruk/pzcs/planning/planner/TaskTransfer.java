@@ -3,7 +3,7 @@ package edu.kpi.nesteruk.pzcs.planning.planner;
 import java.util.List;
 
 /**
- * Created by Yurii on 2016-05-26.
+ * Created by Anatolii Bed on 2016-05-26.
  */
 class TaskTransfer {
 

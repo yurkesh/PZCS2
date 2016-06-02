@@ -5,7 +5,7 @@ import org.jgrapht.EdgeFactory;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 /**
- * Created by Yurii on 2016-05-16.
+ * Created by Anatolii Bed on 2016-05-16.
  */
 public class ProcessorsGraph extends SimpleWeightedGraph<String, String> {
 

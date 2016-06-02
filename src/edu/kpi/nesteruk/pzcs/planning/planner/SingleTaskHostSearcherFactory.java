@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Created by Yurii on 2016-06-02.
+ * Created by Anatolii Bed on 2016-06-02.
  */
 public class SingleTaskHostSearcherFactory {
 

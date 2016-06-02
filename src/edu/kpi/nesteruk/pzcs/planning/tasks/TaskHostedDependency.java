@@ -6,7 +6,7 @@ import edu.kpi.nesteruk.pzcs.model.tasks.Task;
 
 /**
  * Contains info about dependency of concrete task (source)
- * Created by Yurii on 2016-05-18.
+ * Created by Anatolii Bed on 2016-05-18.
  */
 public class TaskHostedDependency {
 

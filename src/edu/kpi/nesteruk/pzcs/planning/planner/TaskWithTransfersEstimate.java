@@ -5,7 +5,7 @@ import edu.kpi.nesteruk.util.CollectionUtils;
 import java.util.Collection;
 
 /**
- * Created by Yurii on 2016-05-26.
+ * Created by Anatolii Bed on 2016-05-26.
  */
 public class TaskWithTransfersEstimate {
 

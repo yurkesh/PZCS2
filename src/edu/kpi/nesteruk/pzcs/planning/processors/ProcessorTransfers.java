@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * Created by Yurii on 2016-05-26.
+ * Created by Anatolii Bed on 2016-05-26.
  */
 class ProcessorTransfers {
 

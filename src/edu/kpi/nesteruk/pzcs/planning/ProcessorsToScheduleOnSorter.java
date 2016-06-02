@@ -5,7 +5,7 @@ import edu.kpi.nesteruk.pzcs.model.system.ProcessorsGraph;
 import java.util.List;
 
 /**
- * Created by Yurii on 2016-06-02.
+ * Created by Anatolii Bed on 2016-06-02.
  */
 @FunctionalInterface
 public interface ProcessorsToScheduleOnSorter {

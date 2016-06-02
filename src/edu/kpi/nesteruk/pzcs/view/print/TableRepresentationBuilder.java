@@ -3,7 +3,7 @@ package edu.kpi.nesteruk.pzcs.view.print;
 import edu.kpi.nesteruk.util.CollectionUtils;
 
 /**
- * Created by Yurii on 2015-09-17.
+ * Created by Anatolii Bed on 2015-09-17.
  */
 public class TableRepresentationBuilder {
 

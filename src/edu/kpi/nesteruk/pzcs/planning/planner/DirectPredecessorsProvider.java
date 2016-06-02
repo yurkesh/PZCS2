@@ -9,7 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.function.Function;
 
 /**
- * Created by Yurii on 2016-05-23.
+ * Created by Anatolii Bed on 2016-05-23.
  */
 @FunctionalInterface
 interface DirectPredecessorsProvider {

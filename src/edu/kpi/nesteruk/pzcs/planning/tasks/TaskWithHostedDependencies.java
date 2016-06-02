@@ -7,7 +7,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Created by Yurii on 2016-05-18.
+ * Created by Anatolii Bed on 2016-05-18.
  */
 public class TaskWithHostedDependencies {
 

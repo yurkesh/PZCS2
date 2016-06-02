@@ -3,7 +3,7 @@ package edu.kpi.nesteruk.pzcs.planning.processors;
 import edu.kpi.nesteruk.pzcs.planning.planner.TaskWithTransfersEstimate;
 
 /**
- * Created by Yurii on 2016-05-23.
+ * Created by Anatolii Bed on 2016-05-23.
  */
 public class ProcessorWithTaskEstimate {
 
