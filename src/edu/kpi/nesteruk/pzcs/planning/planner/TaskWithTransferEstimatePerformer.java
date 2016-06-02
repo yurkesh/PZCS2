@@ -10,87 +10,21 @@ import edu.kpi.nesteruk.pzcs.planning.tasks.TaskHostedDependency;
 import edu.kpi.nesteruk.pzcs.planning.tasks.TaskWithHostedDependencies;
 
 import java.util.*;
-import java.util.function.BinaryOperator;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
- * Created by Yurii on 2016-05-22.
+ * Created by Yurii on 2016-06-02.
  */
-public class SingleTaskHostSearcherImpl implements SingleTaskHostSearcher {
+class TaskWithTransferEstimatePerformer {
 
-    @Override
-    public TaskWithTransfersEstimate getStartTime(
-            TaskTransferRouter router,
-            int tact,
-            TaskWithHostedDependencies task,
-            StatefulProcessor processor,
-            TaskFinishTimeProvider taskFinishTimeProvider,
-            LockedStatefulProcessorProvider processorProvider) {
-
-        int startTime;
-
-        if(!task.hasDependencies()) {
-            //If task has no dependencies (it is 'in the top of tasks graph')
-            if(processor.isFree(tact)) {
-                //And current processor is free now
-                //Return current tact
-                startTime = tact;
-            } else {
-                //Processor can start execute task immediately after becoming free and available to process whole task
-                startTime = processor.getMinStartTime(tact, task.weight);
-            }
-        } else {
-            List<String> dependencies = task.dependencySources.stream()
-                    .map(TaskHostedDependency::getSourceTaskId)
-                    .collect(Collectors.toList());
-
-            boolean processorHasAllDependencies = processor.hasAllTasks(dependencies);
-            boolean allTasksAreOnProcessor = task.allAreOnProcessor(processor.getId());
-            if(processorHasAllDependencies ^ allTasksAreOnProcessor) {
-                //Just to check that processor is in correct state
-                throw new AssertionError("processorHasAllDependencies = " + processorHasAllDependencies + ", allTasksAreOnProcessor = " + allTasksAreOnProcessor);
-            }
-
-            if(allTasksAreOnProcessor) {
-                // If all dependencies of specified task were executed on current processor
-                // we can start it immediately after processor becomes free and could be available to process whole task
-                startTime = processor.getMinStartTime(tact, task.weight);
-            } else {
-                //Need to transfer data from parent tasks located on other processors. Time of arrival of the last data
-                // transfer => time of start
-                TaskWithTransfersEstimate taskWithTransfersEstimate = getMinAvailableStartTimeOfTaskDependingOnTransfers(
-                        tact,
-                        taskFinishTimeProvider,
-                        task,
-                        processor,
-                        router,
-                        processorProvider
-                );
-                startTime = taskWithTransfersEstimate.start;
-                //We need to check result
-                if(startTime < tact) {
-                    throw new IllegalStateException(
-                            "StartTime must be >= tact"
-                                    + ". Tact = " + tact
-                                    + ", startTime = " + startTime
-                                    + "\nTask = " + task
-                                    + "\nProcessor = " + processor
-                    );
-                }
-                return taskWithTransfersEstimate;
-            }
-        }
-        return new TaskWithTransfersEstimate(startTime, null);
-    }
-
-    private static TaskWithTransfersEstimate getMinAvailableStartTimeOfTaskDependingOnTransfers(
+    public static TaskWithTransfersEstimate getMinAvailableStartTimeOfTaskDependingOnTransfers(
             int tact,
             TaskFinishTimeProvider taskFinishTimeProvider,
             TaskWithHostedDependencies task,
             StatefulProcessor processor,
             TaskTransferRouter router,
-            LockedStatefulProcessorProvider processorProvider) {
+            LockedStatefulProcessorProvider processorProvider,
+            boolean transferBackwardPrediction) {
 
         // TODO: 2016-05-24 Add metric customization
         TaskDependencyTransferPriorityComparator taskTransferPriorityComparator =
@@ -108,7 +42,7 @@ public class SingleTaskHostSearcherImpl implements SingleTaskHostSearcher {
 
         Collection<TaskTransfer> taskTransfers = new ArrayList<>();
 
-        int lastTransferFinished = nonOnThisProcessorDependencies.stream()
+        OptionalInt maxOpt = nonOnThisProcessorDependencies.stream()
                 //Sort all these dependencies tasks by their metric
                 .sorted((t1, t2) -> taskTransferPriorityComparator.compare(t1.getSourceTaskId(), t2.getSourceTaskId()))
                 //For all dependencies find the time of transfer arrival on this processor:
@@ -148,8 +82,13 @@ public class SingleTaskHostSearcherImpl implements SingleTaskHostSearcher {
                 })
                 //Get max time of transfer arrival -> this is the minimum time of task start on specified processor
                 // (because task cannot be started before all its dependencies transfers arrive)
-                .max()
-                .getAsInt();
+                .max();
+
+        if(!maxOpt.isPresent()) {
+            throw new IllegalStateException();
+        }
+
+        int lastTransferFinished = maxOpt.getAsInt();
 
         int minStartTime = processor.getMinStartTime(lastTransferFinished, task.weight);
 

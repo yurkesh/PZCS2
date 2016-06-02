@@ -1,6 +1,8 @@
 package edu.kpi.nesteruk.pzcs.planning.planner;
 
+import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
+import edu.kpi.nesteruk.pzcs.planning.SchedulingResult;
 import edu.kpi.nesteruk.pzcs.planning.processors.ProcessorWithTaskEstimate;
 import edu.kpi.nesteruk.pzcs.planning.processors.StatefulProcessor;
 import edu.kpi.nesteruk.pzcs.planning.tasks.TaskWithHostedDependencies;
@@ -63,7 +65,15 @@ class TasksGraphPlanner {
         this.router = router;
     }
 
-    public int getPlannedWorkTime() {
+    public SchedulingResult getPlannedWork() {
+
+        final List<StatefulProcessor> statefulProcessorsSorted = Collections.unmodifiableList(
+                processorsSorted.stream()
+                        .map(statefulProcessorMap::get)
+                        .collect(Collectors.toList())
+        );
+
+        final LockedStatefulProcessorProvider lockedStatefulProcessorProvider = processorID -> statefulProcessorMap.get(processorID).copy();
 
         Set<String> executingTasks = new LinkedHashSet<>();
 
@@ -97,44 +107,40 @@ class TasksGraphPlanner {
                     .map(taskWithPredecessorsMapper::getTaskWithItsPredecessors)
                     //TaskWithPredecessors -> TaskWithHostedDependencies
                     .map(taskWithHostedPredecessorsMapper::getTaskWithHostedPredecessors)
-                    .collect(CollectionUtils.CustomCollectors.toMap(
-                            Function.<TaskWithHostedDependencies>identity(),
-                            taskWithHostedPredecessors -> {
-                                //Find processor with the best start time for this task
-                                ProcessorWithTaskEstimate processorWithTaskEstimate = processorsSorted.stream()
-                                        //processorId -> StatefulProcessor
-                                        .map(statefulProcessorMap::get)
-                                        //StatefulProcessor -> {StatefulProcessor, startTime}
-                                        .map(statefulProcessor -> new ProcessorWithTaskEstimate(
-                                                statefulProcessor,
-                                                singleTaskPlanner.getStartTime(
-                                                        router,
-                                                        tact,
-                                                        taskWithHostedPredecessors,
-                                                        statefulProcessor,
-                                                        doneTasksHolder,
-                                                        processorID -> statefulProcessorMap.get(processorID).copy()
-                                                )
-                                        ))
-                                        //Get {StatefulProcessor, startTime} with the lowest (best) startTime (sort by
-                                        // startTime, asc)
-                                        .min(Comparator.comparing(ProcessorWithTaskEstimate::getStartTime))
-                                        .get();
+                    //TaskWithHostedDependencies -> {TaskWithHostedDependencies, ProcessorWithTaskEstimate}
+                    .map(taskWithHostedPredecessors -> {
+                        Optional<ProcessorWithTaskEstimate> processorWithTaskEstimateOpt = singleTaskPlanner.getStartTime(
+                                router,
+                                tact,
+                                taskWithHostedPredecessors,
+                                doneTasksHolder,
+                                statefulProcessorsSorted,
+                                lockedStatefulProcessorProvider
+                        );
+                        return Pair.create(taskWithHostedPredecessors, processorWithTaskEstimateOpt);
+                    })
+                    //Remain with estimates only
+                    .filter(pair -> pair.second.isPresent())
+                    .peek(pair -> {
+                        TaskWithHostedDependencies taskWithHostedPredecessors = pair.first;
+                        ProcessorWithTaskEstimate processorWithTaskEstimate = pair.second.get();
 
-                                String taskId = taskWithHostedPredecessors.task;
-                                //Need to schedule task on found processor to change state of processors system
-                                // before scheduling next task
-                                processorWithTaskEstimate.statefulProcessor.assignTask(
-                                        processorWithTaskEstimate.getStartTime(),
-                                        taskId,
-                                        tasksMap.get(taskId).getWeight()
-                                );
-                                //Also need to schedule all transfers
-                                if(processorWithTaskEstimate.taskEstimate.transfersNeeded) {
-                                    applyTransfers(processorWithTaskEstimate.taskEstimate.taskTransfers);
-                                }
-                                return processorWithTaskEstimate;
-                            },
+                        String taskId = taskWithHostedPredecessors.task;
+                        //Need to schedule task on found processor to change state of processors system
+                        // before scheduling next task
+                        processorWithTaskEstimate.statefulProcessor.assignTask(
+                                processorWithTaskEstimate.getStartTime(),
+                                taskId,
+                                tasksMap.get(taskId).getWeight()
+                        );
+                        //Also need to schedule all transfers
+                        if(processorWithTaskEstimate.taskEstimate.transfersNeeded) {
+                            applyTransfers(processorWithTaskEstimate.taskEstimate.taskTransfers);
+                        }
+                    })
+                    .collect(CollectionUtils.CustomCollectors.toMap(
+                            Pair::getFirst,
+                            pair -> pair.second.get(),
                             LinkedHashMap::new
                     ));
 
@@ -163,110 +169,11 @@ class TasksGraphPlanner {
             //repeat until all tasks are done
         } while (doneTasksHolder.hasNotDone());
 
-        {
-            Table executionTable = makeExecutionTable(tactCounter.get());
-            String executionTableStr = new TableRepresentationBuilder(executionTable).getRepresentation();
-            System.out.println("\n\n" + executionTableStr);
-        }
-
-        {
-            Table transfersTable = makeTransfersTable(tactCounter.get());
-            String transfersTableStr = new TableRepresentationBuilder(transfersTable).getRepresentation();
-            System.out.println("\n\n" + transfersTableStr);
-        }
-
-        return tactCounter.decrementAndGet();
+        TreeMap<String, StatefulProcessor> processorTreeMap = new TreeMap<>(statefulProcessorMap);
+        return new SchedulingResult(tactCounter.get(), processorTreeMap);
     }
 
-    private Table makeTransfersTable(int tacts) {
-        int processors = statefulProcessorMap.size();
-        int channels = statefulProcessorMap.get(String.valueOf("1")).getNumberOfChannels() + 1;
 
-        return new Table() {
-            @Override
-            public String[] getColumnsNames() {
-                String[] columns = new String[tacts + 1];
-                columns[0] = "#";
-                for (int i = 1; i <= tacts; i++) {
-                    columns[i] = String.valueOf(i - 1);
-                }
-                return columns;
-            }
-
-            @Override
-            public String[][] getColumnsData() {
-                String[][] data = new String[processors * channels][];
-                for (int processor = 0; processor < processors; processor++) {
-                    String processorId = String.valueOf(processor + 1);
-                    for (int channel = 0; channel < channels; channel++) {
-                        int globalChannel = processor * channels + channel;
-                        if(channel == channels - 1) {
-                            String[] div = new String[tacts + 1];
-                            Arrays.fill(div, TableRepresentationBuilder.DIV_ESCAPE + "-");
-                            data[globalChannel] = div;
-                            continue;
-                        }
-                        data[globalChannel] = new String[tacts + 1];
-                        if(channel == 0) {
-                            data[globalChannel][0] = processorId;
-                        }
-
-                        StatefulProcessor statefulProcessor = statefulProcessorMap.get(processorId);
-                        String transfer;
-                        for (int tact = 0; tact < tacts; tact++) {
-                            transfer = statefulProcessor.getTransfer(channel, tact);
-                            data[globalChannel][tact + 1] = transfer;
-                        }
-                    }
-                }
-                return data;
-            }
-        };
-    }
-
-    private Table makeExecutionTable(int tacts) {
-        int numberOfProcessors = statefulProcessorMap.size();
-
-        return new Table() {
-            @Override
-            public String[] getColumnsNames() {
-                String[] columns = new String[tacts + 1];
-                columns[0] = "#";
-                for (int i = 1; i <= tacts; i++) {
-                    columns[i] = String.valueOf(i - 1);
-                }
-                return columns;
-            }
-
-            @Override
-            public String[][] getColumnsData() {
-                String[][] data = new String[numberOfProcessors * 2][];
-                String previousTask = null;
-                for (int globalProcessor = 0; globalProcessor < numberOfProcessors * 2; globalProcessor++) {
-                    if(globalProcessor % 2 == 0) {
-                        String[] div = new String[tacts + 1];
-                        Arrays.fill(div, TableRepresentationBuilder.DIV_ESCAPE + "-");
-                        data[globalProcessor] = div;
-                        continue;
-                    }
-                    int processor = globalProcessor / 2 + 1;
-                    data[globalProcessor] = new String[tacts + 1];
-                    String processorId = String.valueOf(processor);
-                    data[globalProcessor][0] = processorId;
-
-                    StatefulProcessor statefulProcessor = statefulProcessorMap.get(processorId);
-                    String task;
-                    for (int tact = 0; tact < tacts; tact++) {
-                        task = statefulProcessor.getExecutingTask(tact);
-                        String cell = task == null ? "" : (task.equals(previousTask) ? task : "*" + task);
-                        previousTask = task;
-                        data[globalProcessor][tact + 1] = cell;
-                    }
-                }
-                return data;
-            }
-        };
-    }
 
     private void applyTransfers(Collection<TaskTransfer> taskTransfers) {
         taskTransfers.stream()

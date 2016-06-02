@@ -140,4 +140,20 @@ class ProcessorExecution {
     public String toString() {
         return "" + execution;
     }
+
+    /**
+     *
+     * @param tact
+     * @return if (tact == 0) returns 0; else return number of previous tacts that processor was free
+     */
+    public int getIdleTime(int tact) {
+        if(tact == 0) {
+            return 0;
+        }
+        int idleTactsCounter = 0;
+        while (--tact >= 0 && isFree(tact)) {
+            idleTactsCounter++;
+        }
+        return idleTactsCounter;
+    }
 }

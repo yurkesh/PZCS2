@@ -1,18 +1,16 @@
 package edu.kpi.nesteruk.pzcs.planning.processors;
 
-import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.model.system.Processor;
 import edu.kpi.nesteruk.pzcs.planning.params.ProcessorsParams;
 import edu.kpi.nesteruk.pzcs.planning.planner.ProcessorTransfer;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
  * Created by Yurii on 2016-05-22.
  */
-public class StatefulProcessor {
+public class StatefulProcessor implements ScheduledJobsHolder {
 
     private final Processor processor;
     private final ProcessorsParams processorsParams;
@@ -69,6 +67,10 @@ public class StatefulProcessor {
         return execution.getMinStartTime(startTact, weight);
     }
 
+    public int getIdleTime(int tact) {
+        return execution.getIdleTime(tact);
+    }
+
     public void assignTask(int tact, String task, int weight) {
         execution.assignTask(tact, task, weight);
     }
@@ -77,25 +79,33 @@ public class StatefulProcessor {
         ChannelTransfer transfer = processorTransfer.channelTransfer;
         boolean isReceiver = processorTransfer.destProcessor.equals(processor.getId());
         int channel = isReceiver ? transfer.destChannel : transfer.srcChannel;
-        String anotherProcessor = isReceiver ? processorTransfer.srcProcessor : processorTransfer.destProcessor;
+        String anotherProcessor;
+        if(USE_EXTENDED_TRANSFER_FORMATTING) {
+            anotherProcessor = isReceiver ? ">>" + processorTransfer.srcProcessor : "<<" + processorTransfer.destProcessor;
+        } else {
+            anotherProcessor = transfer.receiver;
+        }
         transfers.addTransfer(
                 channel,
                 transfer.startTact,
                 transfer.weight,
-//                anotherProcessor,
-                transfer.receiver,
+                anotherProcessor,
+//                transfer.receiver,
                 transfer.transfer
         );
     }
 
+    @Override
     public String getExecutingTask(int tact) {
         return execution.getTask(tact);
     }
 
+    @Override
     public int getNumberOfChannels() {
         return transfers.getNumberOfChannels();
     }
 
+    @Override
     public String getTransfer(int channel, int tact) {
         return transfers.getTransfer(channel, tact);
     }
