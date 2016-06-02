@@ -25,6 +25,7 @@ import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcherImpl;
 import edu.kpi.nesteruk.pzcs.planning.processors.StatefulProcessor;
 import edu.kpi.nesteruk.pzcs.view.dashboard.DashboardView;
 import edu.kpi.nesteruk.pzcs.view.dashboard.UnitedGraphsView;
+import edu.kpi.nesteruk.pzcs.view.localization.Localization;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,6 +36,8 @@ import java.util.stream.Collectors;
 public class CommonPlannerTesting {
 
     public static void main(String[] args) {
+        Localization.getInstance().init(Localization.Language.UA);
+
         TasksGraphBundle tasks = makeTasks();
         ProcessorsGraphBundle processors = makeProcessors();
 

@@ -1,7 +1,5 @@
 package edu.kpi.nesteruk.pzcs.presenter.common;
 
-import com.mxgraph.layout.mxCircleLayout;
-import com.mxgraph.layout.mxGraphLayout;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.layout.mxIGraphLayout;
 import com.mxgraph.model.mxCell;
@@ -17,8 +15,6 @@ import edu.kpi.nesteruk.misc.OneToOneMapper;
 import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.misc.Tuple;
 import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
-import edu.kpi.nesteruk.pzcs.common.GraphType;
-import edu.kpi.nesteruk.pzcs.graph.misc.GraphUtils;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModelBundle;
 import edu.kpi.nesteruk.pzcs.model.common.LinkBuilder;
@@ -52,7 +48,6 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
     private final Object parent;
 
     private GraphModel model;
-    private GraphType graphType;
 
     private boolean listenCellConnection = true;
 
@@ -67,10 +62,8 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
             Function<mxStylesheet, mxStylesheet> graphStylesheetInterceptor,
             CaptionsSupplier captionsSupplier,
             Supplier<GraphModel> graphModelFactory,
-            GraphVertexSizeSupplier vertexSizeSupplier,
-            GraphType graphType) {
+            GraphVertexSizeSupplier vertexSizeSupplier) {
 
-        this.graphType = graphType;
         this.graphView = graphView;
         this.captionsSupplier = captionsSupplier;
         this.graphModelFactory = graphModelFactory;
@@ -186,9 +179,6 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
                 "Валідація",
                  "Граф " + (error ? "не" : "") + "валідний"
         );
-        if (!error) {
-            formatGraph();
-        }
     }
 
     void addNode(int x, int y) {
@@ -398,14 +388,6 @@ public abstract class CommonGraphPresenter implements GraphPresenter {
             e.printStackTrace();
             graphView.showMessage(true, "Cannot open " + captionsSupplier.getCaption(true) + " graph", e.getMessage());
         }
-    }
-
-    protected void formatGraph(){
-        graph.getModel().beginUpdate();
-        mxGraphLayout mxGraphLayout = graphType.getMxGraphLayout(graph);
-//            mxCompactTreeLayout layout = new mxCompactTreeLayout(graph, true);
-        mxGraphLayout.execute(graph.getDefaultParent());
-        graph.getModel().endUpdate();
     }
 
     protected void setGraph(GraphDataAssembly graphDataAssembly) {

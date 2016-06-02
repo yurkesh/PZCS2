@@ -21,7 +21,8 @@ public class TableView {
             rowData[i][1] = queues.get(i).node.getWeight();
             rowData[i][2] = queues.get(i).value;
         }
-
+        String[] strings = {"a"};
+        Object[] strings1 =  strings;
         Object columnNames[] = {"Вершина", "Вага", "Критерій"};
         JTable table = new JTable(rowData, columnNames);
         JScrollPane scrollPane = new JScrollPane(table);

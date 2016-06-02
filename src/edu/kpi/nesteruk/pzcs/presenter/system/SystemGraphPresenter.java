@@ -1,7 +1,6 @@
 package edu.kpi.nesteruk.pzcs.presenter.system;
 
 import com.mxgraph.view.mxStylesheet;
-import edu.kpi.nesteruk.pzcs.common.GraphType;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
 import edu.kpi.nesteruk.pzcs.model.system.ProcessorsGraphBundle;
 import edu.kpi.nesteruk.pzcs.presenter.common.CaptionsSupplier;
@@ -24,7 +23,7 @@ public class SystemGraphPresenter extends CommonGraphPresenter implements System
                                 Supplier<GraphModel> graphModelFactory,
                                 GraphVertexSizeSupplier vertexSizeSupplier) {
 
-        super(graphView, graphStylesheetInterceptor, captionsSupplier, graphModelFactory, vertexSizeSupplier, GraphType.SYSTEM);
+        super(graphView, graphStylesheetInterceptor, captionsSupplier, graphModelFactory, vertexSizeSupplier);
     }
 
     @Override

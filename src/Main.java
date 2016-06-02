@@ -34,7 +34,7 @@ public class Main {
         );
 
         new DashboardView(GraphType.values());
-        */
+
         DashboardView.defaultStart();
     }
 }

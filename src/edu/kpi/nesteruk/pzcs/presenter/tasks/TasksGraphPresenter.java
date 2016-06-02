@@ -1,15 +1,11 @@
 package edu.kpi.nesteruk.pzcs.presenter.tasks;
 
-import com.mxgraph.layout.mxGraphLayout;
 import com.mxgraph.view.mxStylesheet;
 import edu.kpi.nesteruk.misc.Pair;
-import edu.kpi.nesteruk.pzcs.common.GraphType;
 import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
 import edu.kpi.nesteruk.pzcs.graph.generation.Params;
-import edu.kpi.nesteruk.pzcs.graph.misc.GraphUtils;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
 import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
-import edu.kpi.nesteruk.pzcs.model.primitives.Node;
 import edu.kpi.nesteruk.pzcs.model.queuing.common.QueueConstructor;
 import edu.kpi.nesteruk.pzcs.model.queuing.primitives.CriticalNode;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
@@ -19,7 +15,6 @@ import edu.kpi.nesteruk.pzcs.presenter.common.CaptionsSupplier;
 import edu.kpi.nesteruk.pzcs.presenter.common.CommonGraphPresenter;
 import edu.kpi.nesteruk.pzcs.presenter.common.GraphVertexSizeSupplier;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
-import edu.kpi.nesteruk.pzcs.view.dashboard.TableView;
 import edu.kpi.nesteruk.pzcs.view.tasks.GraphGeneratorFrame;
 import edu.kpi.nesteruk.pzcs.view.tasks.GraphGeneratorParamsInputDialog;
 import edu.kpi.nesteruk.pzcs.view.dialog.Message;
@@ -29,7 +24,6 @@ import java.awt.event.ActionEvent;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * Created by Anatolii on 2016-03-23.
@@ -50,7 +44,7 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
             Collection<QueueConstructor<Task, DirectedLink<Task>>> queueConstructors,
             Params defaultGeneratorParams) {
 
-        super(graphView, graphStylesheetInterceptor, captionsSupplier, graphModelFactory, vertexSizeSupplier, GraphType.TASKS);
+        super(graphView, graphStylesheetInterceptor, captionsSupplier, graphModelFactory, vertexSizeSupplier);
         this.queueConstructors = queueConstructors;
         this.defaultGeneratorParams = defaultGeneratorParams;
     }
@@ -63,7 +57,6 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
     private void checkAndGenerateWithParams(Params params) {
         Params.CheckResult check = Params.isCorrect(params);
         if(check == Params.CheckResult.OK) {
-            /*
             GraphGeneratorFrame generatorFrame = new GraphGeneratorFrame(
                     params,
                     (generatorParams) -> {
@@ -73,18 +66,9 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
                         setGraph(generated);
                     }
             );
-            */
-            GraphDataAssembly generated = getModel().generate(params);
-            System.out.println(generated);
-            setGraph(generated);
-//            double graphCorrelation = GraphUtils.getGraphCorrelation(getModel().getNodesMap().values(), getModel().getLinksMap().values());
-//            System.out.println(graphCorrelation);
             int frameOffset = generatorsCount * 20;
-            /*
             generatorFrame.setLocation(frameOffset, frameOffset);
-            */
             generatorsCount++;
-//            formatGraph();
         } else {
             Message.showMessage(true, "Incorrect params", getParamsErrorCaption(check));
         }
@@ -133,7 +117,6 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
                 ));
 
         queuesWithTitles.forEach((title, queues) -> System.out.println(title + ":\n" + queuesToString(queues) + "\n"));
-        queuesWithTitles.forEach((title, queues) -> TableView.showTable(title, queues));
     }
 
     private static String queuesToString(Collection<CriticalNode<Task>> criticalNodes) {
