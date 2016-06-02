@@ -121,6 +121,11 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
         queuesWithTitles.forEach((title, queues) -> TableView.showTable(title, queues));
     }
 
+    @Override
+    public TasksGraphBundle getTasksGraphBundle() {
+        return (TasksGraphBundle) getModel().getBundle();
+    }
+
     private static String queuesToString(Collection<CriticalNode<Task>> criticalNodes) {
         StringBuilder sb = new StringBuilder();
         criticalNodes.forEach(node ->

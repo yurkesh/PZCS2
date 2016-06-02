@@ -32,6 +32,11 @@ public class SystemGraphPresenter extends CommonGraphPresenter implements System
     }
 
     @Override
+    public ProcessorsGraphBundle getProcessorsGraphBundle() {
+        return (ProcessorsGraphBundle) getModel().getBundle();
+    }
+
+    @Override
     public void setGraph(Object graph) {
         if(graph instanceof ProcessorsGraphBundle) {
             setGraph(getModel().restore((ProcessorsGraphBundle) graph));

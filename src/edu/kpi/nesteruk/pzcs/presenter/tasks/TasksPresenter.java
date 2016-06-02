@@ -1,5 +1,6 @@
 package edu.kpi.nesteruk.pzcs.presenter.tasks;
 
+import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphBundle;
 import edu.kpi.nesteruk.pzcs.presenter.common.GraphPresenter;
 
 import java.awt.event.ActionEvent;
@@ -23,4 +24,6 @@ public interface TasksPresenter extends GraphPresenter {
     }
 
     void onMakeQueues(ActionEvent event);
+
+    TasksGraphBundle getTasksGraphBundle();
 }

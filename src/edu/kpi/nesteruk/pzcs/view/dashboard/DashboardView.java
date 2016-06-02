@@ -26,7 +26,7 @@ public class DashboardView extends JFrame {
 
         graphPresenter = UnitedGraphPresenter.createDefault(graphTypes);
         setContentPane(graphPresenter.getGraphsContainer());
-
+        
         JMenuBar menuBar = new JMenuBar();
         initHeaderMenu(menuBar);
         setJMenuBar(menuBar);
@@ -90,8 +90,11 @@ public class DashboardView extends JFrame {
             menuBar.add(modeling);
             {
                 JMenuItem processorsParams = new JMenuItem(lang.processorsParams);
+                /*
+                JMenuItem processorsParams = new JMenuItem("Processors params");
                 processorsParams.addActionListener(graphPresenter::onProcessorsParams);
                 modeling.add(processorsParams);
+                */
 
                 JMenuItem gantDiagram = new JMenuItem(lang.gantDiagram);
                 gantDiagram.addActionListener(graphPresenter::onGantDiagram);
