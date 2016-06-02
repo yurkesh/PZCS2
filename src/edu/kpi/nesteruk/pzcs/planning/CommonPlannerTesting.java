@@ -84,8 +84,8 @@ public class CommonPlannerTesting {
                         new TableRepresentationBuilder(executionAndTransfersTables.second, true).getRepresentation()
         );
         */
-        GantDiagrmView.showDiagramForProcessors(executionAndTransfersTables.first, "Processors");
-        GantDiagrmView.showDiagramForProcessors(executionAndTransfersTables.second, "Transfers");
+//        GantDiagrmView.showDiagramForProcessors(executionAndTransfersTables.first, "Processors");
+//        GantDiagrmView.showDiagramForProcessors(executionAndTransfersTables.second, "Transfers");
 
 
         DashboardView dashboardView = DashboardView.defaultStart();

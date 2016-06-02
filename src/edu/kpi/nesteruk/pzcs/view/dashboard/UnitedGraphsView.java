@@ -40,14 +40,28 @@ public class UnitedGraphsView implements UnitedGraphPresenter {
         public void onGantDiagram(ActionEvent event) {
             PlannedWorkPresenter presenter = schedulingResult -> {
                 Tuple<Table> executionAndTransfersTables = schedulingResult.getExecutionAndTransfersTables();
+                /*
                 System.out.println(
                         "Planning result:\nExecution:\n" +
                                 new TableRepresentationBuilder(executionAndTransfersTables.first, true).getRepresentation()
                                 + "\nTransfers:\n" +
                                 new TableRepresentationBuilder(executionAndTransfersTables.second, true).getRepresentation()
                 );
+                */
+                GantDiagrmView.showDiagramForProcessors(executionAndTransfersTables.first, "Processors");
+                GantDiagrmView.showDiagramForProcessors(executionAndTransfersTables.second, "Transfers");
             };
 
+            TasksGraphBundle tasks = getTasksPresenter().getTasksGraphBundle();
+            ProcessorsGraphBundle processors = getSystemPresenter().getProcessorsGraphBundle();
+            SchedulingResult schedulingResult = CommonPlannerTesting.makePlanner(PlanningParams.DEFAULT.labWork).getPlannedWork(
+                    processors,
+                    tasks,
+                    new ProcessorsParams(PlanningParams.DEFAULT.numberOfChannels)
+            );
+            presenter.displaySchedule(schedulingResult);
+
+            /*
             PlanningParamsInputDialog.showDialog(PlanningParams.DEFAULT, params -> {
                 TasksGraphBundle tasks = getTasksPresenter().getTasksGraphBundle();
                 ProcessorsGraphBundle processors = getSystemPresenter().getProcessorsGraphBundle();
@@ -58,6 +72,7 @@ public class UnitedGraphsView implements UnitedGraphPresenter {
                 );
                 presenter.displaySchedule(schedulingResult);
             });
+            */
         }
 
         @Override
