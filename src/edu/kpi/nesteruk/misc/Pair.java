@@ -1,5 +1,6 @@
 package edu.kpi.nesteruk.misc;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -9,7 +10,10 @@ import java.util.Objects;
  * implementation of equals(), returning true if equals() is true on each of the contained
  * objects.
  */
-public class Pair<F, S> {
+public class Pair<F, S> implements Serializable {
+
+    private static final long serialVersionUID = -451745873784794669L;
+
     public final F first;
     public final S second;
 
