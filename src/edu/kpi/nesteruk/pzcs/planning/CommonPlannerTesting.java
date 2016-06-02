@@ -67,6 +67,7 @@ public class CommonPlannerTesting {
         Task.TO_STRING_FORMAT = "T[%s]: %s";
         Processor.TO_STRING_FORMAT = "P[%s]=%s";
 
+        /*
         TasksGraphBundle tasks = makeTasks();
         ProcessorsGraphBundle processors = makeProcessors();
 
@@ -76,6 +77,7 @@ public class CommonPlannerTesting {
                 new ProcessorsParams(CommonPlannerParameters.NUMBER_OF_LINKS, false, DuplexMode.Full, TransferParams.messages())
         );
         Tuple<Table> executionAndTransfersTables = schedulingResult.getExecutionAndTransfersTables();
+        */
         /*
         System.out.println(
                 "Planning result:\nExecution:\n" +
@@ -89,9 +91,11 @@ public class CommonPlannerTesting {
 
 
         DashboardView dashboardView = DashboardView.defaultStart();
+        /*
         UnitedGraphsView graphPresenter = (UnitedGraphsView) dashboardView.getGraphPresenter();
         graphPresenter.getTasksPresenter().setGraph(tasks);
         graphPresenter.getSystemPresenter().setGraph(processors);
+        */
     }
 
     public static Planner makePlanner(LabWork labWork) {
