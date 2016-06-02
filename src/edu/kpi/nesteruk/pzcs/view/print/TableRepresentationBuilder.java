@@ -17,8 +17,15 @@ public class TableRepresentationBuilder {
 
     private String representation;
 
+    private boolean delimitersAfterRow = false;
+
     public TableRepresentationBuilder(Table table) {
         this.table = table;
+    }
+
+    public TableRepresentationBuilder(Table table, boolean delimitersAfterRow) {
+        this.table = table;
+        this.delimitersAfterRow = delimitersAfterRow;
     }
 
     public String getRepresentation() {
@@ -31,33 +38,45 @@ public class TableRepresentationBuilder {
         }
 
         StringBuilder builder = new StringBuilder();
-//        format(builder, "", columnsWidth[0]);
         String[] columnsNames = table.getColumnsNames();
         for (int i = 0; i < columnsNames.length; i++) {
-            format(builder, columnsNames[i], columnsWidth[i]).append(COLUMNS_DELIMITER);
+            formatAndAppend(builder, columnsNames[i], columnsWidth[i]).append(COLUMNS_DELIMITER);
         }
         builder.append("\n");
-        CollectionUtils.join(
-                builder,
-                table.getColumnsData(),
-                (sb, row) -> {
-                    for (int j = 0; j < row.length; j++) {
-                        String cell = row[j];
-                        if(cell != null && cell.startsWith(DIV_ESCAPE)) {
-                            String div = cell.substring(DIV_ESCAPE.length());
-                            cell = "";
-                            while (cell.length() < columnsWidth[j]) {
-                                cell += div;
-                            }
-                            builder.append(cell);
-                        } else {
-                            format(builder, cell, columnsWidth[j]);
-                        }
-                        builder.append('|');
+
+        String[][] data = table.getColumnsData();
+        if(delimitersAfterRow) {
+            int numberOfRows = data.length;
+            for (int rowNumber = 0; rowNumber < numberOfRows * 2; rowNumber++) {
+                String[] row = data[rowNumber/2];
+                if(!delimitersAfterRow || (rowNumber % 2 != 0)) {
+                    for (int columnNumber = 0; columnNumber < row.length; columnNumber++) {
+                        formatAndAppend(builder, row[columnNumber], columnsWidth[columnNumber]).append('|');
                     }
-                },
-                "\n"
-        );
+                } else {
+                    for (int columnNumber = 0; columnNumber < row.length; columnNumber++) {
+                        for (int i = 0; i < columnsWidth[columnNumber]; i++) {
+                            builder.append("-");
+                        }
+                        builder.append("+");
+                    }
+
+                }
+                builder.append("\n");
+            }
+        } else {
+            CollectionUtils.join(
+                    builder,
+                    table.getColumnsData(),
+                    (sb, row) -> {
+                        for (int j = 0; j < row.length; j++) {
+                            formatAndAppend(builder, row[j], columnsWidth[j]).append('|');
+                        }
+                    },
+                    "\n"
+            );
+        }
+
         representation = builder.toString();
         return representation;
     }
@@ -89,7 +108,7 @@ public class TableRepresentationBuilder {
         }
     }
 
-    public static StringBuilder format(StringBuilder builder, String str, int minWidth) {
+    public static StringBuilder formatAndAppend(StringBuilder builder, String str, int minWidth) {
         str = str == null ? "" : str;
         int padding = minWidth - str.length();
         for (int i = 0; i < padding; i++) {
@@ -98,7 +117,7 @@ public class TableRepresentationBuilder {
         return builder.append(str);
     }
 
-    public static StringBuilder format(StringBuilder builder, int number, int minWidth) {
+    public static StringBuilder formatAndAppend(StringBuilder builder, int number, int minWidth) {
         String str = String.valueOf(number);
         int padding = minWidth - str.length();
         for (int i = 0; i < padding; i++) {

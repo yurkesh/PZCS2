@@ -1,18 +1,16 @@
 package edu.kpi.nesteruk.pzcs.planning.processors;
 
-import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.model.system.Processor;
 import edu.kpi.nesteruk.pzcs.planning.params.ProcessorsParams;
 import edu.kpi.nesteruk.pzcs.planning.planner.ProcessorTransfer;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
  * Created by Yurii on 2016-05-22.
  */
-public class StatefulProcessor {
+public class StatefulProcessor implements ScheduledJobsHolder {
 
     private final Processor processor;
     private final ProcessorsParams processorsParams;
@@ -88,14 +86,17 @@ public class StatefulProcessor {
         );
     }
 
+    @Override
     public String getExecutingTask(int tact) {
         return execution.getTask(tact);
     }
 
+    @Override
     public int getNumberOfChannels() {
         return transfers.getNumberOfChannels();
     }
 
+    @Override
     public String getTransfer(int channel, int tact) {
         return transfers.getTransfer(channel, tact);
     }

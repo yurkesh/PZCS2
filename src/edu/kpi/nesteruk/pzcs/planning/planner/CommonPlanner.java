@@ -7,14 +7,13 @@ import edu.kpi.nesteruk.pzcs.model.system.ProcessorsGraphBundle;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraph;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphBundle;
-import edu.kpi.nesteruk.pzcs.planning.Planner;
+import edu.kpi.nesteruk.pzcs.planning.*;
 import edu.kpi.nesteruk.pzcs.planning.params.ProcessorsParams;
 import edu.kpi.nesteruk.pzcs.planning.processors.StatefulProcessor;
 import edu.kpi.nesteruk.util.CollectionUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -22,23 +21,23 @@ import java.util.stream.Collectors;
  */
 public class CommonPlanner implements Planner {
 
-    private final Function<ProcessorsGraphBundle, ProcessorsGraph> processorsGraphSimplifier;
-    private final Function<ProcessorsGraph, List<String>> processorsByCoherenceDescSorter;
-    private final Function<TasksGraphBundle, TasksGraph> tasksGraphSimplifier;
-    private final Function<TasksGraphBundle, List<String>> tasksSorter;
+    private final ProcessorsGraphSimplifier processorsGraphSimplifier;
+    private final ProcessorsToScheduleOnSorter processorsSorter;
+    private final TasksGraphSimplifier tasksGraphSimplifier;
+    private final TasksToScheduleSorter tasksSorter;
     private final SingleTaskHostSearcher singleTaskPlanner;
     private final Consumer<Object> logger;
 
     public CommonPlanner(
-            Function<ProcessorsGraphBundle, ProcessorsGraph> processorsGraphSimplifier,
-            Function<ProcessorsGraph, List<String>> processorsByCoherenceDescSorter,
-            Function<TasksGraphBundle, TasksGraph> tasksGraphSimplifier,
-            Function<TasksGraphBundle, List<String>> tasksSorter,
+            ProcessorsGraphSimplifier processorsGraphSimplifier,
+            ProcessorsToScheduleOnSorter processorsSorter,
+            TasksGraphSimplifier tasksGraphSimplifier,
+            TasksToScheduleSorter tasksSorter,
             SingleTaskHostSearcher singleTaskPlanner,
             Consumer<Object> logger) {
 
         this.processorsGraphSimplifier = processorsGraphSimplifier;
-        this.processorsByCoherenceDescSorter = processorsByCoherenceDescSorter;
+        this.processorsSorter = processorsSorter;
         this.tasksGraphSimplifier = tasksGraphSimplifier;
         this.tasksSorter = tasksSorter;
         this.singleTaskPlanner = singleTaskPlanner;
@@ -47,17 +46,17 @@ public class CommonPlanner implements Planner {
 
 
     @Override
-    public Collection<StatefulProcessor> getPlannedWork(
+    public SchedulingResult getPlannedWork(
             ProcessorsGraphBundle processorsGraphBundle,
             TasksGraphBundle tasksGraphBundle,
             ProcessorsParams params) {
 
         Map<String, Processor> allProcessors = processorsGraphBundle.getNodesMap();
 
-        ProcessorsGraph processorsGraph = processorsGraphSimplifier.apply(processorsGraphBundle);
+        ProcessorsGraph processorsGraph = processorsGraphSimplifier.convertToGraph(processorsGraphBundle);
 
         //Sort processors by coherence
-        List<String> processorsSorted = processorsByCoherenceDescSorter.apply(processorsGraph);
+        List<String> processorsSorted = processorsSorter.sort(processorsGraph);
         logger.accept("Sorted processors:\n" + processorsSorted);
 
 
@@ -69,7 +68,7 @@ public class CommonPlanner implements Planner {
         Map<String, Task> tasksMap = tasksGraphBundle.getNodesMap();
 
         //Get tasks queue
-        List<String> tasksSorted = tasksSorter.apply(tasksGraphBundle);
+        List<String> tasksSorted = tasksSorter.sort(tasksGraphBundle);
         logger.accept("Sorted tasks:\n" + tasksSorted);
 
         Set<String> doneTasks = new LinkedHashSet<>();
@@ -80,7 +79,7 @@ public class CommonPlanner implements Planner {
                 doneTasks
         );
 
-        TasksGraph tasksGraph = tasksGraphSimplifier.apply(tasksGraphBundle);
+        TasksGraph tasksGraph = tasksGraphSimplifier.convertToGraph(tasksGraphBundle);
 
         DirectPredecessorsProvider taskPredecessorsProvider =
                 DirectPredecessorsProvider.getDirectPredecessorsProvider(tasksGraph);
@@ -121,9 +120,7 @@ public class CommonPlanner implements Planner {
         );
 
         try {
-            // TODO: 2016-05-24 [REFACTOR] Make it look better
-            planner.getPlannedWorkTime();
-            return statefulProcessorMap.values();
+            return planner.getPlannedWork();
         } catch (Exception e) {
             System.out.println("Processors:\n" + statefulProcessorMap.values().stream().map(Object::toString).collect(Collectors.joining("\n")));
             e.printStackTrace();

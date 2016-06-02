@@ -145,7 +145,11 @@ class ProcessorTransfers {
     }
 
     public String getTransfer(int channel, int tact) {
-        return channels.get(channel).getTransfer(tact);
+        ProcessorChannel processorChannel = channels.get(channel);
+        if(processorChannel == null) {
+            throw new IllegalArgumentException("No channel with number = " + channel);
+        }
+        return processorChannel.getTransfer(tact);
     }
 
     @Override
