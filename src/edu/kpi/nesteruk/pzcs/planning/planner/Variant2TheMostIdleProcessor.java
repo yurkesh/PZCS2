@@ -11,7 +11,7 @@ import java.util.Optional;
 /**
  * Created by Yurii on 2016-06-02.
  */
-public class Variant2TheMostIdleProcessor implements SingleTaskHostSearcher {
+class Variant2TheMostIdleProcessor implements SingleTaskHostSearcher {
 
     @Override
     public Optional<ProcessorWithTaskEstimate> getStartTime(
