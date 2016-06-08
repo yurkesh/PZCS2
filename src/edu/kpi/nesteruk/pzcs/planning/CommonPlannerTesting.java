@@ -40,7 +40,7 @@ public class CommonPlannerTesting {
 
     static {
         SingleTaskHostSearcherFactory.setLabs67Variants(3, 5);
-        LAB_WORK = LabWork.LAB_7;
+        LAB_WORK = LabWork.LAB_6;
     }
 
     public static void main(String[] args) {

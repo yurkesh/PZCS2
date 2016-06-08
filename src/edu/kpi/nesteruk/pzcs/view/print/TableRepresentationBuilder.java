@@ -9,7 +9,8 @@ public class TableRepresentationBuilder {
 
     public static final String DIV_ESCAPE = "\n\t\r\"\\";
 
-    public static final char COLUMNS_DELIMITER = '|';
+//    public static final char COLUMNS_DELIMITER = '|';
+    public static final char COLUMNS_DELIMITER = '│';
 
     private final Table table;
 
@@ -51,14 +52,14 @@ public class TableRepresentationBuilder {
                 String[] row = data[rowNumber/2];
                 if(!delimitersAfterRow || (rowNumber % 2 != 0)) {
                     for (int columnNumber = 0; columnNumber < row.length; columnNumber++) {
-                        formatAndAppend(builder, row[columnNumber], columnsWidth[columnNumber]).append('|');
+                        formatAndAppend(builder, row[columnNumber], columnsWidth[columnNumber]).append('│');
                     }
                 } else {
                     for (int columnNumber = 0; columnNumber < row.length; columnNumber++) {
                         for (int i = 0; i < columnsWidth[columnNumber]; i++) {
                             builder.append("-");
                         }
-                        builder.append("+");
+                        builder.append("┼");
                     }
 
                 }
