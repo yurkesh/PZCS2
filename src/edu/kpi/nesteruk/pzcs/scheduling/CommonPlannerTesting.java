@@ -44,7 +44,7 @@ public class CommonPlannerTesting {
 
     public static void main(String[] args) {
         QueueConstructorFactory.setLabs234Variants(1, 3, 11);
-        SingleTaskHostSearcherFactory.setLabs67Variants(3, 5);
+        SingleTaskHostSearcherFactory.setLabs67Variants(4, 5);
         LabWork LAB_WORK = LabWork.LAB_6;
 
         TasksGraphBundle tasks = makeTasks();
@@ -56,12 +56,15 @@ public class CommonPlannerTesting {
                 new ProcessorsParams(1)
         );
         Tuple<Table> executionAndTransfersTables = schedulingResult.getExecutionAndTransfersTables();
+
+        /*
         System.out.println(
                 "Planning result:\nExecution:\n" +
                         new TableRepresentationBuilder(executionAndTransfersTables.first, true).getRepresentation()
                 + "\nTransfers:\n" +
                         new TableRepresentationBuilder(executionAndTransfersTables.second, true).getRepresentation()
         );
+        */
 
         DashboardView dashboardView = DashboardView.defaultStart();
         UnitedGraphsView graphPresenter = (UnitedGraphsView) dashboardView.getGraphPresenter();

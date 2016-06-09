@@ -57,7 +57,7 @@ public class JobCase implements Comparable<JobCase> {
     @Override
     public String toString() {
         return "{" +
-                ", tasks=" + numberOfTasks +
+                "tasks=" + numberOfTasks +
                 ", coherence=" + tasksGraphCoherence +
                 "}"
                 ;

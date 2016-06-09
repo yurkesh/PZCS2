@@ -7,7 +7,7 @@ public class Main {
     public static void main(String[] args) {
 
         QueueConstructorFactory.setLabs234Variants(1, 3, 11);
-        SingleTaskHostSearcherFactory.setLabs67Variants(3, 5);
+        SingleTaskHostSearcherFactory.setLabs67Variants(4, 5);
 
         /*
         GraphStyle.DEFAULT_STYLE = GraphStyle.Alternative;

@@ -137,7 +137,6 @@ public class CompositePlannerTestingResultsInterpreter {
                                 //Scheduler Ef
                                 row[7] = String.valueOf(DOUBLE_FORMAT.format(result.getSchedulerEfficiency()));
 
-
                                 allData[rowNumber] = row;
                             });
                 }

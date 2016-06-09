@@ -136,7 +136,7 @@ public class CompositePlannerTesting {
                     .setNumberOfNodes(numberOfTasks);
 
             coherences.stream().forEach(coherence -> {
-                log("Coherence = " + numberOfTasks);
+                log("Coherence = " + coherence);
 
                 GeneratorParams.Builder builderWithCoherence = new GeneratorParams.Builder(builderWithNumberOfTasks)
                         .setCoherence(coherence);
@@ -147,7 +147,7 @@ public class CompositePlannerTesting {
 
                 //Parallel stream is used
                 IntStream.range(0, params.numberOfTaskGraphsToGenerate).forEach(number -> {
-                    log("# " + number);
+                    log("\nJobCase = " + jobCase + "; Graph # " + number);
 
                     TasksGraphBundle tasksGraphBundle = tasksGraphGenerator.generate(generatorParams);
                     ConcreteTasksJob concreteTasksJob = new ConcreteTasksJob(jobCase, tasksGraphBundle);

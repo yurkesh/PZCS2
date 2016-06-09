@@ -52,14 +52,14 @@ class TaskWithTransferEstimatePerformer {
                             processor.getId()
                     );
 
-                    int tactForTask = useTransferBackwardPrediction ?
+                    int tactForTaskTransfers = useTransferBackwardPrediction ?
                             taskFinishTimeProvider.getFinishTimeOfTask(taskHostedDependency.getSourceTaskId())
                             : tact;
 
                     Pair<Integer, List<ProcessorTransfer>> bestEstimate = allRoutes.stream()
                             //Find the route with the best (the lowest) transfer time
                             .map(route -> getTransferTimeAndTransfers(
-                                    tactForTask,
+                                    tactForTaskTransfers,
                                     taskHostedDependency.getTransferWeight(),
                                     taskHostedDependency.getTransferId(),
                                     taskHostedDependency.getProcessorId(),
@@ -91,9 +91,16 @@ class TaskWithTransferEstimatePerformer {
             throw new IllegalStateException();
         }
 
+        Optional<Integer> lastDepFinOpt = task.dependencySources.stream().map(taskHostedDependency ->
+                taskFinishTimeProvider.getFinishTimeOfTask(taskHostedDependency.getSourceTaskId())
+        ).reduce(Integer::sum);
+        int latestDependencyFinished = lastDepFinOpt.isPresent() ? lastDepFinOpt.get() : 0;
+
         int lastTransferFinished = maxOpt.getAsInt();
 
-        int minStartTime = processor.getMinStartTime(lastTransferFinished, task.weight);
+        int minAvailableStart = Math.max(latestDependencyFinished, lastTransferFinished);
+
+        int minStartTime = processor.getMinStartTime(minAvailableStart, task.weight);
 
         return new TaskWithTransfersEstimate(minStartTime, taskTransfers);
     }
