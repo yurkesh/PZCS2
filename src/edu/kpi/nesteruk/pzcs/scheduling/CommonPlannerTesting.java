@@ -14,7 +14,6 @@ import edu.kpi.nesteruk.pzcs.model.queuing.QueueConstructorFactory;
 import edu.kpi.nesteruk.pzcs.model.queuing.common.QueueConstructor;
 import edu.kpi.nesteruk.pzcs.model.queuing.concrete.CriticalPathByTimeForAllNodes3;
 import edu.kpi.nesteruk.pzcs.model.queuing.primitives.CriticalNode;
-import edu.kpi.nesteruk.pzcs.model.system.Processor;
 import edu.kpi.nesteruk.pzcs.model.system.ProcessorsGraphBundle;
 import edu.kpi.nesteruk.pzcs.model.system.SystemGraphModel;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
@@ -29,7 +28,6 @@ import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcherFactory;
 import edu.kpi.nesteruk.pzcs.view.dashboard.DashboardView;
 import edu.kpi.nesteruk.pzcs.view.dashboard.UnitedGraphsView;
 import edu.kpi.nesteruk.pzcs.view.print.Table;
-import edu.kpi.nesteruk.pzcs.view.print.TableRepresentationBuilder;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -44,7 +42,7 @@ public class CommonPlannerTesting {
 
     public static void main(String[] args) {
         QueueConstructorFactory.setLabs234Variants(1, 3, 11);
-        SingleTaskHostSearcherFactory.setLabs67Variants(4, 5);
+        SingleTaskHostSearcherFactory.setLabs67Variants(3, 5);
         LabWork LAB_WORK = LabWork.LAB_6;
 
         TasksGraphBundle tasks = makeTasks();
