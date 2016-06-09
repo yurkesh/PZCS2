@@ -18,14 +18,9 @@ import edu.kpi.nesteruk.pzcs.model.system.SystemGraphModel;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphBundle;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphModel;
-import edu.kpi.nesteruk.pzcs.planning.params.DuplexMode;
 import edu.kpi.nesteruk.pzcs.planning.params.ProcessorsParams;
-import edu.kpi.nesteruk.pzcs.planning.params.TransferParams;
 import edu.kpi.nesteruk.pzcs.planning.planner.CommonPlanner;
 import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcherFactory;
-import edu.kpi.nesteruk.pzcs.planning.planner.Variant4EarliestStartWithoutPrediction;
-import edu.kpi.nesteruk.pzcs.planning.processors.ScheduledJobsHolder;
-import edu.kpi.nesteruk.pzcs.view.GraphStyle;
 import edu.kpi.nesteruk.pzcs.view.dashboard.DashboardView;
 import edu.kpi.nesteruk.pzcs.view.dashboard.GantDiagrmView;
 import edu.kpi.nesteruk.pzcs.view.dashboard.UnitedGraphsView;
@@ -48,11 +43,8 @@ public class CommonPlannerTesting {
     private static final LabWork LAB_WORK;
 
     static {
-        // TODO: 2016-06-02 Set correct formatting
-        //ScheduledJobsHolder.USE_EXTENDED_TRANSFER_FORMATTING;
-        // TODO: 2016-06-02 Set correct variants
-        SingleTaskHostSearcherFactory.setLabs67Variants(2, 4);
-        LAB_WORK = CommonPlannerParameters.LAB_WORK;
+        SingleTaskHostSearcherFactory.setLabs67Variants(3, 5);
+        LAB_WORK = LabWork.LAB_6;
     }
 
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
@@ -74,7 +66,7 @@ public class CommonPlannerTesting {
         SchedulingResult schedulingResult = makePlanner(LAB_WORK).getPlannedWork(
                 processors,
                 tasks,
-                new ProcessorsParams(CommonPlannerParameters.NUMBER_OF_LINKS, false, DuplexMode.Full, TransferParams.messages())
+                new ProcessorsParams(1)
         );
         Tuple<Table> executionAndTransfersTables = schedulingResult.getExecutionAndTransfersTables();
         */

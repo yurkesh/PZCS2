@@ -24,9 +24,8 @@ class TaskWithTransferEstimatePerformer {
             StatefulProcessor processor,
             TaskTransferRouter router,
             LockedStatefulProcessorProvider processorProvider,
-            boolean transferBackwardPrediction) {
+            boolean useTransferBackwardPrediction) {
 
-        // TODO: 2016-05-24 Add metric customization
         TaskDependencyTransferPriorityComparator taskTransferPriorityComparator =
                 getTaskDependencyTransferPriorityComparator(tact, taskFinishTimeProvider, task, processor);
 
@@ -53,10 +52,14 @@ class TaskWithTransferEstimatePerformer {
                             processor.getId()
                     );
 
+                    int tactForTask = useTransferBackwardPrediction ?
+                            taskFinishTimeProvider.getFinishTimeOfTask(taskHostedDependency.getSourceTaskId())
+                            : tact;
+
                     Pair<Integer, List<ProcessorTransfer>> bestEstimate = allRoutes.stream()
                             //Find the route with the best (the lowest) transfer time
                             .map(route -> getTransferTimeAndTransfers(
-                                    tact,
+                                    tactForTask,
                                     taskHostedDependency.getTransferWeight(),
                                     taskHostedDependency.getTransferId(),
                                     taskHostedDependency.getProcessorId(),

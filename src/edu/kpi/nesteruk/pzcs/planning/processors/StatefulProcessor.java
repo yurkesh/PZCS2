@@ -81,7 +81,7 @@ public class StatefulProcessor implements ScheduledJobsHolder {
         int channel = isReceiver ? transfer.destChannel : transfer.srcChannel;
         String anotherProcessor;
         if(USE_EXTENDED_TRANSFER_FORMATTING) {
-            anotherProcessor = isReceiver ? ">>" + processorTransfer.srcProcessor : "<<" + processorTransfer.destProcessor;
+            anotherProcessor = isReceiver ? "<" + processorTransfer.srcProcessor : ">" + processorTransfer.destProcessor;
         } else {
             anotherProcessor = transfer.receiver;
         }

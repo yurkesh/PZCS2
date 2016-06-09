@@ -7,21 +7,12 @@ public class ProcessorsParams {
 
     public static final int DEFAULT_NUMBER_OF_CHANNELS = 6;
 
-    public final int numberOfChannels;
-    public final boolean hasIoProcessor;
-    public final DuplexMode duplexMode;
-    public final TransferParams transferParams;
+    public static final int NUMBER_OF_CHANNELS_BY_MAX_COHERENCE = -1;
 
-    public ProcessorsParams(int numberOfChannels, boolean hasIoProcessor, DuplexMode duplexMode, TransferParams transferParams) {
-        this.numberOfChannels = numberOfChannels;
-        this.hasIoProcessor = hasIoProcessor;
-        this.duplexMode = duplexMode;
-        this.transferParams = transferParams;
-    }
+    public final int numberOfChannels;
 
     public ProcessorsParams(int numberOfChannels) {
-        this(numberOfChannels, false, null, null);
-
+        this.numberOfChannels = numberOfChannels;
     }
 
     public static int numberOfChannelsNullSafe(ProcessorsParams params) {

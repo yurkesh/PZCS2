@@ -6,7 +6,7 @@ import edu.kpi.nesteruk.pzcs.planning.processors.StatefulProcessor;
  * Created by Anatolii Bed on 2016-05-25.
  */
 @FunctionalInterface
-public interface LockedStatefulProcessorProvider {
+interface LockedStatefulProcessorProvider {
 
     /**
      *

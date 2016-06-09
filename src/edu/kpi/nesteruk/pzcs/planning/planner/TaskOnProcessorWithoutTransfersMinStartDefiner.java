@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Anatolii Bed on 2016-06-02.
  */
-public class TaskOnProcessorWithoutTransfersMinStartDefiner {
+class TaskOnProcessorWithoutTransfersMinStartDefiner {
 
     /**
      * @return the lowest time (tact) of task's start on specified processor. <b>Return -1 if any transfer is needed</b>

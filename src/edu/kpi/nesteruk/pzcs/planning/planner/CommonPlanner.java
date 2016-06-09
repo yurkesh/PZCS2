@@ -60,7 +60,7 @@ public class CommonPlanner implements Planner {
         logger.accept("Sorted processors:\n" + processorsSorted);
 
 
-        params = params.numberOfChannels == -1 ? new ProcessorsParams(
+        params = params.numberOfChannels == ProcessorsParams.NUMBER_OF_CHANNELS_BY_MAX_COHERENCE ? new ProcessorsParams(
                 GraphUtils.getMaxCoherence(processorsGraph)
         ) : params;
         Map<String, StatefulProcessor> statefulProcessorMap = makeStatefulProcessors(allProcessors.values(), params);
