@@ -55,7 +55,7 @@ public class ResultIndicators implements Comparable<ResultIndicators> {
             int theoreticCriticalTime) {
 
         double seedUp = 1.0 * singleCoreTime / parallelSchedulingTime;
-        double systemEf = seedUp / numberOfProcessors;
+        double systemEf = 1.0 * seedUp / numberOfProcessors;
         double schedulerEf = 1.0 * theoreticCriticalTime / parallelSchedulingTime;
 
         return new ResultIndicators(seedUp, systemEf, schedulerEf);
