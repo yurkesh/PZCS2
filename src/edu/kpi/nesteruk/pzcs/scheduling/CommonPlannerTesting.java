@@ -46,8 +46,8 @@ import java.util.stream.Collectors;
 public class CommonPlannerTesting {
 
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
-        QueueConstructorFactory.setLabs234Variants(1, 3, 11);
-        SingleTaskHostSearcherFactory.setLabs67Variants(3, 5);
+        QueueConstructorFactory.setLabs234Variants(2, 10, 14);
+        SingleTaskHostSearcherFactory.setLabs67Variants(4, 2);
         LabWork LAB_WORK = LabWork.LAB_6;
 
         Localization.getInstance().init(Localization.Language.UA);
@@ -70,12 +70,14 @@ public class CommonPlannerTesting {
                 new ProcessorsParams(1)
         );
         Tuple<Table> executionAndTransfersTables = schedulingResult.getExecutionAndTransfersTables();
+/*
         System.out.println(
                 "Planning result:\nExecution:\n" +
                         new TableRepresentationBuilder(executionAndTransfersTables.first, true).getRepresentation()
                 + "\nTransfers:\n" +
                         new TableRepresentationBuilder(executionAndTransfersTables.second, true).getRepresentation()
         );
+*/
 //        GantDiagrmView.showDiagramForProcessors(executionAndTransfersTables.first, "Processors");
 //        GantDiagrmView.showDiagramForProcessors(executionAndTransfersTables.second, "Transfers");
 

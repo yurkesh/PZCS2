@@ -10,6 +10,7 @@ import edu.kpi.nesteruk.pzcs.presenter.common.GraphVertexSizeSupplier;
 import edu.kpi.nesteruk.pzcs.scheduling.*;
 import edu.kpi.nesteruk.pzcs.view.common.GenericInputDialog;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
+import edu.kpi.nesteruk.pzcs.view.dashboard.StatisticsResultView;
 import edu.kpi.nesteruk.pzcs.view.print.Table;
 import edu.kpi.nesteruk.pzcs.view.print.TableRepresentationBuilder;
 import edu.kpi.nesteruk.pzcs.view.processors.CompositeSchedulerTestParamsInput;
@@ -49,6 +50,7 @@ public class SystemGraphPresenter extends CommonGraphPresenter implements System
                             );
                     Table table =
                             CompositePlannerTestingResultsInterpreter.makeTableResult(fullResult);
+//                    StatisticsResultView.showStatistics("Statistics", table);
                     System.out.println("Results: " + new TableRepresentationBuilder(table).getRepresentation());
                 }
         );
