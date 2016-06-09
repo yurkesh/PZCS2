@@ -28,7 +28,10 @@ import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcher;
 import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcherFactory;
 import edu.kpi.nesteruk.pzcs.view.GraphStyle;
 import edu.kpi.nesteruk.pzcs.view.dashboard.DashboardView;
+import edu.kpi.nesteruk.pzcs.view.dashboard.UnitedGraphsView;
 import edu.kpi.nesteruk.pzcs.view.localization.Localization;
+import edu.kpi.nesteruk.pzcs.view.print.Table;
+import edu.kpi.nesteruk.pzcs.view.print.TableRepresentationBuilder;
 
 import javax.swing.*;
 import java.util.Arrays;
@@ -42,7 +45,7 @@ import java.util.stream.Collectors;
  */
 public class CommonPlannerTesting {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
         QueueConstructorFactory.setLabs234Variants(1, 3, 11);
         SingleTaskHostSearcherFactory.setLabs67Variants(3, 5);
         LabWork LAB_WORK = LabWork.LAB_6;
