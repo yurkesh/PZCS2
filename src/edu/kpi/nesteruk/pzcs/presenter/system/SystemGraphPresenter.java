@@ -49,7 +49,7 @@ public class SystemGraphPresenter extends CommonGraphPresenter implements System
                             );
                     Table table =
                             CompositePlannerTestingResultsInterpreter.makeTableResult(fullResult);
-                    System.out.println("Results: " + new TableRepresentationBuilder(table).getRepresentation());
+                    System.out.println("Results:\n" + new TableRepresentationBuilder(table).getRepresentation());
                 }
         );
     }
