@@ -10,6 +10,8 @@ import edu.kpi.nesteruk.pzcs.presenter.common.GraphVertexSizeSupplier;
 import edu.kpi.nesteruk.pzcs.scheduling.*;
 import edu.kpi.nesteruk.pzcs.view.common.GenericInputDialog;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
+import edu.kpi.nesteruk.pzcs.view.print.Table;
+import edu.kpi.nesteruk.pzcs.view.print.TableRepresentationBuilder;
 import edu.kpi.nesteruk.pzcs.view.processors.CompositeSchedulerTestParamsInput;
 
 import java.awt.event.ActionEvent;
@@ -41,12 +43,13 @@ public class SystemGraphPresenter extends CommonGraphPresenter implements System
                 Arrays.asList(CompositeSchedulerTestParamsInput.values()),
                 CompositeSchedulerTestParams.Builder::new,
                 params -> {
-                    Map<SchedulerCase, Map<JobCase, List<ResultIndicators>>> fullResult = CompositePlannerTesting.performFullTesting(
-                            getProcessorsGraphBundle(),
-                            params
-                    );
-                    List<Pair<SchedulerCase, ResultIndicators>> sorted = CompositePlannerTestingResultsInterpreter.interpret(fullResult);
-                    System.out.println("Results: " + sorted);
+                    List<Pair<ConcreteTasksJob, Map<SchedulerCase, ResultIndicators>>> fullResult =
+                            CompositePlannerTesting.performFullTesting(
+                                    getProcessorsGraphBundle(), params
+                            );
+                    Table table =
+                            CompositePlannerTestingResultsInterpreter.makeTableResult(fullResult);
+                    System.out.println("Results: " + new TableRepresentationBuilder(table).getRepresentation());
                 }
         );
     }

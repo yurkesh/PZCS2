@@ -1,6 +1,7 @@
 package edu.kpi.nesteruk.pzcs.scheduling;
 
 import edu.kpi.nesteruk.misc.Pair;
+import edu.kpi.nesteruk.pzcs.view.print.Table;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -71,6 +72,30 @@ public class CompositePlannerTestingResultsInterpreter {
             this.total += other.total;
             this.indicators.addAll(other.indicators);
         }
+    }
+
+    private static final String[] COLUMNS = {"#", "Tasks", "Coherence", "Queue", "Planner", "SpeedUp", "System Ef", "Scheduler Ef"};
+
+    public static Table makeTableResult(List<Pair<ConcreteTasksJob, Map<SchedulerCase, ResultIndicators>>> results) {
+        return makeTableResult(6, results);
+    }
+
+    public static Table makeTableResult(int numberOfSchedulers, List<Pair<ConcreteTasksJob, Map<SchedulerCase, ResultIndicators>>> results) {
+        return new Table() {
+            @Override
+            public String[] getColumnsNames() {
+                return COLUMNS;
+            }
+
+            @Override
+            public String[][] getColumnsData() {
+                String[][] allData = new String[results.size()][];
+                for (int resultNumber = 0; resultNumber < results.size(); resultNumber++) {
+                    Pair<ConcreteTasksJob, Map<SchedulerCase, ResultIndicators>> concreteJobResults = results.get(resultNumber);
+                }
+                return null;
+            }
+        };
     }
 
 }
