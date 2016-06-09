@@ -1,11 +1,12 @@
 package edu.kpi.nesteruk.pzcs.view.processors;
 
 import edu.kpi.nesteruk.pzcs.planning.PlanningParams;
+import edu.kpi.nesteruk.pzcs.view.common.input.ParamsInput;
 
 /**
  * Created by Yurii on 2016-06-02.
  */
-public enum PlanningParamInput {
+public enum PlanningParamInput implements ParamsInput<PlanningParams, PlanningParams.Builder> {
     LabWork("Лабораторна") {
         @Override
         public Number getValue(PlanningParams params) {
@@ -40,8 +41,4 @@ public enum PlanningParamInput {
     public String getCaption() {
         return caption;
     }
-
-    public abstract Number getValue(PlanningParams params);
-
-    public abstract void setValue(String input, PlanningParams.Builder builder);
 }

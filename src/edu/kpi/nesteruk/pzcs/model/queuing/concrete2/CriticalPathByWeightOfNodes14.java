@@ -31,4 +31,9 @@ public class CriticalPathByWeightOfNodes14<N extends Node, L extends Link<N>> im
                         .collect(Collectors.toList())
         );
     }
+
+    @Override
+    public String toString() {
+        return "CriticalPathByWeightOfNodes14";
+    }
 }

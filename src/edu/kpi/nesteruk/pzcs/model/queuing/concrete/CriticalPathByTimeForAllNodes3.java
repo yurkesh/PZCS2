@@ -37,4 +37,9 @@ public class CriticalPathByTimeForAllNodes3 <N extends Node, L extends Link<N>> 
                 .map(CriticalNode::makeWithDouble)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public String toString() {
+        return "CriticalPathByTimeForAllNodes3";
+    }
 }

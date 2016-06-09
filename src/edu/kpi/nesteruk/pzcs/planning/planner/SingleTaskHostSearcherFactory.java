@@ -18,14 +18,19 @@ public class SingleTaskHostSearcherFactory {
     }
 
     public static SingleTaskHostSearcher getSearcher(LabWork labWork) {
+        int variant = getSearcherVariant(labWork);
+        return getByVariant(variant);
+    }
+
+    public static int getSearcherVariant(LabWork labWork) {
         Integer variant = latToVariantMap.get(labWork);
         if(variant == null) {
             throw new NullPointerException("Variant not specified for this lab-work = " + labWork);
         }
-        return getVariant(variant);
+        return variant;
     }
 
-    private static SingleTaskHostSearcher getVariant(int variant) {
+    public static SingleTaskHostSearcher getByVariant(int variant) {
         switch (variant) {
             case 2:
                 return new Variant2TheMostIdleProcessor();

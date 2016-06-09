@@ -15,7 +15,6 @@ import java.util.IntSummaryStatistics;
 import java.util.Random;
 
 import static edu.kpi.nesteruk.util.RandomUtils.randomFromTo;
-import static org.testng.Assert.*;
 
 /**
  * Created by Yurii on 2016-04-19.
@@ -53,41 +52,41 @@ public class GraphGeneratorTest extends Assert {
         testWithParams(generateParams());
     }
 
-    private void testWithParams(Params params) {
-        checkParams(params);
+    private void testWithParams(GeneratorParams generatorParams) {
+        checkParams(generatorParams);
 
-        GraphModelBundle<Task, DirectedLink<Task>> modelBundle = graphGenerator.generate(params);
+        GraphModelBundle<Task, DirectedLink<Task>> modelBundle = graphGenerator.generate(generatorParams);
 
-        checkNumberOfNodes(modelBundle, params);
-        checkNodesWeight(modelBundle, params);
-        checkCoherence(modelBundle, params);
+        checkNumberOfNodes(modelBundle, generatorParams);
+        checkNodesWeight(modelBundle, generatorParams);
+        checkCoherence(modelBundle, generatorParams);
     }
 
-    private static void checkCoherence(GraphModelBundle<Task, DirectedLink<Task>> modelBundle, Params params) {
+    private static void checkCoherence(GraphModelBundle<Task, DirectedLink<Task>> modelBundle, GeneratorParams generatorParams) {
         double correlation = GraphUtils.getGraphCorrelation(modelBundle.getNodesMap().values(), modelBundle.getLinksMap().values());
-        assertEquals(correlation, params.coherence, 0.1, "Correlation does not match");
+        assertEquals(correlation, generatorParams.coherence, 0.1, "Correlation does not match");
     }
 
-    private static void checkNodesWeight(GraphModelBundle<Task, DirectedLink<Task>> modelBundle, Params params) {
+    private static void checkNodesWeight(GraphModelBundle<Task, DirectedLink<Task>> modelBundle, GeneratorParams generatorParams) {
         IntSummaryStatistics statistics = modelBundle.getNodesMap().values().stream().mapToInt(HasWeight::getWeight).summaryStatistics();
-        assertTrue(statistics.getMin() >= params.minNodeWeight, "Min weight of nodes is incorrect");
-        assertTrue(statistics.getMax() <= params.maxNodeWeight, "Max weight of nodes is incorrect");
+        assertTrue(statistics.getMin() >= generatorParams.minNodeWeight, "Min weight of nodes is incorrect");
+        assertTrue(statistics.getMax() <= generatorParams.maxNodeWeight, "Max weight of nodes is incorrect");
     }
 
-    private static void checkNumberOfNodes(GraphModelBundle<Task, DirectedLink<Task>> modelBundle, Params params) {
+    private static void checkNumberOfNodes(GraphModelBundle<Task, DirectedLink<Task>> modelBundle, GeneratorParams generatorParams) {
         int nodesCount = modelBundle.getNodesMap().values().size();
-        assertEquals(nodesCount, params.numberOfNodes, "Number of nodes is not correct");
+        assertEquals(nodesCount, generatorParams.numberOfNodes, "Number of nodes is not correct");
     }
 
-    private static void checkParams(Params params) {
-        Params.CheckResult check = Params.isCorrect(params);
-        if(check != Params.CheckResult.OK) {
-            throw new IllegalStateException("Params are incorrect = " + check + ". Params = " + params);
+    private static void checkParams(GeneratorParams generatorParams) {
+        GeneratorParams.CheckResult check = GeneratorParams.isCorrect(generatorParams);
+        if(check != GeneratorParams.CheckResult.OK) {
+            throw new IllegalStateException("GeneratorParams are incorrect = " + check + ". GeneratorParams = " + generatorParams);
         }
     }
 
-    private static Params generateParams() {
-        Params.Builder builder = new Params.Builder();
+    private static GeneratorParams generateParams() {
+        GeneratorParams.Builder builder = new GeneratorParams.Builder();
 
         builder.setNumberOfNodes(randomFromTo(PARAMS_RANDOM, MIN_NODES_COUNT, MAX_NODES_COUNT));
 
@@ -104,7 +103,7 @@ public class GraphGeneratorTest extends Assert {
         return builder.build();
     }
 
-    private static Params getParams() {
-        return new Params(1, 5, 6, 0.1, 1, 3);
+    private static GeneratorParams getParams() {
+        return new GeneratorParams(1, 5, 6, 0.1, 1, 3);
     }
 }

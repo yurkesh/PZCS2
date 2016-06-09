@@ -75,4 +75,9 @@ public class CriticalPathByNumberOfNodesAndCoherence11<N extends Node, L extends
                 ))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public String toString() {
+        return "CriticalPathByNumberOfNodesAndCoherence11";
+    }
 }

@@ -34,14 +34,36 @@ public abstract class AbstractQueueConstructor<N extends Node, L extends Link<N>
 
         Collection<L> allLinks = graphModelBundle.getLinksMap().values();
         Collection<N> allNodes = graphModelBundle.getNodesMap().values();
-        GraphPathsData<N> graphPathsData = GraphPathsData.compute(
-                lengthComputer,
+        GraphPathsData<N> graphPathsData = getGraphPathsData(lengthComputer, graphModelBundle);
+
+        return Pair.create(title, constructQueues(allNodes, allLinks, allPaths, graphPathsData));
+    }
+
+    public static <N extends Node, L extends Link<N>> GraphPathsData<N> getGraphPathsData(
+            PathLengthsComputer<N, L> pathLengthsComputer,
+            GraphModelBundle<N, L> graphModelBundle) {
+
+        return getGraphPathsData(
+                pathLengthsComputer,
+                graphModelBundle,
+                new DefaultPathsConstructor<>(graphModelBundle)
+        );
+    }
+
+    private static <N extends Node, L extends Link<N>> GraphPathsData<N> getGraphPathsData(
+            PathLengthsComputer<N, L> pathLengthsComputer,
+            GraphModelBundle<N, L> graphModelBundle,
+            DefaultPathsConstructor<N, L> pathsConstructor) {
+        Collection<List<N>> allPaths = pathsConstructor.getAllPaths();
+
+        Collection<L> allLinks = graphModelBundle.getLinksMap().values();
+        Collection<N> allNodes = graphModelBundle.getNodesMap().values();
+        return GraphPathsData.compute(
+                pathLengthsComputer,
                 allPaths,
                 allNodes,
                 allLinks
         );
-
-        return Pair.create(title, constructQueues(allNodes, allLinks, allPaths, graphPathsData));
     }
 
     protected abstract List<CriticalNode<N>> constructQueues(Collection<N> allNodes, Collection<L> allLinks, Collection<List<N>> allPaths, GraphPathsData<N> graphPathsData);

@@ -1,4 +1,4 @@
-package edu.kpi.nesteruk.pzcs.planning;
+package edu.kpi.nesteruk.pzcs.scheduling;
 
 import edu.kpi.nesteruk.misc.Tuple;
 import edu.kpi.nesteruk.pzcs.common.LabWork;
@@ -10,15 +10,21 @@ import edu.kpi.nesteruk.pzcs.model.common.NodeBuilder;
 import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
 import edu.kpi.nesteruk.pzcs.model.primitives.Link;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
+import edu.kpi.nesteruk.pzcs.model.queuing.QueueConstructorFactory;
+import edu.kpi.nesteruk.pzcs.model.queuing.common.QueueConstructor;
 import edu.kpi.nesteruk.pzcs.model.queuing.concrete.CriticalPathByTimeForAllNodes3;
 import edu.kpi.nesteruk.pzcs.model.queuing.primitives.CriticalNode;
+import edu.kpi.nesteruk.pzcs.model.system.Processor;
 import edu.kpi.nesteruk.pzcs.model.system.ProcessorsGraphBundle;
 import edu.kpi.nesteruk.pzcs.model.system.SystemGraphModel;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphBundle;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphModel;
+import edu.kpi.nesteruk.pzcs.planning.Planner;
+import edu.kpi.nesteruk.pzcs.planning.SchedulingResult;
 import edu.kpi.nesteruk.pzcs.planning.params.ProcessorsParams;
 import edu.kpi.nesteruk.pzcs.planning.planner.CommonPlanner;
+import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcher;
 import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcherFactory;
 import edu.kpi.nesteruk.pzcs.view.dashboard.DashboardView;
 import edu.kpi.nesteruk.pzcs.view.dashboard.UnitedGraphsView;
@@ -36,14 +42,11 @@ import java.util.stream.Collectors;
  */
 public class CommonPlannerTesting {
 
-    private static final LabWork LAB_WORK;
-
-    static {
-        SingleTaskHostSearcherFactory.setLabs67Variants(3, 5);
-        LAB_WORK = LabWork.LAB_6;
-    }
-
     public static void main(String[] args) {
+        QueueConstructorFactory.setLabs234Variants(1, 3, 11);
+        SingleTaskHostSearcherFactory.setLabs67Variants(3, 5);
+        LabWork LAB_WORK = LabWork.LAB_6;
+
         TasksGraphBundle tasks = makeTasks();
         ProcessorsGraphBundle processors = makeProcessors();
 
@@ -67,6 +70,17 @@ public class CommonPlannerTesting {
     }
 
     public static Planner makePlanner(LabWork labWork) {
+        return makePlanner(labWork, new CriticalPathByTimeForAllNodes3<>());
+    }
+
+    public static Planner makePlanner(LabWork labWork, QueueConstructor<Task, DirectedLink<Task>> queueConstructor) {
+        return makePlanner(
+                SingleTaskHostSearcherFactory.getSearcher(labWork),
+                queueConstructor
+        );
+    }
+
+    public static Planner makePlanner(SingleTaskHostSearcher hostSearcher, QueueConstructor<Task, DirectedLink<Task>> queueConstructor) {
         return new CommonPlanner(
                 processorsGraphBundle -> GraphUtils.makeGraphCheckAllEdgesAdded(
                         SystemGraphModel::newGraph,
@@ -80,15 +94,19 @@ public class CommonPlannerTesting {
                         tasksGraphBundle.getNodesMap().values(),
                         tasksGraphBundle.getLinksMap().values()
                 ),
-                tasksGraphBundle -> new CriticalPathByTimeForAllNodes3<Task, DirectedLink<Task>>()
-                        .constructQueues(tasksGraphBundle).second.stream()
+                tasksGraphBundle -> queueConstructor.constructQueues(tasksGraphBundle).second.stream()
                         .map(CriticalNode::getNode)
                         .map(Task::getId)
                         .collect(Collectors.toList())
                 ,
-                SingleTaskHostSearcherFactory.getSearcher(labWork),
+                hostSearcher,
                 System.out::println
-        );
+        ) {
+            @Override
+            public String toString() {
+                return "Planner{" + queueConstructor + ", " + hostSearcher + "}";
+            }
+        };
     }
 
     private static TasksGraphBundle makeTasks() {
@@ -108,8 +126,8 @@ public class CommonPlannerTesting {
 
     private static PlannerTestingData getProcessors() {
         return new
-//                ControlWorkExampleCaseProcessors()
-                LabDeliveryCase1Processors()
+                ControlWorkExampleCaseProcessors()
+//                LabDeliveryCase1Processors()
                 ;
     }
 

@@ -3,7 +3,7 @@ package edu.kpi.nesteruk.pzcs.presenter.tasks;
 import com.mxgraph.view.mxStylesheet;
 import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
-import edu.kpi.nesteruk.pzcs.graph.generation.Params;
+import edu.kpi.nesteruk.pzcs.graph.generation.GeneratorParams;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
 import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
 import edu.kpi.nesteruk.pzcs.model.queuing.common.QueueConstructor;
@@ -31,7 +31,7 @@ import java.util.function.Supplier;
 public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPresenter {
 
     private final Collection<QueueConstructor<Task, DirectedLink<Task>>> queueConstructors;
-    private final Params defaultGeneratorParams;
+    private final GeneratorParams defaultGeneratorGeneratorParams;
 
     private int generatorsCount = 0;
 
@@ -42,26 +42,26 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
             Supplier<GraphModel> graphModelFactory,
             GraphVertexSizeSupplier vertexSizeSupplier,
             Collection<QueueConstructor<Task, DirectedLink<Task>>> queueConstructors,
-            Params defaultGeneratorParams) {
+            GeneratorParams defaultGeneratorGeneratorParams) {
 
         super(graphView, graphStylesheetInterceptor, captionsSupplier, graphModelFactory, vertexSizeSupplier);
         this.queueConstructors = queueConstructors;
-        this.defaultGeneratorParams = defaultGeneratorParams;
+        this.defaultGeneratorGeneratorParams = defaultGeneratorGeneratorParams;
     }
 
     @Override
     public void onNewGraphGenerator(ActionEvent event) {
-        GraphGeneratorParamsInputDialog.showDialog(defaultGeneratorParams).ifPresent(this::checkAndGenerateWithParams);
+        GraphGeneratorParamsInputDialog.showDialog(defaultGeneratorGeneratorParams).ifPresent(this::checkAndGenerateWithParams);
     }
 
-    private void checkAndGenerateWithParams(Params params) {
-        Params.CheckResult check = Params.isCorrect(params);
-        if(check == Params.CheckResult.OK) {
+    private void checkAndGenerateWithParams(GeneratorParams generatorParams) {
+        GeneratorParams.CheckResult check = GeneratorParams.isCorrect(generatorParams);
+        if(check == GeneratorParams.CheckResult.OK) {
             GraphGeneratorFrame generatorFrame = new GraphGeneratorFrame(
-                    params,
-                    (generatorParams) -> {
+                    generatorParams,
+                    (specifiedGeneratorParams) -> {
                         GraphModel model = getModel();
-                        GraphDataAssembly generated = ((TasksGraphModel) model).generate(generatorParams);
+                        GraphDataAssembly generated = ((TasksGraphModel) model).generate(specifiedGeneratorParams);
                         System.out.println(generated);
                         setGraph(generated);
                     }
@@ -70,7 +70,7 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
             generatorFrame.setLocation(frameOffset, frameOffset);
             generatorsCount++;
         } else {
-            Message.showMessage(true, "Incorrect params", getParamsErrorCaption(check));
+            Message.showMessage(true, "Incorrect generatorParams", getParamsErrorCaption(check));
         }
     }
 
@@ -85,7 +85,7 @@ public class TasksGraphPresenter extends CommonGraphPresenter implements TasksPr
         }
     }
 
-    private static String getParamsErrorCaption(Params.CheckResult check) {
+    private static String getParamsErrorCaption(GeneratorParams.CheckResult check) {
         switch (check) {
             case MIN_NODE_WEIGHT_LESS_THAN_ZERO:
                 return "Min weight of node cannot be less than 0";

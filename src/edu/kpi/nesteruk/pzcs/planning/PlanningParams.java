@@ -1,5 +1,6 @@
 package edu.kpi.nesteruk.pzcs.planning;
 
+import edu.kpi.nesteruk.misc.GenericBuilder;
 import edu.kpi.nesteruk.pzcs.common.LabWork;
 
 /**
@@ -25,10 +26,13 @@ public class PlanningParams {
                 '}';
     }
 
-    public static class Builder {
+    public static class Builder implements GenericBuilder<PlanningParams> {
 
         private int labWork;
         private int numberOfChannels;
+
+        public Builder() {
+        }
 
         public Builder setLabWork(int labWork) {
             this.labWork = labWork;
@@ -40,6 +44,7 @@ public class PlanningParams {
             return this;
         }
 
+        @Override
         public PlanningParams build() {
             LabWork labWork = getLabWork(this.labWork);
             checkNumberOfChannels(numberOfChannels);

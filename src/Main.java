@@ -1,17 +1,14 @@
-import edu.kpi.nesteruk.pzcs.common.GraphType;
-import edu.kpi.nesteruk.pzcs.model.queuing.concrete2.CriticalPathByNumberOfNodesAndCoherence10;
-import edu.kpi.nesteruk.pzcs.model.queuing.concrete2.CriticalPathByTimeAndNumberOfNodes2;
-import edu.kpi.nesteruk.pzcs.model.queuing.concrete2.CriticalPathByWeightOfNodes14;
-import edu.kpi.nesteruk.pzcs.model.system.Processor;
-import edu.kpi.nesteruk.pzcs.model.tasks.Task;
-import edu.kpi.nesteruk.pzcs.view.GraphStyle;
+import edu.kpi.nesteruk.pzcs.model.queuing.QueueConstructorFactory;
+import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcherFactory;
 import edu.kpi.nesteruk.pzcs.view.dashboard.DashboardView;
-
-import java.util.Arrays;
 
 public class Main {
 
     public static void main(String[] args) {
+
+        QueueConstructorFactory.setLabs234Variants(1, 3, 11);
+        SingleTaskHostSearcherFactory.setLabs67Variants(3, 5);
+
         /*
         GraphStyle.DEFAULT_STYLE = GraphStyle.Alternative;
         Task.TO_STRING_FORMAT = "Task[%s]: %s";

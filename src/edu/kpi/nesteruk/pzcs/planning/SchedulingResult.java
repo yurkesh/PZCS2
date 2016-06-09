@@ -21,6 +21,10 @@ public class SchedulingResult {
         this.jobHoldersMap = Collections.unmodifiableMap(jobHoldersMap);
     }
 
+    public int getTactsNumber() {
+        return tactsNumber;
+    }
+
     public Tuple<Table> getExecutionAndTransfersTables() {
         return Tuple.of(makeExecutionTable(tactsNumber), makeTransfersTable(tactsNumber));
     }

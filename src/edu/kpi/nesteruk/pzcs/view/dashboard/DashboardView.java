@@ -8,6 +8,7 @@ import edu.kpi.nesteruk.pzcs.view.Views;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Created by Yurii on 09.09.2014.
@@ -99,7 +100,7 @@ public class DashboardView extends JFrame {
         }
 
         {
-            JMenu statistics = new JMenu("Statistics");
+            JMenuItem statistics = new JMenuItem("Statistics");
             statistics.addActionListener(graphPresenter::onStatistics);
             menuBar.add(statistics);
         }

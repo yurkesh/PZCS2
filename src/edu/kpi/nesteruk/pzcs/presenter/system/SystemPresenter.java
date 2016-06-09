@@ -21,7 +21,7 @@ public interface SystemPresenter extends GraphPresenter {
         onSave(event);
     }
 
-    void onProcessorsParams(ActionEvent event);
+    void onStatistics(ActionEvent event);
 
     ProcessorsGraphBundle getProcessorsGraphBundle();
 }

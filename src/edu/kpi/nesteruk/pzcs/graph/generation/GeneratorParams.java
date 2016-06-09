@@ -1,9 +1,11 @@
 package edu.kpi.nesteruk.pzcs.graph.generation;
 
+import edu.kpi.nesteruk.misc.GenericBuilder;
+
 /**
  * Created by Yurii on 2016-04-13.
  */
-public class Params {
+public class GeneratorParams {
     public final int minNodeWeight;
     public final int maxNodeWeight;
 
@@ -16,7 +18,7 @@ public class Params {
     public final int minLinkWeight;
     public final int maxLinkWeight;
 
-    public Params(int minNodeWeight, int maxNodeWeight, int numberOfNodes, double coherence, int minLinkWeight, int maxLinkWeight) {
+    public GeneratorParams(int minNodeWeight, int maxNodeWeight, int numberOfNodes, double coherence, int minLinkWeight, int maxLinkWeight) {
         this.minNodeWeight = minNodeWeight;
         this.maxNodeWeight = maxNodeWeight;
         this.numberOfNodes = numberOfNodes;
@@ -25,7 +27,7 @@ public class Params {
         this.maxLinkWeight = maxLinkWeight;
     }
 
-    public static class Builder {
+    public static class Builder implements GenericBuilder<GeneratorParams> {
         private int minNodeWeight = -1;
         private int maxNodeWeight = -1;
         private int numberOfNodes = -1;
@@ -33,52 +35,71 @@ public class Params {
         private int minLinkWeight = -1;
         private int maxLinkWeight = -1;
 
-        public void setMinNodeWeight(int minNodeWeight) {
+        public Builder() {
+        }
+
+        public Builder(Builder builder) {
+            minNodeWeight = builder.minNodeWeight;
+            maxNodeWeight = builder.maxNodeWeight;
+            numberOfNodes = builder.numberOfNodes;
+            coherence = builder.coherence;
+            minLinkWeight = builder.minLinkWeight;
+            maxLinkWeight = builder.maxLinkWeight;
+        }
+
+        public Builder setMinNodeWeight(int minNodeWeight) {
             this.minNodeWeight = minNodeWeight;
+            return this;
         }
 
-        public void setMaxNodeWeight(int maxNodeWeight) {
+        public Builder setMaxNodeWeight(int maxNodeWeight) {
             this.maxNodeWeight = maxNodeWeight;
+            return this;
         }
 
-        public void setNumberOfNodes(int numberOfNodes) {
+        public Builder setNumberOfNodes(int numberOfNodes) {
             this.numberOfNodes = numberOfNodes;
+            return this;
         }
 
-        public void setCoherence(double coherence) {
+        public Builder setCoherence(double coherence) {
             this.coherence = coherence;
+            return this;
         }
 
-        public void setMinLinkWeight(int minLinkWeight) {
+        public Builder setMinLinkWeight(int minLinkWeight) {
             this.minLinkWeight = minLinkWeight;
+            return this;
         }
 
-        public void setMaxLinkWeight(int maxLinkWeight) {
+        public Builder setMaxLinkWeight(int maxLinkWeight) {
             this.maxLinkWeight = maxLinkWeight;
+            return this;
         }
 
-        public Params build() {
-            return new Params(minNodeWeight, maxNodeWeight, numberOfNodes, coherence, minLinkWeight, maxLinkWeight);
+        @Override
+        public GeneratorParams build() {
+            return new GeneratorParams(minNodeWeight, maxNodeWeight, numberOfNodes, coherence, minLinkWeight, maxLinkWeight);
         }
     }
 
-    public static CheckResult isCorrect(Params params) {
-        if (params.minNodeWeight < 0) {
+    public static CheckResult isCorrect(GeneratorParams generatorParams) {
+        if (generatorParams.minNodeWeight < 0) {
             return CheckResult.MIN_NODE_WEIGHT_LESS_THAN_ZERO;
         }
-        if (params.maxNodeWeight < params.minNodeWeight) {
+        if (generatorParams.maxNodeWeight < generatorParams.minNodeWeight) {
             return CheckResult.MAX_NODE_WEIGHT_LESS_THAN_MIN;
         }
-        if (params.numberOfNodes < 1) {
+        if (generatorParams.numberOfNodes < 1) {
             return CheckResult.NUMBER_OF_NODES_LESS_THAN_ONE;
         }
-        if (params.coherence <= 0 || params.coherence >= 1) {
+        if (generatorParams.coherence <= 0 || generatorParams.coherence >= 1) {
             return CheckResult.INCORRECT_COHERENCE;
         }
-        if (params.minLinkWeight < 0) {
+        if (generatorParams.minLinkWeight < 0) {
             return CheckResult.MIN_LINK_WEIGHT_LESS_THAN_ZERO;
         }
-        if (params.maxLinkWeight < params.minLinkWeight) {
+        if (generatorParams.maxLinkWeight < generatorParams.minLinkWeight) {
             return CheckResult.MAX_LINK_WEIGHT_LESS_THAN_MIN;
         }
         return CheckResult.OK;
@@ -86,7 +107,7 @@ public class Params {
 
     @Override
     public String toString() {
-        return "Params{" +
+        return "GeneratorParams{" +
                 "minNodeWeight=" + minNodeWeight +
                 ", maxNodeWeight=" + maxNodeWeight +
                 ", numberOfNodes=" + numberOfNodes +

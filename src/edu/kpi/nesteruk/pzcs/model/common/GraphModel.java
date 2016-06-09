@@ -1,7 +1,6 @@
 package edu.kpi.nesteruk.pzcs.model.common;
 
 import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
-import edu.kpi.nesteruk.pzcs.graph.generation.Params;
 import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
 
 import java.util.Collection;
@@ -16,7 +15,6 @@ public interface GraphModel {
     LinkBuilder getLinkBuilder();
 
     /**
-     *
      * @param id
      * @return collection of IDs of incident edges
      */
@@ -28,16 +26,11 @@ public interface GraphModel {
 
     GraphModelBundle getBundle();
 
-    /*
-    GraphDataAssembly generate(Params params);
-    */
-
     GraphDataAssembly restore(GraphModelBundle modelBundle);
 
     void reset();
 
     /**
-     *
      * @param idOfLink
      * @param text
      * @return new String value to set in corresponding cell
@@ -45,7 +38,6 @@ public interface GraphModel {
     IdAndValue updateWeightOfLink(String idOfLink, String text);
 
     /**
-     *
      * @param idOfNode
      * @param text
      * @return new String value to set in corresponding cell
