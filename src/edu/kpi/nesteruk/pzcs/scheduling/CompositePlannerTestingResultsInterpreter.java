@@ -3,7 +3,10 @@ package edu.kpi.nesteruk.pzcs.scheduling;
 import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.view.print.Table;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -76,6 +79,8 @@ public class CompositePlannerTestingResultsInterpreter {
 
     private static final String[] COLUMNS = {"#", "Tasks", "Coherence", "Queue", "Planner", "SpeedUp", "System Ef", "Scheduler Ef"};
 
+    private static final NumberFormat DOUBLE_FORMAT = new DecimalFormat("#.##");
+
     public static Table makeTableResult(List<Pair<ConcreteTasksJob, Map<SchedulerCase, ResultIndicators>>> results) {
         return makeTableResult(6, results);
     }
@@ -90,12 +95,59 @@ public class CompositePlannerTestingResultsInterpreter {
             @Override
             public String[][] getColumnsData() {
                 String[][] allData = new String[results.size()][];
-                for (int resultNumber = 0; resultNumber < results.size(); resultNumber++) {
-                    Pair<ConcreteTasksJob, Map<SchedulerCase, ResultIndicators>> concreteJobResults = results.get(resultNumber);
+                for (int jobNumber = 0; jobNumber < results.size(); jobNumber++) {
+                    final int job = jobNumber;
+                    Pair<ConcreteTasksJob, Map<SchedulerCase, ResultIndicators>> concreteJobResults = results.get(jobNumber);
+
+                    ConcreteTasksJob concreteTasksJob = concreteJobResults.first;
+                    JobCase jobCase = concreteTasksJob.jobCase;
+
+                    AtomicInteger resultsCounter = new AtomicInteger();
+                    concreteJobResults.second.entrySet().stream()
+                            //Compare by ResultIndicator
+                            .sorted(Comparator.comparing(Map.Entry::getValue))
+                            .forEach(schedulerResultEntry -> {
+                                SchedulerCase schedulerCase = schedulerResultEntry.getKey();
+                                ResultIndicators result = schedulerResultEntry.getValue();
+
+                                int rowNumber = job * resultsCounter.getAndIncrement();
+                                String[] row = new String[COLUMNS.length];
+
+                                //#
+                                row[0] = String.valueOf(rowNumber);
+
+                                //Tasks
+                                row[1] = String.valueOf(jobCase.numberOfTasks);
+
+                                //Coherence
+                                row[2] = String.valueOf(DOUBLE_FORMAT.format(jobCase.tasksGraphCoherence));
+
+                                //Queue
+                                row[3] = String.valueOf(schedulerCase.queueConstructorVariant);
+
+                                //Planner
+                                row[4] = String.valueOf(schedulerCase.plannerVariant);
+
+                                //SpeedUp
+                                row[5] = String.valueOf(DOUBLE_FORMAT.format(result.getSpeedUp()));
+
+                                //System Ef
+                                row[6] = String.valueOf(DOUBLE_FORMAT.format(result.getSystemEfficiency()));
+
+                                //Scheduler Ef
+                                row[7] = String.valueOf(DOUBLE_FORMAT.format(result.getSchedulerEfficiency()));
+
+
+                                allData[rowNumber] = row;
+                            });
                 }
-                return null;
+                return allData;
             }
         };
     }
+
+
+
+
 
 }
