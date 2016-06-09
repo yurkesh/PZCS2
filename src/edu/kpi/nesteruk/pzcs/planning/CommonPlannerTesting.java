@@ -1,6 +1,5 @@
 package edu.kpi.nesteruk.pzcs.planning;
 
-import edu.kpi.nesteruk.misc.Tuple;
 import edu.kpi.nesteruk.pzcs.common.LabWork;
 import edu.kpi.nesteruk.pzcs.graph.misc.GraphUtils;
 import edu.kpi.nesteruk.pzcs.model.common.AbstractGraphModel;
@@ -18,15 +17,11 @@ import edu.kpi.nesteruk.pzcs.model.system.SystemGraphModel;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphBundle;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphModel;
-import edu.kpi.nesteruk.pzcs.planning.params.ProcessorsParams;
 import edu.kpi.nesteruk.pzcs.planning.planner.CommonPlanner;
 import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcherFactory;
+import edu.kpi.nesteruk.pzcs.view.GraphStyle;
 import edu.kpi.nesteruk.pzcs.view.dashboard.DashboardView;
-import edu.kpi.nesteruk.pzcs.view.dashboard.GantDiagrmView;
-import edu.kpi.nesteruk.pzcs.view.dashboard.UnitedGraphsView;
 import edu.kpi.nesteruk.pzcs.view.localization.Localization;
-import edu.kpi.nesteruk.pzcs.view.print.Table;
-import edu.kpi.nesteruk.pzcs.view.print.TableRepresentationBuilder;
 
 import javax.swing.*;
 import java.util.Arrays;
