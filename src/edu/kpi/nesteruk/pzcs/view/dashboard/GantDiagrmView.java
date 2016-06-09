@@ -11,7 +11,7 @@ import java.awt.*;
 public class GantDiagrmView {
     public static void showDiagramForProcessors(Table table, String title) {
         JFrame frame = new JFrame(title);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         table = transportTable(table);
         JTable jTable = new JTable(table.getColumnsData(), table.getColumnsNames());
         JScrollPane scrollPane = new JScrollPane(jTable);

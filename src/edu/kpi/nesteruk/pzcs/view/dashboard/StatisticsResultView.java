@@ -8,19 +8,13 @@ import java.awt.*;
 import java.util.List;
 
 /**
- * Created by Anatolii Bed on 07.04.2016.
+ * Created by Anatolii Bed on 09.06.2016.
  */
-public class TableView {
-    public static void showTable(String title, List<CriticalNode<Task>> queues) {
+public class StatisticsResultView {
+    public static void showStatistics(String title) {
         JFrame frame = new JFrame(title);
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        Object rowData[][] = new Object[queues.size()][3];
-        for (int i = 0; i < rowData.length; i++) {
-            rowData[i][0] = queues.get(i).node.getId();
-            rowData[i][1] = queues.get(i).node.getWeight();
-            rowData[i][2] = queues.get(i).value;
-        }
+        Object rowData[][] = new Object[3][3];
         String[] strings = {"a"};
         Object[] strings1 =  strings;
         Object columnNames[] = {"Вершина", "Вага", "Критерій"};
