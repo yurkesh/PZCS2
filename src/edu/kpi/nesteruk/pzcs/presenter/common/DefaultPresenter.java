@@ -11,8 +11,6 @@ public interface DefaultPresenter {
 
     void onGantDiagram(ActionEvent event);
 
-    void onStatistics(ActionEvent event);
-
     void onAbout(ActionEvent event);
 
     default void onExit(ActionEvent event) {

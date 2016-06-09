@@ -57,7 +57,9 @@ public class CommonPlanner implements Planner {
 
         //Sort processors by coherence
         List<String> processorsSorted = processorsSorter.sort(processorsGraph);
+        /*
         logger.accept("Sorted processors:\n" + processorsSorted);
+        */
 
 
         params = params.numberOfChannels == ProcessorsParams.NUMBER_OF_CHANNELS_BY_MAX_COHERENCE ? new ProcessorsParams(
@@ -69,7 +71,9 @@ public class CommonPlanner implements Planner {
 
         //Get tasks queue
         List<String> tasksSorted = tasksSorter.sort(tasksGraphBundle);
+        /*
         logger.accept("Sorted tasks:\n" + tasksSorted);
+        */
 
         Set<String> doneTasks = new LinkedHashSet<>();
         DoneTasksHolder doneTasksHolder = DoneTasksHolder.getDoneTasksHolder(
@@ -119,13 +123,15 @@ public class CommonPlanner implements Planner {
                 router
         );
 
+        return planner.getPlannedWork();
+        /*
         try {
-            return planner.getPlannedWork();
         } catch (Exception e) {
             System.out.println("Processors:\n" + statefulProcessorMap.values().stream().map(Object::toString).collect(Collectors.joining("\n")));
             e.printStackTrace();
             return null;
         }
+        */
     }
 
     private static Map<String, StatefulProcessor> makeStatefulProcessors(Collection<Processor> processors, ProcessorsParams params) {

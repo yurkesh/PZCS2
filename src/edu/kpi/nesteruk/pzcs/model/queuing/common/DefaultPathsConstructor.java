@@ -58,9 +58,8 @@ public class DefaultPathsConstructor<N extends Node, L extends Link<N>> {
         }
         if(counter >= 128) {
             System.out.println("Counter = " + counter);
-        } else {
-            counter++;
         }
+        counter++;
 
         if(allNotExpanded) {
             return paths;

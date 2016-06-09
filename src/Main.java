@@ -1,19 +1,18 @@
-import edu.kpi.nesteruk.pzcs.common.GraphType;
-import edu.kpi.nesteruk.pzcs.model.queuing.concrete2.CriticalPathByNumberOfNodesAndCoherence10;
-import edu.kpi.nesteruk.pzcs.model.queuing.concrete2.CriticalPathByTimeAndNumberOfNodes2;
-import edu.kpi.nesteruk.pzcs.model.queuing.concrete2.CriticalPathByWeightOfNodes14;
-import edu.kpi.nesteruk.pzcs.model.system.Processor;
-import edu.kpi.nesteruk.pzcs.model.tasks.Task;
-import edu.kpi.nesteruk.pzcs.view.GraphStyle;
+import edu.kpi.nesteruk.pzcs.model.queuing.QueueConstructorFactory;
+import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcherFactory;
 import edu.kpi.nesteruk.pzcs.view.dashboard.DashboardView;
 import edu.kpi.nesteruk.pzcs.view.localization.Localization;
 
 import javax.swing.*;
 
-import java.util.Arrays;
-
 public class Main {
 
+    public static void main(String[] args) {
+
+        QueueConstructorFactory.setLabs234Variants(1, 3, 11);
+        SingleTaskHostSearcherFactory.setLabs67Variants(3, 5);
+
+        /*
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
         Localization.getInstance().init(Localization.Language.UA);
         for (UIManager.LookAndFeelInfo lookAndFeelInfo : UIManager.getInstalledLookAndFeels()) {
@@ -34,7 +33,7 @@ public class Main {
         );
 
         new DashboardView(GraphType.values());
-
+        */
         DashboardView.defaultStart();
     }
 }

@@ -50,4 +50,9 @@ public class CriticalPathOfGraphAndNodesByTime1<N extends Node, L extends Link<N
     private Double getRelativeLength(PathLength pathLengths, PathLength graphLengths) {
         return 1.0 * pathLengths.inWeight / graphLengths.inWeight + 1.0 * pathLengths.inNumberOfNodes / graphLengths.inNumberOfNodes;
     }
+
+    @Override
+    public String toString() {
+        return "CriticalPathOfGraphAndNodesByTime1";
+    }
 }

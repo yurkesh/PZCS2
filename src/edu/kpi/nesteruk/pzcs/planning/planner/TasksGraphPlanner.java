@@ -82,6 +82,10 @@ class TasksGraphPlanner {
 
             final int tact = tactCounter.get();
 
+//            if(tact > 12 && !doneTasksHolder.hasDone()) {
+//                System.out.println("Very bad");
+//            }
+
             //Get all done tasks
             List<String> doneTasks = statefulProcessorMap.values().stream()
                     .map(statefulProcessor -> statefulProcessor.getDoneTask(tact))
@@ -92,13 +96,17 @@ class TasksGraphPlanner {
             //Add them to holder
             doneTasksHolder.addDoneTasks(tact, doneTasks);
 
-            if(!doneTasksHolder.hasNotDone()) {
-                break;
-            }
+//            if(!doneTasksHolder.hasNotDone()) {
+//                break;
+//            }
 
             //Get all ready tasks
             Collection<String> readyTasks = readyTasksSupplier.getIdOfReadyTasks();
             readyTasks.removeAll(executingTasks);
+
+//            if(!doneTasks.isEmpty() && readyTasks.isEmpty()) {
+//                System.out.println("Very very bad");
+//            }
 
             Map<TaskWithHostedDependencies, ProcessorWithTaskEstimate> map = tasksSorted.stream()
                     //Iterate over all ready task keeping initial order
@@ -152,6 +160,12 @@ class TasksGraphPlanner {
             //Add scheduled tasks to executing
             executingTasks.addAll(scheduledTasks);
 
+            if(tact > 1000 * 1000) {
+                //This is very bad approach to stop infinite loop, but I don't have enough time for debugging and fixing
+                throw new NeedRetryException();
+            }
+
+            /*
             logger.accept("[" + tact + "]\nPlaced tasks\n" + map.entrySet().stream()
                     .sorted(
                             Comparator.<Map.Entry<TaskWithHostedDependencies, ProcessorWithTaskEstimate>, String>comparing(
@@ -161,6 +175,7 @@ class TasksGraphPlanner {
                     .map(entry -> entry.getKey().task + " -> " + entry.getValue().getProcessorId())
                     .collect(Collectors.joining("\n"))
             );
+            */
 
             tactCounter.incrementAndGet();
 

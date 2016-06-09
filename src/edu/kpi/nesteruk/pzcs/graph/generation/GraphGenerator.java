@@ -10,7 +10,6 @@ import edu.kpi.nesteruk.pzcs.model.primitives.Node;
 import edu.kpi.nesteruk.util.CollectionUtils;
 import edu.kpi.nesteruk.util.RandomUtils;
 import org.jgrapht.Graph;
-import org.jgrapht.WeightedGraph;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -57,8 +56,8 @@ public class GraphGenerator<N extends Node, L extends Link<N>, G extends GraphMo
         this(new Random(42), nodeFactory, linkFactory, graphFactory, graphBundleFactory);
     }
 
-    public G generate(Params params) {
-        Pair<Collection<N>, Map<String, L>> generated = generateInner(params);
+    public G generate(GeneratorParams generatorParams) {
+        Pair<Collection<N>, Map<String, L>> generated = generateInner(generatorParams);
         if(DEBUG_LOG_ENABLED) {
             System.out.println(
                     "NODES_WEIGHT = " + generated.getFirst().stream().mapToDouble(Node::getWeight).sum() + "\n" +
@@ -71,23 +70,23 @@ public class GraphGenerator<N extends Node, L extends Link<N>, G extends GraphMo
         );
     }
 
-    private Pair<Collection<N>, Map<String, L>> generateInner(Params params) {
-        Map<Integer, N> nodesMap = generateNodes(params);
+    private Pair<Collection<N>, Map<String, L>> generateInner(GeneratorParams generatorParams) {
+        Map<Integer, N> nodesMap = generateNodes(generatorParams);
         Map<String, N> nodesMapStr = nodesMap.values().stream().collect(Collectors.toMap(
                 Node::getId,
                 Function.identity()
         ));
 
         double totalWeightOfNodes = GraphUtils.getWeightSum(nodesMap.values());
-        final double totalWeightOfLinks = getTotalWeightOfLinks(totalWeightOfNodes, params.coherence);
+        final double totalWeightOfLinks = getTotalWeightOfLinks(totalWeightOfNodes, generatorParams.coherence);
         final double[] linksWeight = new double[] {0};
         Map<String, L> allLinks = new LinkedHashMap<>();
 
         for (double reserve = totalWeightOfLinks; reserve > 0; reserve = totalWeightOfLinks - GraphUtils.getWeightSum(allLinks.values())) {
             double minReserve = Math.max(reserve, 1);
             generateLink(
-                    Math.min(minReserve, params.minLinkWeight),
-                    Math.min(minReserve, params.maxLinkWeight),
+                    Math.min(minReserve, generatorParams.minLinkWeight),
+                    Math.min(minReserve, generatorParams.maxLinkWeight),
                     nodesMap,
                     nodesMapStr,
                     allLinks
@@ -176,11 +175,11 @@ public class GraphGenerator<N extends Node, L extends Link<N>, G extends GraphMo
     /**
      * @return {idOfNode -> node}
      */
-    private Map<Integer, N> generateNodes(Params params) {
-        return IntStream.range(0, params.numberOfNodes)
+    private Map<Integer, N> generateNodes(GeneratorParams generatorParams) {
+        return IntStream.range(0, generatorParams.numberOfNodes)
                 .mapToObj(id -> Pair.create(
                         id, nodeFactory.createNode(
-                                String.valueOf(id), randomFromTo(params.minNodeWeight, params.maxNodeWeight)
+                                String.valueOf(id), randomFromTo(generatorParams.minNodeWeight, generatorParams.maxNodeWeight)
                         )
                 )).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
     }

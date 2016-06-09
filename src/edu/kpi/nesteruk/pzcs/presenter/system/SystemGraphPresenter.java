@@ -1,14 +1,21 @@
 package edu.kpi.nesteruk.pzcs.presenter.system;
 
 import com.mxgraph.view.mxStylesheet;
+import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
 import edu.kpi.nesteruk.pzcs.model.system.ProcessorsGraphBundle;
 import edu.kpi.nesteruk.pzcs.presenter.common.CaptionsSupplier;
 import edu.kpi.nesteruk.pzcs.presenter.common.CommonGraphPresenter;
 import edu.kpi.nesteruk.pzcs.presenter.common.GraphVertexSizeSupplier;
+import edu.kpi.nesteruk.pzcs.scheduling.*;
+import edu.kpi.nesteruk.pzcs.view.common.GenericInputDialog;
 import edu.kpi.nesteruk.pzcs.view.common.GraphView;
+import edu.kpi.nesteruk.pzcs.view.processors.CompositeSchedulerTestParamsInput;
 
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -27,8 +34,21 @@ public class SystemGraphPresenter extends CommonGraphPresenter implements System
     }
 
     @Override
-    public void onProcessorsParams(ActionEvent event) {
-
+    public void onStatistics(ActionEvent event) {
+        GenericInputDialog.showDialog(
+                "Enter scheduling testing params",
+                CompositeSchedulerTestParams.DEFAULT,
+                Arrays.asList(CompositeSchedulerTestParamsInput.values()),
+                CompositeSchedulerTestParams.Builder::new,
+                params -> {
+                    Map<SchedulerCase, Map<JobCase, List<ResultIndicators>>> fullResult = CompositePlannerTesting.performFullTesting(
+                            getProcessorsGraphBundle(),
+                            params
+                    );
+                    List<Pair<SchedulerCase, ResultIndicators>> sorted = CompositePlannerTestingResultsInterpreter.interpret(fullResult);
+                    System.out.println("Results: " + sorted);
+                }
+        );
     }
 
     @Override

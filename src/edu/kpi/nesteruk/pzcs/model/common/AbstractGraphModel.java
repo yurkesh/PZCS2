@@ -3,15 +3,12 @@ package edu.kpi.nesteruk.pzcs.model.common;
 import edu.kpi.nesteruk.misc.IdPool;
 import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
-import edu.kpi.nesteruk.pzcs.graph.generation.GraphGenerator;
-import edu.kpi.nesteruk.pzcs.graph.generation.Params;
 import edu.kpi.nesteruk.pzcs.graph.misc.GraphUtils;
 import edu.kpi.nesteruk.pzcs.graph.validation.GraphValidator;
 import edu.kpi.nesteruk.pzcs.model.primitives.IdAndValue;
 import edu.kpi.nesteruk.pzcs.model.primitives.Link;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
 import org.jgrapht.Graph;
-import org.jgrapht.WeightedGraph;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -102,12 +99,6 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>, G ex
     protected N getNode(String nodeId) {
         return nodesMap.get(nodeId);
     }
-
-    /*
-    protected L getLink(String linkId) {
-        return linksMap.get(linkId);
-    }
-    */
 
     protected boolean canConnect(String srcId, String destId) {
         return !(graph.containsEdge(srcId, destId) || graph.containsEdge(destId, srcId));
@@ -225,20 +216,6 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>, G ex
                         .collect(Collectors.toList())
         );
     }
-
-    /*
-    @Override
-    public GraphDataAssembly generate(Params params) {
-        return apply(
-                new GraphGenerator<>(
-                        this::makeConcreteNode,
-                        this::makeConcreteLink,
-                        graphFactory,
-                        this::makeBundle
-                ).generate(params)
-        );
-    }
-    */
 
     @Override
     public IdAndValue updateWeightOfLink(String idOfLink, String text) {

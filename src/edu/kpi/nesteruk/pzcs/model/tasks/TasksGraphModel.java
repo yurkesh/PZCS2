@@ -2,18 +2,12 @@ package edu.kpi.nesteruk.pzcs.model.tasks;
 
 import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
+import edu.kpi.nesteruk.pzcs.graph.generation.GeneratorParams;
 import edu.kpi.nesteruk.pzcs.graph.generation.GraphGenerator;
-import edu.kpi.nesteruk.pzcs.graph.generation.Params;
 import edu.kpi.nesteruk.pzcs.graph.validation.NonAcyclicGraphValidator;
 import edu.kpi.nesteruk.pzcs.model.common.AbstractGraphModel;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
-import edu.kpi.nesteruk.pzcs.model.common.GraphModelBundle;
 import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
-import edu.kpi.nesteruk.pzcs.model.primitives.Link;
-import edu.kpi.nesteruk.pzcs.model.primitives.Node;
-import org.jgrapht.Graph;
-import org.jgrapht.WeightedGraph;
-import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,13 +25,13 @@ public class TasksGraphModel extends AbstractGraphModel<Task, DirectedLink<Task>
         return new TasksGraph(TasksGraphModel::getLinkId);
     }
 
+    private static Task makeNode(String nodeId, int weight) {
+        return new Task(nodeId, weight);
+    }
+
     @Override
     protected Task makeConcreteNode(String nodeId, int weight) {
         return makeNode(nodeId, weight);
-    }
-
-    private static Task makeNode(String nodeId, int weight) {
-        return new Task(nodeId, weight);
     }
 
     @Override
@@ -63,13 +57,13 @@ public class TasksGraphModel extends AbstractGraphModel<Task, DirectedLink<Task>
         return idsList.stream().collect(Collectors.joining("=-="));
     }
 
-    public GraphDataAssembly generate(Params params) {
+    public GraphDataAssembly generate(GeneratorParams generatorParams) {
         return apply(new GraphGenerator<>(
                 this::makeConcreteNode,
                 this::makeConcreteLink,
                 TasksGraphModel::makeGraph,
                 this::makeBundle
-        ).generate(params));
+        ).generate(generatorParams));
     }
 
     public static GraphGenerator<Task, DirectedLink<Task>, TasksGraphBundle> makeGenerator(Random random) {

@@ -1,7 +1,7 @@
 package edu.kpi.nesteruk.pzcs.view.tasks;
 
 import edu.kpi.nesteruk.misc.Pair;
-import edu.kpi.nesteruk.pzcs.graph.generation.Params;
+import edu.kpi.nesteruk.pzcs.graph.generation.GeneratorParams;
 import edu.kpi.nesteruk.util.CollectionUtils;
 
 import javax.swing.*;
@@ -17,10 +17,10 @@ import java.util.function.Function;
  */
 public class GraphGeneratorParamsInputDialog {
 
-    public static Optional<Params> showDialog(Params defaultParams) {
-        Map<ParamsInput, Pair<String, JTextField>> inputs = Arrays.stream(ParamsInput.values()).collect(CollectionUtils.CustomCollectors.toMap(
+    public static Optional<GeneratorParams> showDialog(GeneratorParams defaultGeneratorParams) {
+        Map<TasksGraphGeneratorParamsInput, Pair<String, JTextField>> inputs = Arrays.stream(TasksGraphGeneratorParamsInput.values()).collect(CollectionUtils.CustomCollectors.toMap(
                 Function.identity(),
-                paramsInput -> Pair.create(paramsInput.getCaption(), field(paramsInput.getValue(defaultParams))),
+                paramsInput -> Pair.create(paramsInput.getCaption(), field(paramsInput.getValue(defaultGeneratorParams))),
                 LinkedHashMap::new
         ));
         JPanel panel = new JPanel();
@@ -41,7 +41,7 @@ public class GraphGeneratorParamsInputDialog {
                 JOptionPane.OK_CANCEL_OPTION
         );
         if (result == JOptionPane.OK_OPTION) {
-            Params.Builder paramsBuilder = new Params.Builder();
+            GeneratorParams.Builder paramsBuilder = new GeneratorParams.Builder();
             try {
                 inputs.forEach((input, captionWithField) -> input.setValue(captionWithField.second.getText(), paramsBuilder));
             } catch (Exception e) {

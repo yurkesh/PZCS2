@@ -20,4 +20,9 @@ class Variant2TheMostIdleProcessor extends SortingProcessorsSingleTaskHostSearch
                 //Sort by time when idle
                 .max(Comparator.comparing(processor -> processor.getIdleTime(tact)));
     }
+
+    @Override
+    public String toString() {
+        return "Variant2TheMostIdleProcessor";
+    }
 }

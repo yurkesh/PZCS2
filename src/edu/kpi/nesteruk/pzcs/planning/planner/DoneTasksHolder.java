@@ -10,10 +10,16 @@ import java.util.Map;
 interface DoneTasksHolder extends TaskFinishTimeProvider {
     void addDoneTasks(int tact, Collection<String> doneTasks);
     boolean hasNotDone();
+    boolean hasDone();
 
     static DoneTasksHolder getDoneTasksHolder(Collection<String> allTasks, Collection<String> doneTasks) {
         Map<String, Integer> doneTaskToFinishTimeMap = new HashMap<>();
         return new DoneTasksHolder() {
+
+            @Override
+            public boolean hasDone() {
+                return !doneTaskToFinishTimeMap.isEmpty();
+            }
 
             @Override
             public void addDoneTasks(int tact, Collection<String> done) {

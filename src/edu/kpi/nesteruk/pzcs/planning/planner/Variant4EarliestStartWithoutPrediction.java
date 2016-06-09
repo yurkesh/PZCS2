@@ -32,4 +32,9 @@ class Variant4EarliestStartWithoutPrediction extends EarliestStartTaskHostSearch
                 processorCopyProvider
         );
     }
+
+    @Override
+    public String toString() {
+        return "Variant4EarliestStartWithoutPrediction";
+    }
 }

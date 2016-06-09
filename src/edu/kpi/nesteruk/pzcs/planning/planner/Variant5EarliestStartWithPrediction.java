@@ -32,4 +32,9 @@ class Variant5EarliestStartWithPrediction extends EarliestStartTaskHostSearcher 
                 processorCopyProvider
         );
     }
+
+    @Override
+    public String toString() {
+        return "Variant5EarliestStartWithPrediction";
+    }
 }

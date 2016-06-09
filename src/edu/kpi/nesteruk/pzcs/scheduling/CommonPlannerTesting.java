@@ -1,5 +1,6 @@
-package edu.kpi.nesteruk.pzcs.planning;
+package edu.kpi.nesteruk.pzcs.scheduling;
 
+import edu.kpi.nesteruk.misc.Tuple;
 import edu.kpi.nesteruk.pzcs.common.LabWork;
 import edu.kpi.nesteruk.pzcs.graph.misc.GraphUtils;
 import edu.kpi.nesteruk.pzcs.model.common.AbstractGraphModel;
@@ -9,6 +10,8 @@ import edu.kpi.nesteruk.pzcs.model.common.NodeBuilder;
 import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
 import edu.kpi.nesteruk.pzcs.model.primitives.Link;
 import edu.kpi.nesteruk.pzcs.model.primitives.Node;
+import edu.kpi.nesteruk.pzcs.model.queuing.QueueConstructorFactory;
+import edu.kpi.nesteruk.pzcs.model.queuing.common.QueueConstructor;
 import edu.kpi.nesteruk.pzcs.model.queuing.concrete.CriticalPathByTimeForAllNodes3;
 import edu.kpi.nesteruk.pzcs.model.queuing.primitives.CriticalNode;
 import edu.kpi.nesteruk.pzcs.model.system.Processor;
@@ -17,7 +20,11 @@ import edu.kpi.nesteruk.pzcs.model.system.SystemGraphModel;
 import edu.kpi.nesteruk.pzcs.model.tasks.Task;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphBundle;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphModel;
+import edu.kpi.nesteruk.pzcs.planning.Planner;
+import edu.kpi.nesteruk.pzcs.planning.SchedulingResult;
+import edu.kpi.nesteruk.pzcs.planning.params.ProcessorsParams;
 import edu.kpi.nesteruk.pzcs.planning.planner.CommonPlanner;
+import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcher;
 import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcherFactory;
 import edu.kpi.nesteruk.pzcs.view.GraphStyle;
 import edu.kpi.nesteruk.pzcs.view.dashboard.DashboardView;
@@ -35,14 +42,11 @@ import java.util.stream.Collectors;
  */
 public class CommonPlannerTesting {
 
-    private static final LabWork LAB_WORK;
-
-    static {
+    public static void main(String[] args) {
+        QueueConstructorFactory.setLabs234Variants(1, 3, 11);
         SingleTaskHostSearcherFactory.setLabs67Variants(3, 5);
-        LAB_WORK = LabWork.LAB_6;
-    }
+        LabWork LAB_WORK = LabWork.LAB_6;
 
-    public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
         Localization.getInstance().init(Localization.Language.UA);
         for (UIManager.LookAndFeelInfo lookAndFeelInfo : UIManager.getInstalledLookAndFeels()) {
             if ("Windows".equals(lookAndFeelInfo.getName())) {
@@ -54,7 +58,6 @@ public class CommonPlannerTesting {
         Task.TO_STRING_FORMAT = "T[%s]: %s";
         Processor.TO_STRING_FORMAT = "P[%s]=%s";
 
-        /*
         TasksGraphBundle tasks = makeTasks();
         ProcessorsGraphBundle processors = makeProcessors();
 
@@ -64,28 +67,33 @@ public class CommonPlannerTesting {
                 new ProcessorsParams(1)
         );
         Tuple<Table> executionAndTransfersTables = schedulingResult.getExecutionAndTransfersTables();
-        */
-        /*
         System.out.println(
                 "Planning result:\nExecution:\n" +
                         new TableRepresentationBuilder(executionAndTransfersTables.first, true).getRepresentation()
                 + "\nTransfers:\n" +
                         new TableRepresentationBuilder(executionAndTransfersTables.second, true).getRepresentation()
         );
-        */
 //        GantDiagrmView.showDiagramForProcessors(executionAndTransfersTables.first, "Processors");
 //        GantDiagrmView.showDiagramForProcessors(executionAndTransfersTables.second, "Transfers");
 
-
         DashboardView dashboardView = DashboardView.defaultStart();
-        /*
         UnitedGraphsView graphPresenter = (UnitedGraphsView) dashboardView.getGraphPresenter();
         graphPresenter.getTasksPresenter().setGraph(tasks);
         graphPresenter.getSystemPresenter().setGraph(processors);
-        */
     }
 
     public static Planner makePlanner(LabWork labWork) {
+        return makePlanner(labWork, new CriticalPathByTimeForAllNodes3<>());
+    }
+
+    public static Planner makePlanner(LabWork labWork, QueueConstructor<Task, DirectedLink<Task>> queueConstructor) {
+        return makePlanner(
+                SingleTaskHostSearcherFactory.getSearcher(labWork),
+                queueConstructor
+        );
+    }
+
+    public static Planner makePlanner(SingleTaskHostSearcher hostSearcher, QueueConstructor<Task, DirectedLink<Task>> queueConstructor) {
         return new CommonPlanner(
                 processorsGraphBundle -> GraphUtils.makeGraphCheckAllEdgesAdded(
                         SystemGraphModel::newGraph,
@@ -99,15 +107,19 @@ public class CommonPlannerTesting {
                         tasksGraphBundle.getNodesMap().values(),
                         tasksGraphBundle.getLinksMap().values()
                 ),
-                tasksGraphBundle -> new CriticalPathByTimeForAllNodes3<Task, DirectedLink<Task>>()
-                        .constructQueues(tasksGraphBundle).second.stream()
+                tasksGraphBundle -> queueConstructor.constructQueues(tasksGraphBundle).second.stream()
                         .map(CriticalNode::getNode)
                         .map(Task::getId)
                         .collect(Collectors.toList())
                 ,
-                SingleTaskHostSearcherFactory.getSearcher(labWork),
+                hostSearcher,
                 System.out::println
-        );
+        ) {
+            @Override
+            public String toString() {
+                return "Planner{" + queueConstructor + ", " + hostSearcher + "}";
+            }
+        };
     }
 
     private static TasksGraphBundle makeTasks() {
@@ -120,15 +132,15 @@ public class CommonPlannerTesting {
 
     private static PlannerTestingData getTasks() {
         return new
-                ControlWorkExampleCaseTasks()
-//                LabDeliveryCase1Tasks()
+//                ControlWorkExampleCaseTasks()
+                LabDeliveryCase1Tasks()
                 ;
     }
 
     private static PlannerTestingData getProcessors() {
         return new
-                ControlWorkExampleCaseProcessors()
-//                LabDeliveryCase1Processors()
+//                ControlWorkExampleCaseProcessors()
+                LabDeliveryCase1Processors()
                 ;
     }
 

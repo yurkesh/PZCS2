@@ -69,15 +69,17 @@ class EarliestStartTaskHostSearcher {
                     useTransferBackwardPrediction
             );
             int startTime = taskWithTransfersEstimate.start;
-            //We need to check result
-            if(startTime < tact) {
-                throw new IllegalStateException(
-                        "StartTime must be >= tact"
-                                + ". Tact = " + tact
-                                + ", startTime = " + startTime
-                                + "\nTask = " + task
-                                + "\nProcessor = " + processor
-                );
+            if(!useTransferBackwardPrediction) {
+                //We need to check result
+                if (startTime < tact) {
+                    throw new IllegalStateException(
+                            "StartTime must be >= tact"
+                                    + ". Tact = " + tact
+                                    + ", startTime = " + startTime
+                                    + "\nTask = " + task
+                                    + "\nProcessor = " + processor
+                    );
+                }
             }
             return taskWithTransfersEstimate;
         }

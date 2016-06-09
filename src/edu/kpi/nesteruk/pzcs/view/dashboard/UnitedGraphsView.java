@@ -4,7 +4,7 @@ import edu.kpi.nesteruk.misc.Tuple;
 import edu.kpi.nesteruk.pzcs.common.GraphType;
 import edu.kpi.nesteruk.pzcs.model.system.ProcessorsGraphBundle;
 import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphBundle;
-import edu.kpi.nesteruk.pzcs.planning.CommonPlannerTesting;
+import edu.kpi.nesteruk.pzcs.scheduling.CommonPlannerTesting;
 import edu.kpi.nesteruk.pzcs.planning.PlanningParams;
 import edu.kpi.nesteruk.pzcs.planning.SchedulingResult;
 import edu.kpi.nesteruk.pzcs.planning.params.ProcessorsParams;
@@ -73,11 +73,6 @@ public class UnitedGraphsView implements UnitedGraphPresenter {
                 presenter.displaySchedule(schedulingResult);
             });
             */
-        }
-
-        @Override
-        public void onStatistics(ActionEvent event) {
-
         }
 
         @Override
@@ -172,11 +167,6 @@ public class UnitedGraphsView implements UnitedGraphPresenter {
     }
 
     @Override
-    public void onProcessorsParams(ActionEvent event) {
-        getSystemPresenter().onProcessorsParams(event);
-    }
-
-    @Override
     public void onGantDiagram(ActionEvent event) {
         defaultPresenter.onGantDiagram(event);
     }
@@ -188,7 +178,7 @@ public class UnitedGraphsView implements UnitedGraphPresenter {
 
     @Override
     public void onStatistics(ActionEvent event) {
-        defaultPresenter.onStatistics(event);
+        getSystemPresenter().onStatistics(event);
     }
 
     @Override

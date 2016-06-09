@@ -5,7 +5,7 @@ import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.layout.mxGraphLayout;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStylesheet;
-import edu.kpi.nesteruk.pzcs.graph.generation.Params;
+import edu.kpi.nesteruk.pzcs.graph.generation.GeneratorParams;
 import edu.kpi.nesteruk.pzcs.model.primitives.DirectedLink;
 import edu.kpi.nesteruk.pzcs.model.queuing.common.QueueConstructor;
 import edu.kpi.nesteruk.pzcs.model.queuing.concrete.CriticalPathByNumberOfNodesAndCoherence11;
@@ -49,7 +49,7 @@ public enum GraphType {
                     TasksGraphModel::new,
                     () -> graphStyle.getNodeSize(this),
                     queueConstructors,
-                    new Params(1, 10, 10, 0.2, 1, 10)
+                    new GeneratorParams(1, 5, 6, 0.1, 1, 3)
             );
         }
     },

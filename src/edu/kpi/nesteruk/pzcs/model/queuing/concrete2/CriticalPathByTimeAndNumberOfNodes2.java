@@ -85,4 +85,9 @@ public class CriticalPathByTimeAndNumberOfNodes2<N extends Node, L extends Link<
                     '}';
         }
     }
+
+    @Override
+    public String toString() {
+        return "CriticalPathByTimeAndNumberOfNodes2";
+    }
 }
