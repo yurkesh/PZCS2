@@ -112,7 +112,7 @@ public class DashboardView extends JFrame {
         }
 
         {
-            JMenu statistics = new JMenu(lang.statistics);
+            JMenuItem statistics = new JMenuItem(lang.statistics);
             statistics.addActionListener(graphPresenter::onStatistics);
             menuBar.add(statistics);
         }
