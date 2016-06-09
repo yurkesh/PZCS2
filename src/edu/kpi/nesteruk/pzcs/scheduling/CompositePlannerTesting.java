@@ -32,7 +32,7 @@ import java.util.stream.IntStream;
  */
 public class CompositePlannerTesting {
 
-    private static final boolean LOG = true;
+    private static final boolean LOG = false;
 
     private static final Random RANDOM = new Random(19);
     private static final ProcessorsParams DEFAULT_PROCESSORS_PARAMS = new ProcessorsParams(

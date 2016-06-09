@@ -77,7 +77,7 @@ public class CompositePlannerTestingResultsInterpreter {
         }
     }
 
-    private static final String[] COLUMNS = {"#", "Tasks", "Coherence", "Queue", "Planner", "SpeedUp", "System Ef", "Scheduler Ef"};
+    private static final String[] COLUMNS = {"№", "К-сть задач", "Звязність", "Черга", "Планувальник", "Кп", "Кеф", "Ке.алг."};
 
     private static final NumberFormat DOUBLE_FORMAT = new DecimalFormat("#.##");
 
@@ -94,7 +94,7 @@ public class CompositePlannerTestingResultsInterpreter {
 
             @Override
             public String[][] getColumnsData() {
-                String[][] allData = new String[results.size()][];
+                String[][] allData = new String[results.size() * numberOfSchedulers][];
                 for (int jobNumber = 0; jobNumber < results.size(); jobNumber++) {
                     final int job = jobNumber;
                     Pair<ConcreteTasksJob, Map<SchedulerCase, ResultIndicators>> concreteJobResults = results.get(jobNumber);
@@ -110,7 +110,7 @@ public class CompositePlannerTestingResultsInterpreter {
                                 SchedulerCase schedulerCase = schedulerResultEntry.getKey();
                                 ResultIndicators result = schedulerResultEntry.getValue();
 
-                                int rowNumber = job * resultsCounter.getAndIncrement();
+                                int rowNumber = job * numberOfSchedulers + resultsCounter.getAndIncrement();
                                 String[] row = new String[COLUMNS.length];
 
                                 //#

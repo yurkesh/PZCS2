@@ -38,6 +38,7 @@ public class SystemGraphPresenter extends CommonGraphPresenter implements System
 
     @Override
     public void onStatistics(ActionEvent event) {
+        /*
         GenericInputDialog.showDialog(
                 "Enter scheduling testing params",
                 CompositeSchedulerTestParams.DEFAULT,
@@ -54,6 +55,14 @@ public class SystemGraphPresenter extends CommonGraphPresenter implements System
 //                    System.out.println("Results: " + new TableRepresentationBuilder(table).getRepresentation());
                 }
         );
+        */
+        List<Pair<ConcreteTasksJob, Map<SchedulerCase, ResultIndicators>>> fullResult =
+                CompositePlannerTesting.performFullTesting(
+                        getProcessorsGraphBundle(), CompositeSchedulerTestParams.DEFAULT
+                );
+        Table table =
+                CompositePlannerTestingResultsInterpreter.makeTableResult(fullResult);
+        StatisticsResultView.showStatistics("Statistics", table);
     }
 
     @Override
