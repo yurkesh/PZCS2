@@ -17,6 +17,7 @@ import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphModel;
 import edu.kpi.nesteruk.pzcs.planning.Planner;
 import edu.kpi.nesteruk.pzcs.planning.SchedulingResult;
 import edu.kpi.nesteruk.pzcs.planning.params.ProcessorsParams;
+import edu.kpi.nesteruk.pzcs.planning.planner.NeedRetryException;
 import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcher;
 import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcherFactory;
 
@@ -31,7 +32,7 @@ import java.util.stream.IntStream;
  */
 public class CompositePlannerTesting {
 
-    private static final boolean LOG = false;
+    private static final boolean LOG = true;
 
     private static final Random RANDOM = new Random(19);
     private static final ProcessorsParams DEFAULT_PROCESSORS_PARAMS = new ProcessorsParams(
@@ -146,7 +147,7 @@ public class CompositePlannerTesting {
 
                 //Parallel stream is used
                 IntStream.range(0, params.numberOfTaskGraphsToGenerate).forEach(number -> {
-                    log("Number of graph = " + numberOfTasks);
+                    log("# " + number);
 
                     TasksGraphBundle tasksGraphBundle = tasksGraphGenerator.generate(generatorParams);
                     ConcreteTasksJob concreteTasksJob = new ConcreteTasksJob(jobCase, tasksGraphBundle);
@@ -154,12 +155,22 @@ public class CompositePlannerTesting {
                     Map<SchedulerCase, ResultIndicators> plannersResults = new LinkedHashMap<>();
 
                     for (Map.Entry<SchedulerCase, Planner> entry : plannersMap.entrySet()) {
+                        SchedulerCase schedulerCase = entry.getKey();
                         Planner planner = entry.getValue();
-                        SchedulingResult plannedWork = planner.getPlannedWork(
-                                processorsGraphBundle,
-                                tasksGraphBundle,
-                                DEFAULT_PROCESSORS_PARAMS
-                        );
+
+                        SchedulingResult plannedWork = null;
+                        while (plannedWork == null) {
+                            try {
+                                plannedWork = planner.getPlannedWork(
+                                        processorsGraphBundle,
+                                        tasksGraphBundle,
+                                        DEFAULT_PROCESSORS_PARAMS
+                                );
+                            } catch (NeedRetryException e) {
+//                                e.printStackTrace();
+                            }
+                        }
+                        log("Scheduler = " + schedulerCase);
 
                         int singleCoreTime = getSingleCoreTime(tasksGraphBundle);
                         int theoreticCriticalTime = getTheoreticCriticalTime(tasksGraphBundle);
@@ -171,9 +182,7 @@ public class CompositePlannerTesting {
                                 theoreticCriticalTime
                         );
 
-                        log("# " + number);
-
-                        plannersResults.put(entry.getKey(), indicator);
+                        plannersResults.put(schedulerCase, indicator);
                     }
 
                     totalResults.add(new Pair<>(concreteTasksJob, plannersResults));
