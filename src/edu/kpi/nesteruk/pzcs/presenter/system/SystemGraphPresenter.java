@@ -50,8 +50,8 @@ public class SystemGraphPresenter extends CommonGraphPresenter implements System
                             );
                     Table table =
                             CompositePlannerTestingResultsInterpreter.makeTableResult(fullResult);
-//                    StatisticsResultView.showStatistics("Statistics", table);
-                    System.out.println("Results: " + new TableRepresentationBuilder(table).getRepresentation());
+                    StatisticsResultView.showStatistics("Statistics", table);
+//                    System.out.println("Results: " + new TableRepresentationBuilder(table).getRepresentation());
                 }
         );
     }
@@ -63,7 +63,7 @@ public class SystemGraphPresenter extends CommonGraphPresenter implements System
 
     @Override
     public void setGraph(Object graph) {
-        if(graph instanceof ProcessorsGraphBundle) {
+        if (graph instanceof ProcessorsGraphBundle) {
             setGraph(getModel().restore((ProcessorsGraphBundle) graph));
         } else {
             throw new IllegalArgumentException("Cannot set graph = " + graph);
