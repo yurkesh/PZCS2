@@ -1,5 +1,6 @@
 package edu.kpi.nesteruk.pzcs.scheduling;
 
+import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.common.LabWork;
 import edu.kpi.nesteruk.pzcs.graph.generation.GeneratorParams;
 import edu.kpi.nesteruk.pzcs.graph.generation.GraphGenerator;
@@ -16,12 +17,11 @@ import edu.kpi.nesteruk.pzcs.model.tasks.TasksGraphModel;
 import edu.kpi.nesteruk.pzcs.planning.Planner;
 import edu.kpi.nesteruk.pzcs.planning.SchedulingResult;
 import edu.kpi.nesteruk.pzcs.planning.params.ProcessorsParams;
-import edu.kpi.nesteruk.pzcs.planning.planner.NeedRetryException;
 import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcher;
 import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcherFactory;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
@@ -38,7 +38,7 @@ public class CompositePlannerTesting {
             ProcessorsParams.NUMBER_OF_CHANNELS_BY_MAX_COHERENCE
     );
 
-    public static Map<SchedulerCase, Map<JobCase, List<ResultIndicators>>> performFullTesting(
+    public static List<Pair<ConcreteTasksJob, Map<SchedulerCase, ResultIndicators>>> performFullTesting(
             ProcessorsGraphBundle processorsGraphBundle,
             CompositeSchedulerTestParams params) {
 
@@ -58,27 +58,23 @@ public class CompositePlannerTesting {
                 generatorParamsBuilder);
     }
 
-    private static Map<SchedulerCase, Map<JobCase, List<ResultIndicators>>> runTestsForAllSchedulers(
+    private static List<Pair<ConcreteTasksJob, Map<SchedulerCase, ResultIndicators>>> runTestsForAllSchedulers(
             ProcessorsGraphBundle processorsGraphBundle,
             CompositeSchedulerTestParams params,
             GraphGenerator<Task, DirectedLink<Task>, TasksGraphBundle> tasksGraphGenerator,
             GeneratorParams.Builder generatorParamsBuilder) {
 
-        Map<SchedulerCase, Map<JobCase, List<ResultIndicators>>> resultsMap = new LinkedHashMap<>();
+        List<LabWork> queuesTypes = Arrays.asList(LabWork.LAB_2, LabWork.LAB_3, LabWork.LAB_4);
+        List<LabWork> plannersTypes = Arrays.asList(LabWork.LAB_6, LabWork.LAB_7);
 
-        List<LabWork> queues = Arrays.asList(LabWork.LAB_2, LabWork.LAB_3, LabWork.LAB_4);
-        List<LabWork> planners = Arrays.asList(LabWork.LAB_6, LabWork.LAB_7);
+        Map<SchedulerCase, Planner> plannersMap = new LinkedHashMap<>();
 
         QueueConstructor<Task, DirectedLink<Task>> queueConstructor;
-        for (int queueLab = 0; queueLab < queues.size(); queueLab++) {
-            LabWork queueLabWork = queues.get(queueLab);
-
+        for (LabWork queueLabWork : queuesTypes) {
             int queueVariant = QueueConstructorFactory.getQueueConstructorVariant(queueLabWork);
             queueConstructor = QueueConstructorFactory.getByVariant(queueVariant);
 
-            for (int plannerLab = 0; plannerLab < planners.size(); plannerLab++) {
-                LabWork plannerLabWork = planners.get(plannerLab);
-
+            for (LabWork plannerLabWork : plannersTypes) {
                 int plannerVariant = SingleTaskHostSearcherFactory.getSearcherVariant(plannerLabWork);
                 SingleTaskHostSearcher searcher = SingleTaskHostSearcherFactory.getByVariant(plannerVariant);
                 SchedulerCase schedulerCase = new SchedulerCase(
@@ -91,40 +87,29 @@ public class CompositePlannerTesting {
                         queueConstructor
                 );
 
-                Map<JobCase, List<ResultIndicators>> testsMap = null;
-                while (testsMap == null) {
-                    try {
-                        testsMap = runTestsForSinglePlanner(
-                                processorsGraphBundle,
-                                params,
-                                tasksGraphGenerator,
-                                generatorParamsBuilder,
-                                planner
-                        );
-                    } catch (NeedRetryException e) {
-//                        e.printStackTrace();
-                    }
-                }
-
-                log("Received results for planner = " + planner + ", results = " + testsMap);
-
-                resultsMap.put(schedulerCase, testsMap);
+                plannersMap.put(schedulerCase, planner);
             }
         }
 
-        return resultsMap;
+        return runTestsForSinglePlanner(
+                processorsGraphBundle,
+                params,
+                tasksGraphGenerator,
+                generatorParamsBuilder,
+                plannersMap
+        );
     }
 
-    private static Map<JobCase, List<ResultIndicators>> runTestsForSinglePlanner(
+    private static List<Pair<ConcreteTasksJob, Map<SchedulerCase, ResultIndicators>>> runTestsForSinglePlanner(
             ProcessorsGraphBundle processorsGraphBundle,
             CompositeSchedulerTestParams params,
             GraphGenerator<Task, DirectedLink<Task>, TasksGraphBundle> tasksGraphGenerator,
             GeneratorParams.Builder generatorParamsBuilder,
-            Planner planner) {
+            Map<SchedulerCase, Planner> plannersMap) {
 
         final int numberOfProcessors = processorsGraphBundle.getNodesMap().size();
 
-        final Map<JobCase, List<ResultIndicators>> resultsMap = new ConcurrentHashMap<>();
+        final List<Pair<ConcreteTasksJob, Map<SchedulerCase, ResultIndicators>>> totalResults = new CopyOnWriteArrayList<>();
 
         IntStream.Builder numberOfTasksBuilder = IntStream.builder();
         for (int numberOfTasks = params.minNumberOfTasks;
@@ -156,8 +141,6 @@ public class CompositePlannerTesting {
                         .setCoherence(coherence);
 
                 final JobCase jobCase = new JobCase(numberOfTasks, coherence);
-                final List<ResultIndicators> indicators = new ArrayList<>();
-                resultsMap.put(jobCase, indicators);
 
                 GeneratorParams generatorParams = builderWithCoherence.build();
 
@@ -166,30 +149,39 @@ public class CompositePlannerTesting {
                     log("Number of graph = " + numberOfTasks);
 
                     TasksGraphBundle tasksGraphBundle = tasksGraphGenerator.generate(generatorParams);
-                    SchedulingResult plannedWork = planner.getPlannedWork(
-                            processorsGraphBundle,
-                            tasksGraphBundle,
-                            DEFAULT_PROCESSORS_PARAMS
-                    );
+                    ConcreteTasksJob concreteTasksJob = new ConcreteTasksJob(jobCase, tasksGraphBundle);
 
-                    int singleCoreTime = getSingleCoreTime(tasksGraphBundle);
-                    int theoreticCriticalTime = getTheoreticCriticalTime(tasksGraphBundle);
+                    Map<SchedulerCase, ResultIndicators> plannersResults = new LinkedHashMap<>();
 
-                    ResultIndicators indicator = ResultIndicators.calculate(
-                            singleCoreTime,
-                            plannedWork.getTactsNumber(),
-                            numberOfProcessors,
-                            theoreticCriticalTime
-                    );
+                    for (Map.Entry<SchedulerCase, Planner> entry : plannersMap.entrySet()) {
+                        Planner planner = entry.getValue();
+                        SchedulingResult plannedWork = planner.getPlannedWork(
+                                processorsGraphBundle,
+                                tasksGraphBundle,
+                                DEFAULT_PROCESSORS_PARAMS
+                        );
 
-                    log("# " + number);
+                        int singleCoreTime = getSingleCoreTime(tasksGraphBundle);
+                        int theoreticCriticalTime = getTheoreticCriticalTime(tasksGraphBundle);
 
-                    indicators.add(indicator);
+                        ResultIndicators indicator = ResultIndicators.calculate(
+                                singleCoreTime,
+                                plannedWork.getTactsNumber(),
+                                numberOfProcessors,
+                                theoreticCriticalTime
+                        );
+
+                        log("# " + number);
+
+                        plannersResults.put(entry.getKey(), indicator);
+                    }
+
+                    totalResults.add(new Pair<>(concreteTasksJob, plannersResults));
                 });
             });
         });
 
-        return resultsMap;
+        return totalResults;
     }
 
     private static int getSingleCoreTime(TasksGraphBundle tasksGraphBundle) {
