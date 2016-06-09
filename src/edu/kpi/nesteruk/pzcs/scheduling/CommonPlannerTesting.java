@@ -28,6 +28,7 @@ import edu.kpi.nesteruk.pzcs.planning.planner.SingleTaskHostSearcherFactory;
 import edu.kpi.nesteruk.pzcs.view.dashboard.DashboardView;
 import edu.kpi.nesteruk.pzcs.view.dashboard.UnitedGraphsView;
 import edu.kpi.nesteruk.pzcs.view.print.Table;
+import edu.kpi.nesteruk.pzcs.view.print.TableRepresentationBuilder;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -43,7 +44,7 @@ public class CommonPlannerTesting {
     public static void main(String[] args) {
         QueueConstructorFactory.setLabs234Variants(1, 3, 11);
         SingleTaskHostSearcherFactory.setLabs67Variants(3, 5);
-        LabWork LAB_WORK = LabWork.LAB_6;
+        LabWork LAB_WORK = LabWork.LAB_7;
 
         TasksGraphBundle tasks = makeTasks();
         ProcessorsGraphBundle processors = makeProcessors();
@@ -55,14 +56,12 @@ public class CommonPlannerTesting {
         );
         Tuple<Table> executionAndTransfersTables = schedulingResult.getExecutionAndTransfersTables();
 
-        /*
         System.out.println(
                 "Planning result:\nExecution:\n" +
                         new TableRepresentationBuilder(executionAndTransfersTables.first, true).getRepresentation()
                 + "\nTransfers:\n" +
                         new TableRepresentationBuilder(executionAndTransfersTables.second, true).getRepresentation()
         );
-        */
 
         DashboardView dashboardView = DashboardView.defaultStart();
         UnitedGraphsView graphPresenter = (UnitedGraphsView) dashboardView.getGraphPresenter();
@@ -127,8 +126,8 @@ public class CommonPlannerTesting {
 
     private static PlannerTestingData getProcessors() {
         return new
-                ControlWorkExampleCaseProcessors()
-//                LabDeliveryCase1Processors()
+//                ControlWorkExampleCaseProcessors()
+                LabDeliveryCase1Processors()
                 ;
     }
 
@@ -291,7 +290,8 @@ public class CommonPlannerTesting {
         public List<Connection> getNodesLinksMap() {
             return Arrays.asList(
                     c(1, 5, 2),
-                    c(2, 5, 8),
+//                    c(2, 5, 8),
+                    c(2, 5, 1),
                     c(3, 5, 1),
                     c(4, 5, 8)
             );

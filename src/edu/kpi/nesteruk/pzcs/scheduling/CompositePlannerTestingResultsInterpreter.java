@@ -2,6 +2,7 @@ package edu.kpi.nesteruk.pzcs.scheduling;
 
 import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.view.print.Table;
+import edu.kpi.nesteruk.util.CollectionUtils;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -11,6 +12,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by Yurii on 2016-06-09.
@@ -94,6 +96,7 @@ public class CompositePlannerTestingResultsInterpreter {
 
             @Override
             public String[][] getColumnsData() {
+                /*
                 String[][] allData = new String[results.size() * numberOfSchedulers][];
                 for (int jobNumber = 0; jobNumber < results.size(); jobNumber++) {
                     final int job = jobNumber;
@@ -141,11 +144,61 @@ public class CompositePlannerTestingResultsInterpreter {
                             });
                 }
                 return allData;
+                */
+                return CompositePlannerTestingResultsInterpreter.getColumnsData(results);
             }
         };
     }
 
+    private static String[][] getColumnsData(List<Pair<ConcreteTasksJob, Map<SchedulerCase, ResultIndicators>>> results) {
+        Collection<String[]> rows = getRows(results);
+        String[][] data = new String[rows.size()][];
+        int counter = 0;
+        for (String[] row : rows) {
+            row[0] = String.valueOf(counter);
+            data[counter++] = row;
+        }
+        return data;
+    }
 
+    private static Collection<String[]> getRows(List<Pair<ConcreteTasksJob, Map<SchedulerCase, ResultIndicators>>> results) {
+        return results.stream().map(concreteJobResults -> {
+            ConcreteTasksJob concreteTasksJob = concreteJobResults.first;
+            JobCase jobCase = concreteTasksJob.jobCase;
+            return concreteJobResults.second.entrySet().stream()
+                    //Compare by ResultIndicator
+                    .sorted(Comparator.comparing(Map.Entry::getValue))
+                    .map(schedulerResultEntry -> {
+                        SchedulerCase schedulerCase = schedulerResultEntry.getKey();
+                        ResultIndicators result = schedulerResultEntry.getValue();
+
+                        String[] row = new String[COLUMNS.length];
+
+                        //Tasks
+                        row[1] = String.valueOf(jobCase.numberOfTasks);
+
+                        //Coherence
+                        row[2] = String.valueOf(DOUBLE_FORMAT.format(jobCase.tasksGraphCoherence));
+
+                        //Queue
+                        row[3] = String.valueOf(schedulerCase.queueConstructorVariant);
+
+                        //Planner
+                        row[4] = String.valueOf(schedulerCase.plannerVariant);
+
+                        //SpeedUp
+                        row[5] = String.valueOf(DOUBLE_FORMAT.format(result.getSpeedUp()));
+
+                        //System Ef
+                        row[6] = String.valueOf(DOUBLE_FORMAT.format(result.getSystemEfficiency()));
+
+                        //Scheduler Ef
+                        row[7] = String.valueOf(DOUBLE_FORMAT.format(result.getSchedulerEfficiency()));
+
+                        return row;
+                    });
+        }).flatMap(Function.<Stream<String[]>>identity()).collect(Collectors.toCollection(LinkedHashSet::new));
+    }
 
 
 

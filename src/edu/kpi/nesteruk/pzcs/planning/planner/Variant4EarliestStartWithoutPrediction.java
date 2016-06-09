@@ -23,7 +23,7 @@ class Variant4EarliestStartWithoutPrediction extends EarliestStartTaskHostSearch
             LockedStatefulProcessorProvider processorCopyProvider) {
 
         return super.getStartTime(
-                false,
+                true,
                 router,
                 tact,
                 task,

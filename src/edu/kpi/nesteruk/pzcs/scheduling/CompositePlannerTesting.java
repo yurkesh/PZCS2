@@ -123,7 +123,7 @@ public class CompositePlannerTesting {
 
         DoubleStream.Builder coherenceBuilder = DoubleStream.builder();
         for (double coherence = params.minTasksGraphCoherence;
-             coherence < params.maxTasksGraphCoherence;
+             coherence <= params.maxTasksGraphCoherence;
              coherence+= params.deltaTasksGraphCoherence) {
             coherenceBuilder.accept(coherence);
         }
