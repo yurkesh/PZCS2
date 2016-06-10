@@ -159,16 +159,15 @@ public class CompositePlannerTesting {
                         Planner planner = entry.getValue();
 
                         SchedulingResult plannedWork = null;
-                        while (plannedWork == null) {
-                            try {
-                                plannedWork = planner.getPlannedWork(
-                                        processorsGraphBundle,
-                                        tasksGraphBundle,
-                                        DEFAULT_PROCESSORS_PARAMS
-                                );
-                            } catch (NeedRetryException e) {
-//                                e.printStackTrace();
-                            }
+                        try {
+                            plannedWork = planner.getPlannedWork(
+                                    processorsGraphBundle,
+                                    tasksGraphBundle,
+                                    DEFAULT_PROCESSORS_PARAMS
+                            );
+                        } catch (NeedRetryException e) {
+//                            e.printStackTrace();
+                            continue;
                         }
                         log("Scheduler = " + schedulerCase);
 

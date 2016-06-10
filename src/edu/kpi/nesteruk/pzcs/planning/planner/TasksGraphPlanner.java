@@ -160,7 +160,7 @@ class TasksGraphPlanner {
             //Add scheduled tasks to executing
             executingTasks.addAll(scheduledTasks);
 
-            if(tact > 1000 * 1000) {
+            if(tact > 100 * 100) {
                 //This is very bad approach to stop infinite loop, but I don't have enough time for debugging and fixing
                 throw new NeedRetryException();
             }

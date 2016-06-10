@@ -4,6 +4,7 @@ import com.mxgraph.view.mxStylesheet;
 import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.model.common.GraphModel;
 import edu.kpi.nesteruk.pzcs.model.system.ProcessorsGraphBundle;
+import edu.kpi.nesteruk.pzcs.planning.processors.ProcessorExecution;
 import edu.kpi.nesteruk.pzcs.presenter.common.CaptionsSupplier;
 import edu.kpi.nesteruk.pzcs.presenter.common.CommonGraphPresenter;
 import edu.kpi.nesteruk.pzcs.presenter.common.GraphVertexSizeSupplier;
@@ -43,12 +44,14 @@ public class SystemGraphPresenter extends CommonGraphPresenter implements System
                 Arrays.asList(CompositeSchedulerTestParamsInput.values()),
                 CompositeSchedulerTestParams.Builder::new,
                 params -> {
+                    ProcessorExecution.THROW_IF_REMOVED = false;
                     List<Pair<ConcreteTasksJob, Map<SchedulerCase, ResultIndicators>>> fullResult =
                             CompositePlannerTesting.performFullTesting(
                                     getProcessorsGraphBundle(), params
                             );
                     Table table =
                             CompositePlannerTestingResultsInterpreter.makeTableResult(fullResult);
+                    ProcessorExecution.THROW_IF_REMOVED = true;
                     System.out.println("Results:\n" + new TableRepresentationBuilder(table).getRepresentation());
                 }
         );

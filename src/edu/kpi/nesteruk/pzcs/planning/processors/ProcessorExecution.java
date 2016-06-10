@@ -8,7 +8,9 @@ import java.util.stream.IntStream;
 /**
  * Created by Yurii on 2016-05-25.
  */
-class ProcessorExecution {
+public class ProcessorExecution {
+
+    public static boolean THROW_IF_REMOVED = true;
 
     private final String processorId;
     private final int power;
@@ -89,7 +91,7 @@ class ProcessorExecution {
 
     private void execute(int tact, String action) {
         String removed = execution.put(tact, action);
-        if(removed != null) {
+        if(removed != null && THROW_IF_REMOVED) {
             throw new IllegalStateException(
                     "Incorrect state of execution = " + execution
                             + ". Processor = " + processorId

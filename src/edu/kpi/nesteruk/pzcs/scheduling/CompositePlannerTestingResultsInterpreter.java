@@ -2,12 +2,10 @@ package edu.kpi.nesteruk.pzcs.scheduling;
 
 import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.view.print.Table;
-import edu.kpi.nesteruk.util.CollectionUtils;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -96,76 +94,89 @@ public class CompositePlannerTestingResultsInterpreter {
 
             @Override
             public String[][] getColumnsData() {
-                /*
-                String[][] allData = new String[results.size() * numberOfSchedulers][];
-                for (int jobNumber = 0; jobNumber < results.size(); jobNumber++) {
-                    final int job = jobNumber;
-                    Pair<ConcreteTasksJob, Map<SchedulerCase, ResultIndicators>> concreteJobResults = results.get(jobNumber);
-
-                    ConcreteTasksJob concreteTasksJob = concreteJobResults.first;
-                    JobCase jobCase = concreteTasksJob.jobCase;
-
-                    AtomicInteger resultsCounter = new AtomicInteger();
-                    concreteJobResults.second.entrySet().stream()
-                            //Compare by ResultIndicator
-                            .sorted(Comparator.comparing(Map.Entry::getValue))
-                            .forEach(schedulerResultEntry -> {
-                                SchedulerCase schedulerCase = schedulerResultEntry.getKey();
-                                ResultIndicators result = schedulerResultEntry.getValue();
-
-                                int rowNumber = job * numberOfSchedulers + resultsCounter.getAndIncrement();
-                                String[] row = new String[COLUMNS.length];
-
-                                //#
-                                row[0] = String.valueOf(rowNumber);
-
-                                //Tasks
-                                row[1] = String.valueOf(jobCase.numberOfTasks);
-
-                                //Coherence
-                                row[2] = String.valueOf(DOUBLE_FORMAT.format(jobCase.tasksGraphCoherence));
-
-                                //Queue
-                                row[3] = String.valueOf(schedulerCase.queueConstructorVariant);
-
-                                //Planner
-                                row[4] = String.valueOf(schedulerCase.plannerVariant);
-
-                                //SpeedUp
-                                row[5] = String.valueOf(DOUBLE_FORMAT.format(result.getSpeedUp()));
-
-                                //System Ef
-                                row[6] = String.valueOf(DOUBLE_FORMAT.format(result.getSystemEfficiency()));
-
-                                //Scheduler Ef
-                                row[7] = String.valueOf(DOUBLE_FORMAT.format(result.getSchedulerEfficiency()));
-
-                                allData[rowNumber] = row;
-                            });
-                }
-                return allData;
-                */
                 return CompositePlannerTestingResultsInterpreter.getColumnsData(results);
             }
         };
     }
 
     private static String[][] getColumnsData(List<Pair<ConcreteTasksJob, Map<SchedulerCase, ResultIndicators>>> results) {
-        Collection<String[]> rows = getRows(results);
+        Collection<RowHolder> rows = getRows(results);
         String[][] data = new String[rows.size()][];
         int counter = 0;
-        for (String[] row : rows) {
-            row[0] = String.valueOf(counter);
-            data[counter++] = row;
+        for (RowHolder rowHolder : rows) {
+            rowHolder.row[0] = String.valueOf(counter);
+            data[counter++] = rowHolder.row;
         }
         return data;
     }
 
-    private static Collection<String[]> getRows(List<Pair<ConcreteTasksJob, Map<SchedulerCase, ResultIndicators>>> results) {
-        return results.stream().map(concreteJobResults -> {
-            ConcreteTasksJob concreteTasksJob = concreteJobResults.first;
+    private static Collection<RowHolder> getRows(List<Pair<ConcreteTasksJob, Map<SchedulerCase, ResultIndicators>>> results) {
+        Map<Pair<JobCase, SchedulerCase>, List<ResultIndicators>> collected = results.stream()
+                .map(jobAndSchedulersResultPair ->
+                        jobAndSchedulersResultPair.second.entrySet().stream()
+                                .map(schedulerResultEntry ->
+                                        Pair.create(jobAndSchedulersResultPair.first.jobCase, schedulerResultEntry)
+                                )
+                )
+                .flatMap(Function.identity())
+                .collect(Collectors.groupingBy(
+                        concreteTasksJobEntryPair -> Pair.create(concreteTasksJobEntryPair.first, concreteTasksJobEntryPair.second.getKey()),
+                        Collectors.mapping(
+                                concreteTasksJobEntryPair -> concreteTasksJobEntryPair.second.getValue(),
+                                Collectors.toList()
+                        )
+                ));
+        LinkedHashSet<Pair<Pair<JobCase, SchedulerCase>, ResultIndicators>> resultsSet = collected.entrySet().stream()
+                .map(entry -> {
+                    AverageIndicators average = entry.getValue().stream().collect(
+                            AverageIndicators::new,
+                            AverageIndicators::accept,
+                            AverageIndicators::combine
+                    );
+                    return Pair.create(entry.getKey(), average.get());
+                })
+                .sorted(Comparator.<Pair<Pair<JobCase, SchedulerCase>, ResultIndicators>, JobCase>comparing(pair -> pair.first.first).thenComparing(pair -> pair.second))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        List<RowHolder> rows = resultsSet.stream()
+                .map(pair -> {
+                    JobCase jobCase = pair.first.first;
+                    SchedulerCase schedulerCase = pair.first.second;
+                    ResultIndicators result = pair.second;
+
+                    String[] row = new String[COLUMNS.length];
+
+                    //Tasks
+                    row[1] = String.valueOf(jobCase.numberOfTasks);
+
+                    //Coherence
+                    row[2] = String.valueOf(DOUBLE_FORMAT.format(jobCase.tasksGraphCoherence));
+
+                    //Queue
+                    row[3] = String.valueOf(schedulerCase.queueConstructorVariant);
+
+                    //Planner
+                    row[4] = String.valueOf(schedulerCase.plannerVariant);
+
+                    //SpeedUp
+                    row[5] = String.valueOf(DOUBLE_FORMAT.format(result.getSpeedUp()));
+
+                    //System Ef
+                    row[6] = String.valueOf(DOUBLE_FORMAT.format(result.getSystemEfficiency()));
+
+                    //Scheduler Ef
+                    row[7] = String.valueOf(DOUBLE_FORMAT.format(result.getSchedulerEfficiency()));
+
+                    return new RowHolder(row);
+                })
+                .collect(Collectors.toList());
+        return rows;
+
+        /*
+        return results.stream().map(concreteJobResultsPair -> {
+            ConcreteTasksJob concreteTasksJob = concreteJobResultsPair.first;
             JobCase jobCase = concreteTasksJob.jobCase;
-            return concreteJobResults.second.entrySet().stream()
+            return concreteJobResultsPair.second.entrySet().stream()
                     //Compare by ResultIndicator
                     .sorted(Comparator.comparing(Map.Entry::getValue))
                     .map(schedulerResultEntry -> {
@@ -195,9 +206,35 @@ public class CompositePlannerTestingResultsInterpreter {
                         //Scheduler Ef
                         row[7] = String.valueOf(DOUBLE_FORMAT.format(result.getSchedulerEfficiency()));
 
-                        return row;
+                        return new RowHolder(row);
                     });
-        }).flatMap(Function.<Stream<String[]>>identity()).collect(Collectors.toCollection(LinkedHashSet::new));
+        }).flatMap(Function.<Stream<RowHolder>>identity()).collect(Collectors.toCollection(LinkedHashSet::new));
+        */
+    }
+
+    private static class RowHolder {
+        public final String[] row;
+
+        private RowHolder(String[] row) {
+            this.row = row;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            RowHolder rowHolder = (RowHolder) o;
+
+            // Probably incorrect - comparing Object[] arrays with Arrays.equals
+            return Arrays.equals(row, rowHolder.row);
+
+        }
+
+        @Override
+        public int hashCode() {
+            return Arrays.hashCode(row);
+        }
     }
 
 
