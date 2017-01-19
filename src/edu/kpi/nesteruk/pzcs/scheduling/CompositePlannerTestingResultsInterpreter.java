@@ -120,7 +120,8 @@ public class CompositePlannerTestingResultsInterpreter {
                 )
                 .flatMap(Function.identity())
                 .collect(Collectors.groupingBy(
-                        concreteTasksJobEntryPair -> Pair.create(concreteTasksJobEntryPair.first, concreteTasksJobEntryPair.second.getKey()),
+                        concreteTasksJobEntryPair ->
+                                Pair.create(concreteTasksJobEntryPair.first, concreteTasksJobEntryPair.second.getKey()),
                         Collectors.mapping(
                                 concreteTasksJobEntryPair -> concreteTasksJobEntryPair.second.getValue(),
                                 Collectors.toList()
@@ -135,7 +136,9 @@ public class CompositePlannerTestingResultsInterpreter {
                     );
                     return Pair.create(entry.getKey(), average.get());
                 })
-                .sorted(Comparator.<Pair<Pair<JobCase, SchedulerCase>, ResultIndicators>, JobCase>comparing(pair -> pair.first.first).thenComparing(pair -> pair.second))
+                .sorted(Comparator.<Pair<Pair<JobCase, SchedulerCase>, ResultIndicators>, JobCase>comparing(
+                        pair -> pair.first.first
+                ).thenComparing(pair -> pair.second))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
         List<RowHolder> rows = resultsSet.stream()
