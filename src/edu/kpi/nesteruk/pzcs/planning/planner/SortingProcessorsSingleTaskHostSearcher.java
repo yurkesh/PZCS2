@@ -43,7 +43,7 @@ abstract class SortingProcessorsSingleTaskHostSearcher implements SingleTaskHost
                         processor,
                         router,
                         processorCopyProvider,
-                        true
+                        false
                 );
             }
 
