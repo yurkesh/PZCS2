@@ -18,6 +18,9 @@ public class GetVerticesWithoutIncomingEdges {
         Set<N> nodesWithoutInput = new LinkedHashSet<>(nodesMap.values());
         for (L link : linksMap.values()) {
             nodesWithoutInput.remove(link.getSecond());
+            // ^ I do not realize how it worked previously ?! ^
+            // Added this \/ removing to ensure node will be really removed
+            nodesWithoutInput.remove(nodesMap.get(link.getSecond()));
         }
         return nodesWithoutInput;
     }

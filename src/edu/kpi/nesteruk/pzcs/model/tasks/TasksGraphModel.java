@@ -2,6 +2,7 @@ package edu.kpi.nesteruk.pzcs.model.tasks;
 
 import edu.kpi.nesteruk.misc.Pair;
 import edu.kpi.nesteruk.pzcs.common.GraphDataAssembly;
+import edu.kpi.nesteruk.pzcs.graph.building.GraphAssembler;
 import edu.kpi.nesteruk.pzcs.graph.generation.GeneratorParams;
 import edu.kpi.nesteruk.pzcs.graph.generation.GraphGenerator;
 import edu.kpi.nesteruk.pzcs.graph.validation.NonAcyclicGraphValidator;
@@ -49,6 +50,10 @@ public class TasksGraphModel extends AbstractGraphModel<Task, DirectedLink<Task>
         return Pair.create(link, getLinkId(source.getId(), destination.getId()));
     }
 
+    /**
+     * Should use {@link edu.kpi.nesteruk.pzcs.model.primitives.Link#getId(boolean)} instead
+     */
+    @Deprecated
     private static String getLinkId(String srcId, String destId) {
         List<String> idsList = new ArrayList<>();
         idsList.add(srcId);
@@ -75,4 +80,15 @@ public class TasksGraphModel extends AbstractGraphModel<Task, DirectedLink<Task>
                 TasksGraphBundle::new
         );
     }
+
+    public GraphAssembler<Task, DirectedLink<Task>, TasksGraphBundle> getGraphAssembler() {
+        return new GraphAssembler<>(
+                TasksGraphModel::makeNode,
+                TasksGraphModel::makeLink,
+                TasksGraphModel::makeGraph,
+                TasksGraphBundle::new
+        );
+    }
+
+
 }

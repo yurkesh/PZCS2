@@ -81,6 +81,10 @@ public abstract class AbstractGraphModel<N extends Node, L extends Link<N>, G ex
         return formatNode(node);
     }
 
+    public Graph<String, String> getGraph() {
+        return graph;
+    }
+
     private static IdAndValue formatNode(Node node) {
         return new IdAndValue(node.getId(), node.toString());
     }

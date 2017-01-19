@@ -1,6 +1,7 @@
 package edu.kpi.nesteruk.pzcs.graph.generation;
 
 import edu.kpi.nesteruk.misc.Pair;
+import edu.kpi.nesteruk.pzcs.graph.building.GraphAssembler;
 import edu.kpi.nesteruk.pzcs.graph.misc.GraphUtils;
 import edu.kpi.nesteruk.pzcs.graph.validation.GraphValidator;
 import edu.kpi.nesteruk.pzcs.graph.validation.NonAcyclicGraphValidator;
@@ -64,10 +65,8 @@ public class GraphGenerator<N extends Node, L extends Link<N>, G extends GraphMo
                             "LINKS_WEIGHT = " + generated.getSecond().values().stream().mapToDouble(Link::getWeight).sum()
             );
         }
-        return graphBundleFactory.apply(
-                generated.first.stream().collect(Collectors.toMap(Node::getId, Function.identity())),
-                generated.second
-        );
+        return new GraphAssembler<>(nodeFactory, linkFactory, graphFactory, graphBundleFactory)
+                .assemble(generated.first, generated.second);
     }
 
     private Pair<Collection<N>, Map<String, L>> generateInner(GeneratorParams generatorParams) {

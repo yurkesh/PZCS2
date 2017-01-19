@@ -17,7 +17,7 @@ public class DirectedLink<N extends HasId> extends SimpleLink<N> {
 
     @Override
     public String toString() {
-        return weight >= 0 ? String.format("(%s -(%s)-> %s", src, weight, dest) : String.format("(%s -> %s", src, dest);
+        return weight >= 0 ? String.format("(%s -(%s)-> %s)", src, weight, dest) : String.format("(%s -> %s)", src, dest);
     }
 
     @Override

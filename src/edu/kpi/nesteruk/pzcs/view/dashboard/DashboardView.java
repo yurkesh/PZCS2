@@ -18,7 +18,7 @@ public class DashboardView extends JFrame {
     private final UnitedGraphPresenter graphPresenter;
 
     public DashboardView(GraphType... graphTypes) throws HeadlessException {
-        super("PZCS-2 Editor");
+        super("Planner");
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(Views.DEFAULT_WINDOW_WIDTH, Views.DEFAULT_WINDOW_HEIGHT);
