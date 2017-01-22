@@ -41,19 +41,6 @@ public class ProcessorExecution {
         //It is free on specified tact if execution queue has (tact - 1) elements or there is no job for this tact
         return execution.size() == tact || execution.get(tact) == null;
     }
-/*
-    public int getReleaseTime(int tact) {
-        execution.
-
-        int size = size();
-        if(size == 0) {
-            return 0;
-        }
-        if(execution.get(size - 1) == null) {
-            throw new IllegalStateException("Incorrect state of execution = " + execution);
-        }
-        return size;
-    }*/
 
     public boolean hasTask(String task) {
         return execution.values().contains(task);
@@ -108,18 +95,6 @@ public class ProcessorExecution {
      * @return task that was executing at previous tact and becomes done at specified tact
      */
     public Optional<String> getDoneTask(int tact) {
-        /*
-        for (int tactCheck = tact; tactCheck >= 0; tactCheck--) {
-            Optional<String> taskOpt = getDoneTaskInner(tactCheck);
-            if(taskOpt.isPresent()) {
-                return taskOpt;
-            }
-        }
-        return Optional.empty();
-    }
-
-    public Optional<String> getDoneTaskInner(int tact) {
-        */
         if(execution.isEmpty()) {
             return Optional.empty();
         }

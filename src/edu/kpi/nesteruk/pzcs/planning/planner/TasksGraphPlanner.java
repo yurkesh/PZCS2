@@ -82,10 +82,6 @@ class TasksGraphPlanner {
 
             final int tact = tactCounter.get();
 
-//            if(tact > 12 && !doneTasksHolder.hasDone()) {
-//                System.out.println("Very bad");
-//            }
-
             //Get all done tasks
             List<String> doneTasks = statefulProcessorMap.values().stream()
                     .map(statefulProcessor -> statefulProcessor.getDoneTask(tact))
@@ -165,18 +161,6 @@ class TasksGraphPlanner {
                 throw new NeedRetryException();
             }
 
-            /*
-            logger.accept("[" + tact + "]\nPlaced tasks\n" + map.entrySet().stream()
-                    .sorted(
-                            Comparator.<Map.Entry<TaskWithHostedDependencies, ProcessorWithTaskEstimate>, String>comparing(
-                                    entry -> entry.getValue().getProcessorId()
-                            ).reversed()
-                    )
-                    .map(entry -> entry.getKey().task + " -> " + entry.getValue().getProcessorId())
-                    .collect(Collectors.joining("\n"))
-            );
-            */
-
             tactCounter.incrementAndGet();
 
 
@@ -203,6 +187,4 @@ class TasksGraphPlanner {
                         })
                 );
     }
-
-
 }
